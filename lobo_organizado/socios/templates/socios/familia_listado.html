@@ -1,0 +1,9 @@
+{% if output %}
+    <ul>
+    {% for familia in lista_familias %}
+        <li><a href="/familia/{{ familia.id }}/">{{ familia.familia_crm_id }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No familias are available.</p>
+{% endif %}
