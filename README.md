@@ -18,24 +18,24 @@ $ python3 manage.py runserver 0:8080
 ## Migraciones
 
 - Genera una migracion
-$ python3 manage.py makemigrations usuarios
-Migrations for 'usuarios':
-  usuarios/migrations/0001_initial.py
+$ python3 manage.py makemigrations socios
+Migrations for 'socios':
+  socios/migrations/0001_initial.py
     - Create model Familia
     - Create model Socio
 
 
-- Ejecuta las migraciones de "usuarios"
-$ python3 manage.py migrate usuarios
+- Ejecuta las migraciones de "socios"
+$ python3 manage.py migrate socios
 Operations to perform:
-  Apply all migrations: usuarios
+  Apply all migrations: socios
 Running migrations:
-  Applying usuarios.0001_initial... OK
+  Applying socios.0001_initial... OK
 
 - Ejecuta todas las migraciones
  $ python3 manage.py migrate
 Operations to perform:
-  Apply all migrations: admin, auth, contenttypes, sessions, usuarios
+  Apply all migrations: admin, auth, contenttypes, sessions, socios
 Running migrations:
   Applying contenttypes.0001_initial... OK
   Applying auth.0001_initial... OK
@@ -60,7 +60,7 @@ Running migrations:
 
   $ python3 manage.py shell
 
-> from usuarios.models import Socio, Familia
+> from socios.models import Socio, Familia
 
 > Socio.objects.all()
  <QuerySet []>
@@ -81,7 +81,7 @@ Running migrations:
 
 ## Superuser
 
-> python manage.py createsuperuser
+> python3 manage.py createsuperuser
 Username (leave blank to use 'claudio'): claudio
 Email address: claudiojd@gmail.com
 Password: 
