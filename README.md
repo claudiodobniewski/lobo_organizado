@@ -1,6 +1,8 @@
 # lobo_organizado
 Gestion asociacion civil pequeña
 
+Desarrollado sobre python 3.6 django python 3.1
+
 ## Comandos dentro de proyecto git "lobo_organizado"
 
 Iniciar webserver dev python default port 8000
@@ -89,3 +91,10 @@ Password (again):
 Superuser created successfully.
 
 * Luego entrar en http://127.0.0.1:8000/admin/. y se accedera al portal de administracion
+
+----------------------------------------------------------
+
+# LOOK AND FEEL  - bootstrap4
+
+* Instalar bootstrap 4
+pip3 install django-bootstrap4

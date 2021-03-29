@@ -1,0 +1,30 @@
+<html>
+<head>
+
+ 
+  </head>
+<body>
+
+<!-- {% load bootstrap4 %} -->
+
+
+<h1>Socio {{ socio.familia_crm_id }}</h1>
+
+<h2>Datos del socio</h2>
+{% if socio %}
+    <ul>
+    
+        <li >{{ socio.id }} - {{ socio.apellidos }},{{ socio.nombres }}</li>
+        <li >Registo creado - {{ socio.creado }}</li>
+        <li >Registo ultima actualizacion - {{ socio.actualizado }}</li>
+    
+    </ul>
+{% else %}
+    <p>No socio is available.</p>
+{% endif %}
+
+
+    
+  </body>
+</html>
+
