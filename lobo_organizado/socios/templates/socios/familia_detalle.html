@@ -1,10 +1,20 @@
+<html>
+<head>
+
+ 
+  </head>
+<body>
+
+<!-- {% load bootstrap4 %} -->
+
+
 <h1>FAMILIA {{ familia.familia_crm_id }}</h1>
 
 <h2>Miembros de la familia</h2>
 {% if socios %}
     <ul>
     {% for socio in socios %}
-        <li ><a href="/socios/{{ socio.id }}">{{ socio.id }} - {{ socio.apellidos }},{{ socio.nombres }}</a></li>
+        <li ><a href="/socios/socio/{{ socio.id }}">{{ socio.id }} - {{ socio.apellidos }},{{ socio.nombres }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
@@ -12,3 +22,9 @@
 {% endif %}
 
 <h2>Gestion Cobranza</h2>
+
+
+    
+  </body>
+</html>
+
