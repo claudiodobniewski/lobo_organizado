@@ -1,7 +1,9 @@
-{% if output %}
+<h1>FAMILIAS</h1>
+
+{% if familias %}
     <ul>
-    {% for familia in lista_familias %}
-        <li><a href="/familia/{{ familia.id }}/">{{ familia.familia_crm_id }}</a></li>
+    {% for familia in familias %}
+        <li ><a href="/socios/familia/{{ familia.id }}">{{ familia.id }} - {{ familia.familia_crm_id }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

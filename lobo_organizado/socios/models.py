@@ -7,6 +7,7 @@ from datetime import datetime
 class Familia(models.Model):
     
     familia_crm_id = models.CharField(max_length=50)
+    # crm_id = models.IntegerField() 
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     
