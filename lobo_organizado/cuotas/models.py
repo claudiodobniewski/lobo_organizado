@@ -1,5 +1,6 @@
 from django.db import models
 from socios.models import Familia
+from datetime import date
 
 # Create your models here.
 
@@ -31,6 +32,7 @@ class CuotaPago(models.Model):
     importe = models.FloatField('cobrado',default=0.0)
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
+    fecha_cobro = models.DateField('fecha_cobro',default=date.today)
     aplica_cuota = models.ForeignKey(CuotaSocialFamilia, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     
