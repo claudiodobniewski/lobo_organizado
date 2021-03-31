@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
-from .models import Familia, Socio
+from .models import Familia, Socio, Observaciones
 from cuotas.models import CuotaSocialFamilia,CuotaPago
 
 def index(request):
@@ -44,7 +44,10 @@ def familia_detalle(request, familia_id):
         pagos = CuotaPago.objects.filter(familia_id=familia_socios.id)
         print(pagos)
         print("-------------")
+        observaciones = Observaciones.objects.filter(familia_id=familia_socios.id)
+        print(pagos)
+        print("-------------")
     except Exception as err:
         raise Http404("Unexpected error: {0}".format(err))
-    return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':plan_de_pago,'pagos':pagos})
+    return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':plan_de_pago,'pagos':pagos, 'observaciones':observaciones})
 
