@@ -9,7 +9,7 @@ pepino
 
 <h2>Miembros de la familia</h2>
 {% if socios %}
-<table id="example" class="table table-striped table-bordered" style="width:70%">
+<table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -20,7 +20,7 @@ pepino
     </tr>
   </thead>
   {% for socio in socios %}
-  <tbody>
+  <tbody >
     <tr>
       <th scope="row">{{ socio.id }}</th>
       <td><a href="/socios/socio/{{ socio.id }}">{{ socio.apellidos }},{{ socio.nombres }}</a></td>
@@ -40,7 +40,7 @@ pepino
 <h2>Gestion Cobranza</h2>
 
 {% if cuotas %}
-<table id="example" class="table table-striped table-bordered" style="width:70%">
+<table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:70%">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -69,7 +69,7 @@ pepino
 {% endif %}
 
 {% if pagos %}
-<table id="example" class="table table-striped table-bordered" style="width:70%">
+<table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:70%">
   <thead>
     <tr>
       <th scope="col">#</th>
