@@ -1,0 +1,28 @@
+{% block observaciones %}
+
+{% if observaciones %}
+<table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:70%">
+    <thead>
+        <tr>
+            <th scope="col">fecha</th>
+            <th scope="col">detalle</th>
+            <th scope="col">actualizado</th>
+        </tr>
+    </thead>
+    {% for observacion in observaciones %}
+    <tbody>
+        <tr>
+            <td>{{ observacion.creado}}</td>
+            <td>{{ observacion.detalle}}</td>
+            <td>{{ observacion.actualizado }}</td>
+        </tr>
+    </tbody>
+    {% endfor %}
+
+</table>
+
+{% else %}
+<p>No observaciones are available.</p>
+{% endif %}
+
+{% endblock observaciones %}
