@@ -1,0 +1,13 @@
+<h1>Pago de cuota socual familia {{ familia.crm_id }} # {{ familia.familia_crm_id }}</h1>
+
+{% if error_message %}<div class="alert alert-success" role="alert">{{ error_message }}</div>{% endif %}
+
+<form action="{% url 'cuotas:nueva_cuota' familia.id %}" method="post">
+{% csrf_token %}
+
+    <input type="number" value="0.00" name="importe" />
+    <input type="hidden" value="{{ familia.id }}" name="familia" />
+    <input type="hidden" value="{{ plan_de_pago.id }}" name="plan_de_pago" />
+
+<input type="submit" value="nuevo_pago">
+</form>

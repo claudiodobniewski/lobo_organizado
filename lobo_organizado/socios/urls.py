@@ -4,6 +4,7 @@ from django.urls import path
 
 from . import views
 
+app_name = 'socios'
 urlpatterns = [
     path('', views.index, name='index'),
     path('socio/<int:socio_id>', views.socio_detalle, name='socio_detalle'),
