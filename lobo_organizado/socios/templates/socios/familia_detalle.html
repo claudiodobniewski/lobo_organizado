@@ -13,7 +13,9 @@ pepino
 
 <h2>Gestion Cobranza</h2>
 
-{% include "socios/familia_financiero.html" %}
+{% include "cuotas/cuotas_y_pagos.html" %}
+
+<a class="btn btn-warning" href="{% url 'cuotas:nuevo_pago' familia_id=familia.pk %}" >INGRESAR NUEVO PAGO</a>
 
 <h2>Observaciones</h2>
 

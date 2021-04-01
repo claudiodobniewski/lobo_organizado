@@ -1,4 +1,4 @@
-{% block familia_financiero %}
+{% block cuotas_y_pagos %}
 
 {% if cuotas %}
 <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:70%">
@@ -31,7 +31,7 @@
 
 {% if pagos %}
 <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:70%">
-  <thead>
+  <thead class="thead-light">
     <tr>
       <th scope="col">#</th>
       <th scope="col">Fecha pago</th>
@@ -40,8 +40,9 @@
       <th scope="col">Importe</th>
     </tr>
   </thead>
-  {% for pago in pagos %}
   <tbody>
+  {% for pago in pagos %}
+  
     <tr>
       <th scope="row">{{ pago.id }}</th>
       <td>{{pago.fecha_cobro}}</td>
@@ -49,13 +50,14 @@
       <td>{{ pago.familia }}</td>
       <td>{{ pago.importe }}</td>
     </tr>
-  </tbody>
-    {% endfor %}
   
+    {% endfor %}
+  </tbody>
   </table>
    
 {% else %}
     <p>No cuotas are available.</p>
 {% endif %}
 
-{% endblock familia_financiero %}
+
+{% endblock cuotas_y_pagos %}

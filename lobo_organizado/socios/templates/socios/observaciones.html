@@ -9,16 +9,17 @@
             <th scope="col">actualizado</th>
         </tr>
     </thead>
-    {% for observacion in observaciones %}
     <tbody>
+    {% for observacion in observaciones %}
+    
         <tr>
             <td>{{ observacion.creado}}</td>
             <td>{{ observacion.detalle}}</td>
             <td>{{ observacion.actualizado }}</td>
         </tr>
-    </tbody>
+    
     {% endfor %}
-
+    </tbody>
 </table>
 
 {% else %}

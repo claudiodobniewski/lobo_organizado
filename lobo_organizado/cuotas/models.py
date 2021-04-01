@@ -4,6 +4,7 @@ from datetime import date
 
 # Create your models here.
 
+# template de plan de pagos para generar las cuotas del plan e identificarlas
 class PlanDePago(models.Model):
     crm_id = models.CharField(max_length=30)
     nombre = models.CharField(max_length=50)
@@ -16,6 +17,7 @@ class PlanDePago(models.Model):
 
     def __str__(self):
         return  "{}".format(self.nombre)
+# cuotas del plan generadas a una familia
 class CuotaSocialFamilia(models.Model):
     vencimiento = models.DateField('vencimiento')
     importe_cuota = models.FloatField()
@@ -27,7 +29,7 @@ class CuotaSocialFamilia(models.Model):
     def __str__(self):
         return  "Concepto: {} | Familia:{} | Vto:{}".format(self.plan_de_pago,self.familia, self.vencimiento)
 
-
+# Pagos de una familia a cuenta de un plan
 class CuotaPago(models.Model):
     importe = models.FloatField('cobrado',default=0.0)
     creado = models.DateTimeField('creado',auto_now_add=True)
