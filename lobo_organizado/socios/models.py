@@ -7,7 +7,7 @@ from django.db import models
 class Familia(models.Model):
     
     familia_crm_id = models.CharField(max_length=50)
-    crm_id = models.IntegerField(default=0) # unique=True
+    crm_id = models.IntegerField(unique=True) # unique=True
     direccion_calle = models.CharField(max_length=50,blank=True)
     direccion_numero = models.CharField(max_length=50,blank=True)
     direccion_depto = models.CharField(max_length=50,blank=True)

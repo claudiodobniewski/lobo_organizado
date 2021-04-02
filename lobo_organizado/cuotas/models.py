@@ -35,8 +35,9 @@ class CuotaPago(models.Model):
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     fecha_cobro = models.DateField('fecha_cobro',default=date.today)
-    aplica_cuota = models.ForeignKey(CuotaSocialFamilia, on_delete=models.CASCADE)
+    #aplica_cuota = models.ForeignKey(CuotaSocialFamilia, on_delete=models.CASCADE)
+    aplica_pago_plan = models.ForeignKey(PlanDePago, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     
     def __str__(self):
-        return  "Concepto: {} | Familia:{} | Vto:{}".format(self.aplica_cuota,self.familia, self.importe)
+        return  "Concepto: {} | Familia:{} | Vto:{}".format(self.aplica_pago_plan,self.familia, self.importe)

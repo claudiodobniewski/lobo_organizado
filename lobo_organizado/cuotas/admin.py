@@ -15,7 +15,7 @@ class PlanDePagoAdmin(admin.ModelAdmin):
 class CuotaSocialFamiliaAdmin(admin.ModelAdmin):
     fields = ['familia','plan_de_pago','vencimiento','importe_cuota']
 class CuotaPagonAdmin(admin.ModelAdmin):
-    fields = ['importe','aplica_cuota','familia']
+    fields = ['importe','aplica_pago_plan','familia']
     
 admin.site.register(PlanDePago,PlanDePagoAdmin)
 admin.site.register(CuotaSocialFamilia,CuotaSocialFamiliaAdmin)
