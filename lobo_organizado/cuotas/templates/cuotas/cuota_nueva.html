@@ -1,6 +1,14 @@
+
 <h1>Pago de cuota social familia {{ familia.crm_id }} # {{ familia.familia_crm_id }}</h1>
 
 {% if error_message %}<div class="alert alert-success" role="alert">{{ error_message }}</div>{% endif %}
+
+<script type="text/javascript">
+var planes_list="{{ planes_de_pago_list  }}";
+logger.debug("plan de pago list : ",planes_list);
+debugger;
+
+</script>
 
 <form action="{% url 'cuotas:procesa_nuevo_pago' familia_id=familia.id %}" method="post">
     {% csrf_token %}
@@ -14,7 +22,7 @@
     </div>
         <div class="form-group">
             <label for="seleccion_de_plan">Seleccione el plan al cual cargar el pago</label>
-            <select class="form-control" name="plan_de_pago_id" required>
+            <select class="form-control" name="plan_de_pago_id" required ONCHANGE="location = this.options[this.selectedIndex].value;">
                 {% for plan_pago in planes_de_pago %}
                 <option value="{{ plan_pago.id }}">{{ plan_pago.nombre }} [cuota ${{ plan_pago.importe_cuota }}]</option>
                 {% endfor %}
