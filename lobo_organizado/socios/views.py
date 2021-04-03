@@ -51,3 +51,8 @@ def familia_detalle(request, familia_id):
         raise Http404("Unexpected error: {0}".format(err))
     return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':plan_de_pago,'pagos':pagos, 'observaciones':observaciones})
 
+def familia_observacion_editar(request, observacion_id):
+    return HttpResponse("Hello, world. ACA VA OBSERVACIONES EDITAR.")
+
+def familia_observacion_borrar(request, observacion_id):
+    return HttpResponse("Hello, world. ACA VA OBSERVACIONES BORRAR.")

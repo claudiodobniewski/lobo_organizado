@@ -1,7 +1,16 @@
 # lobo_organizado
 Gestion asociacion civil pequeña
 
-Desarrollado sobre python 3.6 django python 3.1
+## Dependencias
+
+Desarrollado sobre 
+
+* python 3.6 
+instalado con pyp3 (pip para python 3)  
+
+* django python 3.1
+* django-bootstrap4
+> pip3 install django-bootstrap4
 
 ## Comandos dentro de proyecto git "lobo_organizado"
 
@@ -98,3 +107,7 @@ Superuser created successfully.
 
 * Instalar bootstrap 4
 pip3 install django-bootstrap4
+
+* Instalar bootstrap
+pip3 install django-icons
+https://readthedocs.org/projects/django-icons/downloads/pdf/latest/

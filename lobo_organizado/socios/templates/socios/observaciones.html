@@ -7,6 +7,8 @@
             <th scope="col">fecha</th>
             <th scope="col">detalle</th>
             <th scope="col">actualizado</th>
+            <th scope="col">editar</th>
+            <th scope="col">eliminar</th>
         </tr>
     </thead>
     <tbody>
@@ -16,6 +18,8 @@
             <td>{{ observacion.creado}}</td>
             <td>{{ observacion.detalle}}</td>
             <td>{{ observacion.actualizado }}</td>
+            <td><a class="btn btn-success" href={% url 'socios:familia_editar_observacion' observacion_id=observacion.pk %}>EDITAR</a></td>
+            <td><a class="btn btn-danger" href={% url 'socios:familia_borrar_observacion' observacion_id=observacion.pk %}>BORRAR</a></td>
         </tr>
     
     {% endfor %}

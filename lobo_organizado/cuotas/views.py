@@ -4,6 +4,7 @@ from django.http import Http404
 from django.urls import reverse
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago
+import  simplejson
 
 # Create your views here.
 def index(request):
@@ -14,9 +15,11 @@ def nuevo_pago(request, familia_id):
     familia_socios = Familia.objects.get(pk=familia_id)
 
     planes_de_pago = PlanDePago.objects.all()
-
+    planes_de_pago_list = list(planes_de_pago)
+    #print("PLAN DE PAGOS LIST:{}".format(planes_de_pago_list))
+    #planes_de_pago_json = simplejson.dumps(planes_de_pago_list)
     #return HttpResponse("Hello, world. ACA VA PANTALLA PAGO NUEVA CUOTA.")
-    return render(request, 'cuotas/cuota_nueva.html', {'familia': familia_socios,'planes_de_pago':planes_de_pago})
+    return render(request, 'cuotas/cuota_nueva.html', {'familia': familia_socios,'planes_de_pago':planes_de_pago,'planes_de_pago_list':planes_de_pago_list})
 
 def procesa_nuevo_pago(request, familia_id):
 
@@ -41,5 +44,25 @@ def procesa_nuevo_pago(request, familia_id):
     nuevo_pago.save()
 
     return HttpResponseRedirect(reverse('socios:familia_detalle', args=(selected_family.id,)))
+
+def editar_pago(request, pago_id):
+    return HttpResponse("Hello, world. ACA VA PANTALLA EDITAR PAGO.")
+
+def borrar_pago(request, pago_id):
+    return HttpResponse("Hello, world. ACA VA PANTALLA BORRAR PAGO.")
+
+def nueva_cuota(request, familia_id):
+    return HttpResponse("Hello, world. ACA VA PANTALLA NUEVA CUOTA.")
+
+def procesa_nueva_cuota(request, familia_id):
+    return HttpResponse("Hello, world. ACA VA PANTALLA PROCESAR NUEVA CUOTA.")
+
+def editar_cuota(request, cuota_id):
+    return HttpResponse("Hello, world. ACA VA PANTALLA EDITAR CUOTA.")
+
+def borrar_cuota(request, cuota_id):
+    return HttpResponse("Hello, world. ACA VA PANTALLA BORRAR CUOTA.")
+
+
 
 

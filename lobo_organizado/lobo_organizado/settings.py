@@ -26,7 +26,7 @@ SECRET_KEY = '5!0m-1s+_g7nkj367&#qvjbbbiz2!jkvuu2e+4w^@o5rhk(j5='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37']
+ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37','192.168.1.40']
 
 
 # Application definition
@@ -146,4 +146,17 @@ LOGGING = {
     },
 }
 
-# Claudio   bootstrap 4
+# Claudio   icons
+
+# Settings for django-icons
+DJANGO_ICONS = {
+    'DEFAULTS': {
+        'renderer': 'fontawesome',
+        },
+    'RENDERERS': {
+        'fontawesome': 'FontAwesomeRenderer','bootstrap3': 'Bootstrap3Renderer',
+        },
+    'ICONS': {
+        "edit": {"name": "far fa-pencil"},
+    },
+}
