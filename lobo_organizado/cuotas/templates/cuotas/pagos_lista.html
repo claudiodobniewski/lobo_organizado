@@ -22,7 +22,7 @@
       <td>{{ pago.aplica_pago_plan }}</td>
       <td>{{ pago.familia }}</td>
       <td>{{ pago.importe }}</td>
-      <td><a class="btn btn-success" href={% url 'cuotas:editar_pago' pago_id=pago.pk %}>EDITAR</a></td>
+      <td><a class="btn btn-success" href={% url 'cuotas:nuevo_pago' familia_id=familia.pk pago_id=pago.pk %}>EDITAR</a></td>
       <td><a class="btn btn-danger" href={% url 'cuotas:borrar_pago' pago_id=pago.pk %}>BORRAR</a></td>
     </tr>
   
@@ -33,6 +33,6 @@
 {% else %}
     <p>No cuotas are available.</p>
 {% endif %}
-<a class="btn btn-warning" href="{% url 'cuotas:nuevo_pago' familia_id=familia.pk %}" >INGRESAR NUEVO PAGO </a>
+<a class="btn btn-warning" href="{% url 'cuotas:nuevo_pago' familia_id=familia.pk pago_id=0 %}" >INGRESAR NUEVO PAGO </a>
 
 {% endblock pagos_lista %}

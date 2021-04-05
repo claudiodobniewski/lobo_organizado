@@ -10,7 +10,7 @@ import  simplejson
 def index(request):
     return HttpResponse("Hello, world. You're at the cuotas index.")
 
-def nuevo_pago(request, familia_id):
+def nuevo_pago(request, familia_id, pago_id=0 ):
 
     familia_socios = Familia.objects.get(pk=familia_id)
 
@@ -19,7 +19,16 @@ def nuevo_pago(request, familia_id):
     #print("PLAN DE PAGOS LIST:{}".format(planes_de_pago_list))
     #planes_de_pago_json = simplejson.dumps(planes_de_pago_list)
     #return HttpResponse("Hello, world. ACA VA PANTALLA PAGO NUEVA CUOTA.")
-    return render(request, 'cuotas/cuota_nueva.html', {'familia': familia_socios,'planes_de_pago':planes_de_pago,'planes_de_pago_list':planes_de_pago_list})
+
+    if not pago_id:
+        pago_error_message = 'Cancelado generacion de nuevo pago'
+        pago = CuotaPago()
+    else:
+        pago = CuotaPago.objects.get(id=pago_id)
+        
+        pago_error_message = 'Cancelado edicion de pago ' # concatenar info del pago cancelado
+    print("error_message [{}] ".format(pago_error_message) )
+    return render(request, 'cuotas/crear_editar_pago.html', {'familia': familia_socios,'planes_de_pago':planes_de_pago,'planes_de_pago_list':planes_de_pago_list, 'pago': pago, 'pago_error_message': pago_error_message })
 
 def procesa_nuevo_pago(request, familia_id):
 
