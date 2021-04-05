@@ -2,25 +2,39 @@
 
 
 {% block content %}
-{% block navbar_base %}
-pepino
-{% endblock %}
+
 
 <h1>FAMILIA {{ familia.familia_crm_id }}</h1>
 
-<h2>Miembros de la familia</h2>
+{% block error_message %}
+{% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message }}</div>{% endif %}
+{% endblock error_message %}
 
-{% include "socios/familia_miembros.html" %}
+<div class="card">
+    <div class="card-title">
+        <h2>Miembros de la familia</h2>
+    </div>
+    <div class="card-body">
+        {% include "socios/familia_miembros.html" %}
+    </div>
+</div>
 
-<h2>Gestion Cobranza</h2>
-
-{% include "cuotas/cuotas_y_pagos.html" %}
-
-
-
-<h2>Observaciones</h2>
-
-{% include "socios/observaciones.html" %}
-
+<div class="card">
+    <div class="card-title">
+        <h2>Gestion Cobranza</h2>
+    </div>
+    <div class="card-body">
+        {% include "cuotas/cuotas_lista.html" %}
+    </div>
+    <div class="card-body">
+        {% include "cuotas/pagos_lista.html" %}
+    </div>
+</div>
+<div class="card">
+    <div class="card-title">
+        <h2>Observaciones</h2>
+    </div>
+    {% include "socios/observaciones.html" %}
+</div>
 
 {% endblock content %}

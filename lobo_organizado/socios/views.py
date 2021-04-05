@@ -1,8 +1,10 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
 from .models import Familia, Socio, Observaciones
 from cuotas.models import CuotaSocialFamilia,CuotaPago
+from django.template.defaulttags import register
 
 def index(request):
     return familias_index(request)
@@ -23,14 +25,41 @@ def socio_detalle(request, socio_id):
         raise Http404("Unexpected error: {0}".format(err))
     return render(request, 'socios/socio_detalle.html', {'socio':socio})
 
+@register.filter(name='lookup')
+def lookup(value, arg):
+    return value[arg]
+
 def familia_index(request):
 
     lista_familias = Familia.objects.all()
-    
-    print(lista_familias)
-    return render(request, 'socios/familia_listado.html', {'familias': lista_familias})
 
-def familia_detalle(request, familia_id):
+    socios = Socio.objects.all()
+
+    
+    familia_estadisticas_socios = {}
+
+    categorias = {k:0 for k,categoria in Socio.CATEGORIAS_CHOISES }
+
+    print(categorias)
+    for socio in socios:
+
+        #print("familia:{} categoria:{} claves:{}".format(socio.familia.id,socio.categoria,familia_estadisticas_socios.keys()) )
+        
+        if socio.familia.id not in familia_estadisticas_socios.keys():
+            #print("seteando dict categorias")
+            familia_estadisticas_socios[socio.familia.id] = {'categorias_counter': categorias.copy(), 'familia':socio.familia }
+
+
+        #print("familia:{} categoria:{} claves:{}".format(socio.familia.id,socio.categoria,familia_estadisticas_socios.keys()) )
+        #print(familia_estadisticas_socios)
+        familia_estadisticas_socios[socio.familia.id]['categorias_counter'][socio.categoria] += 1
+
+    print(familia_estadisticas_socios)
+
+    
+    return render(request, 'socios/familia_listado.html', {'familias': lista_familias,'familias_categorias':familia_estadisticas_socios} )
+
+def familia_detalle(request, familia_id, error_message=''):
     
     try:
         familia_socios = Familia.objects.get(pk=familia_id)
@@ -49,7 +78,7 @@ def familia_detalle(request, familia_id):
         print("-------------")
     except Exception as err:
         raise Http404("Unexpected error: {0}".format(err))
-    return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':plan_de_pago,'pagos':pagos, 'observaciones':observaciones})
+    return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':plan_de_pago,'pagos':pagos, 'observaciones':observaciones, 'error_message': error_message })
 
 def familia_observacion_editar(request, observacion_id):
     return HttpResponse("Hello, world. ACA VA OBSERVACIONES EDITAR.")

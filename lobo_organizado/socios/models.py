@@ -63,3 +63,4 @@ class Observaciones(models.Model):
     
     def __str__(self):
         return  "{}, {}".format(self.familia.familia_crm_id,self.pk)
+
