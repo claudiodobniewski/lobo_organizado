@@ -6,7 +6,7 @@ from . import views
 
 app_name = 'cuotas'
 urlpatterns = [
-    path('familia/nuevo_pago/<int:familia_id>', views.nuevo_pago, name='nuevo_pago'),
+    path('familia/nuevo_pago/<int:familia_id>/<int:pago_id>', views.nuevo_pago, name='nuevo_pago'),
     path('familia/procesa_nuevo_pago/<int:familia_id>', views.procesa_nuevo_pago, name='procesa_nuevo_pago'),
     path('familia/editar_pago/<int:pago_id>', views.editar_pago, name='editar_pago'),
     path('familia/borrar_pago/<int:pago_id>', views.borrar_pago, name='borrar_pago'),

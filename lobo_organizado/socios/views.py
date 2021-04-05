@@ -5,6 +5,8 @@ from django.http import Http404
 from .models import Familia, Socio, Observaciones
 from cuotas.models import CuotaSocialFamilia,CuotaPago
 from django.template.defaulttags import register
+from django.template.defaultfilters import stringfilter
+from urllib.parse import unquote
 
 def index(request):
     return familias_index(request)
@@ -28,6 +30,10 @@ def socio_detalle(request, socio_id):
 @register.filter(name='lookup')
 def lookup(value, arg):
     return value[arg]
+
+@register.filter(name='unquote_raw')
+def unquote_raw(value):
+    return unquote(value)
 
 def familia_index(request):
 
