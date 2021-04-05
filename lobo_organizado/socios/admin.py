@@ -24,6 +24,7 @@ class ObservacionesAdmin(admin.ModelAdmin):
     fields = ['descripcion','actualizado']
     list_display = ['descripcion','actualizado']
 
+
 admin.site.register(Familia,FamiliaAdmin)
 admin.site.register(Socio,SocioAdmin)
 #admin.site.register(Observaciones,ObservacionesInline)
