@@ -1,23 +1,19 @@
-
-
-
 {% extends "base_site.html" %}
 
 {% block content %}
 {% load crispy_forms_tags %}
 
-<!-- {% lorem 4 p random %} -->
 
 <h1>Familia {{ familia.familia_crm_id }}</h1>
 
 <h2>{{ op_title }}</h2>
 
 <div class="post">
-<form method="POST" enctype="multipart/form-data" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
-  {% csrf_token %}
-  {{ form|crispy }}
-  <button type="submit" class="btn btn-primary" type="submit" class="save btn btn-default">{{ boton_aceptar }}</button>
-</form>
+  <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary" type="submit" class="save btn btn-default">{{ boton_aceptar }}</button>
+  </form>
 
 </div>
 

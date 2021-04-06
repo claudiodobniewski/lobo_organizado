@@ -1,16 +1,16 @@
 {% extends "base_site.html" %}
 
 {% block content %}
-
+{% load crispy_forms_tags %}
 
 
 <h1>Familia {{ familia.familia_crm_id }}</h1>
 
 <h2>Eliminar Socio</h2>
 
-<div class="post">
+<div class="post" >
 <form method="POST" class="post-form">{% csrf_token %}
-  {{ form.as_p }}
+  {{ form|crispy }}
 
 <button type="submit" class="btn btn-danger" type="submit" class="save btn btn-default">ELIMINAR SOCIO - la operacion es definitiva.</button>
 </form>

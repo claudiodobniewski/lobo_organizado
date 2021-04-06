@@ -33,23 +33,27 @@ def socio_nuevo(request,familia_id):
     print("Socio nuevo a familia {}".format(familia_id))
     familia_socios = Familia.objects.get(pk=familia_id)
     socio = Socio(familia_id=familia_socios)
-    print("Socio --> {}".format(socio))
+    #print("Socio --> {}".format(socio))
+
+
     if request.method == "POST":
         form = SocioForm(request.POST,instance=socio)
         if form.is_valid():
             post = form.save(commit=False)
             post.save()
             print("CAMINO 1 familia {}".format(familia_id))
-            redirect('socios:familia_detalle', familia_id=familia_id)
-
+            return redirect('socios:familia_detalle', familia_id=familia_id)
     else:
         print("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_socios.familia_crm_id))
 
         form = SocioForm(instance=socio)
-        print("From:{}".format(form))
-        op_title='Nuevo Socio'
-        boton_aceptar='Agregar Socio a la Familia'
-        boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_socios.familia_crm_id)
+        #print("From:{}".format(form))
+    
+    op_title='Nuevo Socio'
+    boton_aceptar='Agregar Socio a la Familia'
+    boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_socios.familia_crm_id)
+
+    print("Socio nuevo END")
     return render(request, 'socios/socio_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
 def socio_editar(request, socio_id):
@@ -58,21 +62,25 @@ def socio_editar(request, socio_id):
     socio = Socio.objects.get(pk=socio_id)
     #post = get_object_or_404(Socio, pk=socio_id)
     familia_socios = Familia.objects.get(pk=socio.familia.id)
+    
+
     if request.method == "POST":
         form = SocioForm(request.POST, instance=socio)
         if form.is_valid():
             post = form.save(commit=False)
             post.save()
             print("CAMINO 1 edicion socio {} - familia {}".format(socio.id,familia_socios.id))
-            redirect('socios:familia_detalle', familia_id=familia_socios.id)
-
+            return redirect('socios:familia_detalle', familia_id=familia_socios.id)
     else:
         print("CAMINO 2 edicion socio {} - familia {}".format(socio.id,familia_socios.id))
         form = SocioForm(instance=socio)
-        print("From:{}".format(form))
-        op_title='Editar Socio'
-        boton_aceptar='Guardar cambios'
-        boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_socios.familia_crm_id)
+        #print("From:{}".format(form))
+    
+    op_title='Editar Socio'
+    boton_aceptar='Guardar cambios'
+    boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_socios.familia_crm_id)
+
+    print("Socio editar END")
     return render(request, 'socios/socio_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
 def socio_borrar(request, socio_id):
@@ -89,12 +97,20 @@ def socio_borrar(request, socio_id):
         socio = Socio.objects.get(id=socio_id)       
         socio.delete()
         print("CAMINO 1 borrar socio {} - familia {}".format(socio.id,familia_socios.id))
-        redirect('socios:familia_detalle', familia_id=familia_socios.id)
+        return redirect('socios:familia_detalle', familia_id=familia_socios.id)
 
     else:
         print("CAMINO 2 borrar socio {} - familia {}".format(socio.id,familia_socios.id))
         form = SocioForm(instance=socio)
+        form.fields['nombres'].disabled = True
+        form.fields['apellidos'].disabled = True
+        form.fields['dni'].disabled = True
+        form.fields['fecha_nacimiento'].disabled = True
+        form.fields['categoria'].disabled = True
+        form.fields['rama'].disabled = True
+        form.fields['familia'].disabled = True
         print("From:{}".format(form))
+    print("Socio borrar END")
     return render(request, 'socios/socio_borrar.html', {'form': form, "familia": familia_socios })
 
 @register.filter(name='lookup')
