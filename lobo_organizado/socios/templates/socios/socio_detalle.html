@@ -17,6 +17,7 @@
     <th scope="col">#</th>
     <th scope="col">Nombre</th>
     <th scope="col">Dni</th>
+    <th scope="col">Familia</th>
     <th scope="col">Creado</th>
     <th scope="col">Editado</th>
   </tr>
@@ -26,6 +27,7 @@
     <th scope="row">1</th>
     <td>{{ socio.apellidos }},{{ socio.nombres }}</td>
     <td>{{ socio.dni }}</td>
+    <td>{{ socio.familia.familia_crm_id }}</td>
     <td>{{ socio.creado }}</td>
     <td>{{ socio.actualizado }}</td>
   </tr>

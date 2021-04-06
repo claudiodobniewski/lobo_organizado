@@ -2,11 +2,13 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
-from .models import Familia, Socio, Observaciones
+from django.shortcuts import redirect
 from cuotas.models import CuotaSocialFamilia,CuotaPago
 from django.template.defaulttags import register
-from django.template.defaultfilters import stringfilter
 from urllib.parse import unquote
+
+from .forms import SocioForm
+from .models import Familia, Socio, Observaciones
 
 def index(request):
     return familias_index(request)
@@ -27,13 +29,50 @@ def socio_detalle(request, socio_id):
         raise Http404("Unexpected error: {0}".format(err))
     return render(request, 'socios/socio_detalle.html', {'socio':socio})
 
+def socio_nuevo(request,familia_id):
+    print("Socio nuevo a familia {}".format(familia_id))
+    familia_socios = Familia.objects.get(pk=familia_id)
+    if request.method == "POST":
+        form = SocioForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            print("CAMINO 1 familia {}".format(familia_id))
+            redirect('socios:familia_detalle', familia_id=familia_id)
+
+    else:
+        print("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_socios.familia_crm_id))
+
+        form = SocioForm({'familia_id': familia_id})
+        print("From:{}".format(form))
+    return render(request, 'socios/socio_nuevo.html', {'form': form, "familia": familia_socios })
+
+def socio_editar(request, socio_id):
+    
+    print("Socio edicion  {}".format(socio_id))
+    socio = Socio.objects.get(pk=socio_id)
+    #post = get_object_or_404(Socio, pk=socio_id)
+    familia_socios = Familia.objects.get(pk=socio.familia.id)
+    if request.method == "POST":
+        form = SocioForm(request.POST, instance=socio)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            print("CAMINO 1 edicion socio {} - familia {}".format(socio.id,familia_socios.id))
+            redirect('socios:familia_detalle', familia_id=familia_socios.id)
+
+    else:
+        print("CAMINO 2 edicion socio {} - familia {}".format(socio.id,familia_socios.id))
+        form = SocioForm(instance=socio)
+        print("From:{}".format(form))
+    return render(request, 'socios/socio_nuevo.html', {'form': form, "familia": familia_socios })
+
+def socio_borrar(request, socio_id):
+    pass
+
 @register.filter(name='lookup')
 def lookup(value, arg):
     return value[arg]
-
-@register.filter(name='unquote_raw')
-def unquote_raw(value):
-    return unquote(value)
 
 def familia_index(request):
 
@@ -91,3 +130,8 @@ def familia_observacion_editar(request, observacion_id):
 
 def familia_observacion_borrar(request, observacion_id):
     return HttpResponse("Hello, world. ACA VA OBSERVACIONES BORRAR.")
+
+
+@register.filter(name='unquote_raw')
+def unquote_raw(value):
+    return unquote(value)
