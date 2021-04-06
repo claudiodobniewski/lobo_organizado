@@ -1,0 +1,24 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+
+
+<!-- {% lorem 4 p random %} -->
+
+<h1>Familia {{ familia.familia_crm_id }}</h1>
+
+<h2>Nuevo Socio</h2>
+
+<div class="post">
+<form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary" type="submit" class="save btn btn-default">Guardar cambios</button>
+</form>
+
+</div>
+
+
+
+<a type="button" class="btn btn-danger" href="/socios/familia/{{ familia.id }}">Descartar cambios y regresar a detalle familia {{ familia.familia_crm_id }}</a>
+{% endblock content %}

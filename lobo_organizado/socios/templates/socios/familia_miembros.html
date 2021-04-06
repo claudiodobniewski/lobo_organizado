@@ -9,25 +9,30 @@
       <th scope="col">Dni</th>
       <th scope="col">Creado</th>
       <th scope="col">Editado</th>
+      <th scope="col">editar</th>
+      <th scope="col">eliminar</th>
     </tr>
   </thead>
-  <tbody >
-  {% for socio in socios %}
-  
+  <tbody>
+    {% for socio in socios %}
+
     <tr>
       <th scope="row">{{ forloop.counter }}</th>
-      <td><a href="/socios/socio/{{ socio.id }}">{{ socio.apellidos }},{{ socio.nombres }}</a></td>
+      <td>{{ socio.apellidos }},{{ socio.nombres }}</td>
       <td>{{ socio.dni }}</td>
       <td>{{ socio.creado }}</td>
       <td>{{ socio.actualizado }}</td>
+      <td><a class="btn btn-success" href={% url 'socios:socio_editar' socio_id=socio.pk %}>EDITAR</a></td>
+      <td><a class="btn btn-danger" href={% url 'socios:socio_borrar' socio_id=socio.pk %}>BORRAR</a></td>
     </tr>
-  
+
     {% endfor %}
   </tbody>
-  </table>
-   
+</table>
+
 {% else %}
-    <p>No familias are available.</p>
+<p>No familias are available.</p>
 {% endif %}
 
+<a class="btn btn-warning" href="{% url 'socios:socio_nuevo' familia_id=familia.pk %}" >SUMAR SOCIO A LA FAMILIA</a>
 {% endblock familia_miembros %}

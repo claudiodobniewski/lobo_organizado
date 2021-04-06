@@ -7,34 +7,16 @@
 
 <h1>Familia {{ familia.familia_crm_id }}</h1>
 
-<h2>Datos del socio</h2>
+<h2>Edicion Socio</h2>
 
+<div class="post">
+<form method="POST" class="post-form">{% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary" type="submit" class="save btn btn-default">Agregar Socio a la Familia</button>
+</form>
+<a class="btn btn-default" href="{% url 'socios:socio_nuevor' familia_id=familia.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+</div>
 
-{% if socio %}
-<table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:70%">
-<thead>
-  <tr>
-    <th scope="col">#</th>
-    <th scope="col">Nombre</th>
-    <th scope="col">Dni</th>
-    <th scope="col">Creado</th>
-    <th scope="col">Editado</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <th scope="row">1</th>
-    <td>{{ socio.apellidos }},{{ socio.nombres }}</td>
-    <td>{{ socio.dni }}</td>
-    <td>{{ socio.creado }}</td>
-    <td>{{ socio.actualizado }}</td>
-  </tr>
-</tbody>
-</table>
+<a type="button" class="btn btn-danger" href="/socios/familia/{{ familia.id }}">Descartar nuevo socio y regresar a detalle familia {{ familia.familia_crm_id }}</a>
 
-{% else %}
-<p>No socio is available.</p>
-{% endif %}
-
-<a type="button" class="btn btn-primary" href="/socios/familia/{{ socio.familia.id }}">Volver a familia {{ socio.familia.familia_crm_id }}</a>
 {% endblock content %}

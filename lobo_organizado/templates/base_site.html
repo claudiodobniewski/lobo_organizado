@@ -12,7 +12,7 @@
     {# Load CSS and JavaScript #}
     {% bootstrap_css %}
     {% bootstrap_javascript jquery='full' %}
-    
+
     {# Display django.contrib.messages as Bootstrap alerts #}
     {% bootstrap_messages %}
 
@@ -25,13 +25,24 @@
 
 
 <body>
+
+    {% if not user.is_authenticated %}
+
+    <div class="container-md">
+        <a href="{% url 'admin:index' %}" class="top-menu"><span class="glyphicon glyphicon-plus">SOLO USUARIOS REGISTRADOS, ir al login</span></a>
+    </div>
+
+    {% else %}
+
     <div class="container-md">
         {% include 'navbar.html' %}
-        
+
         {% block content %}
-            <p>Placeholder text in base template. Replace with page content.</p>
+        <p>Placeholder text in base template. Replace with page content.</p>
         {% endblock content %}
     </div>
+    {% endif %}
+
 </body>
 
 </html>
