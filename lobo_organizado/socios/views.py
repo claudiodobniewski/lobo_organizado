@@ -32,8 +32,10 @@ def socio_detalle(request, socio_id):
 def socio_nuevo(request,familia_id):
     print("Socio nuevo a familia {}".format(familia_id))
     familia_socios = Familia.objects.get(pk=familia_id)
+    socio = Socio(familia_id=familia_socios)
+    print("Socio --> {}".format(socio))
     if request.method == "POST":
-        form = SocioForm(request.POST)
+        form = SocioForm(request.POST,instance=socio)
         if form.is_valid():
             post = form.save(commit=False)
             post.save()
@@ -43,7 +45,7 @@ def socio_nuevo(request,familia_id):
     else:
         print("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_socios.familia_crm_id))
 
-        form = SocioForm({'familia_id': familia_id})
+        form = SocioForm(instance=socio)
         print("From:{}".format(form))
     return render(request, 'socios/socio_nuevo.html', {'form': form, "familia": familia_socios })
 
