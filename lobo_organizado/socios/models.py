@@ -43,7 +43,7 @@ class Socio(models.Model):
     nombres = models.CharField(max_length=50)
     apellidos = models.CharField(max_length=50)
     dni = models.CharField(max_length=15)
-    fecha_nacimiento = models.DateField('fecha_nacimiento')
+    fecha_nacimiento = models.DateField('fecha_nacimiento',null=True)
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     familia=models.ForeignKey(Familia, on_delete=models.CASCADE)

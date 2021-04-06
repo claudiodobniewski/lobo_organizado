@@ -1,0 +1,21 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+
+
+
+<h1>Familia {{ familia.familia_crm_id }}</h1>
+
+<h2>Eliminar Socio</h2>
+
+<div class="post">
+<form method="POST" class="post-form">{% csrf_token %}
+  {{ form.as_p }}
+
+<button type="submit" class="btn btn-danger" type="submit" class="save btn btn-default">ELIMINAR SOCIO - la operacion es definitiva.</button>
+</form>
+</div>
+
+<a type="button" class="btn btn-primary" href="/socios/familia/{{ familia.id }}">Descartar nuevo socio y regresar a detalle familia {{ familia.familia_crm_id }}</a>
+
+{% endblock content %}

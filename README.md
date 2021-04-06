@@ -9,8 +9,12 @@ Desarrollado sobre
 instalado con pyp3 (pip para python 3)  
 
 * django python 3.1
+  
 * django-bootstrap4
 > pip3 install django-bootstrap4
+
+* crispy template tag library
+> pip3 install django-crispy
 
 ## Comandos dentro de proyecto git "lobo_organizado"
 
