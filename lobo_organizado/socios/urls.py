@@ -17,4 +17,6 @@ urlpatterns = [
     path('familia/observacion/editar/<int:observacion_id>', views.familia_observacion_editar, name='familia_editar_observacion'),
     path('familia/observacion/borrar/<int:observacion_id>', views.familia_observacion_borrar, name='familia_borrar_observacion'),
     path('familias', views.familia_index, name='familia_listado'),
+    path('observacion/nuevo/<int:familia_id>/<int:observacion_id>', views.observacion_nuevo, name='observacion_nuevo'),
+    path('observacion/borrar/<int:observacion_id>', views.observacion_borrar, name='observacion_borrar'),
 ]

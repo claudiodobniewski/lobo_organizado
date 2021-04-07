@@ -18,8 +18,8 @@
             <td>{{ observacion.creado}}</td>
             <td>{{ observacion.detalle}}</td>
             <td>{{ observacion.actualizado }}</td>
-            <td><a class="btn btn-success" href={% url 'socios:familia_editar_observacion' observacion_id=observacion.pk %}>EDITAR</a></td>
-            <td><a class="btn btn-danger" href={% url 'socios:familia_borrar_observacion' observacion_id=observacion.pk %}>BORRAR</a></td>
+            <td><a class="btn btn-success" href={% url 'socios:observacion_nuevo' familia_id=familia.pk observacion_id=observacion.pk %}>EDITAR</a></td>
+            <td><a class="btn btn-danger" href={% url 'socios:observacion_borrar' observacion_id=observacion.pk %}>BORRAR</a></td>
         </tr>
     
     {% endfor %}
@@ -29,5 +29,7 @@
 {% else %}
 <p>No observaciones are available.</p>
 {% endif %}
+
+<a class="btn btn-warning" href="{% url 'socios:observacion_nuevo' familia_id=familia.pk observacion_id=0 %}" >GENERAR NUEVA OBSERVACION </a>
 
 {% endblock observaciones %}

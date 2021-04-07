@@ -7,8 +7,9 @@ from cuotas.models import CuotaSocialFamilia,CuotaPago
 from django.template.defaulttags import register
 from urllib.parse import unquote
 
-from .forms import SocioForm
+from .forms import SocioForm, ObservacionForm
 from .models import Familia, Socio, Observaciones
+
 
 def index(request):
     return familias_index(request)
@@ -174,6 +175,67 @@ def familia_observacion_editar(request, observacion_id):
 def familia_observacion_borrar(request, observacion_id):
     return HttpResponse("Hello, world. ACA VA OBSERVACIONES BORRAR.")
 
+
+def observacion_nuevo(request,familia_id,observacion_id):
+    print("Observacion nuevo a familia {}".format(familia_id))
+
+    familia_observacions = Familia.objects.get(pk=familia_id)
+    if observacion_id :
+        observacion = Observaciones.objects.get(pk=observacion_id)
+        boton_aceptar='Guardar cambios'
+        boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_observacions.familia_crm_id)
+    else:
+        observacion = Observaciones(familia_id=familia_observacions)
+        boton_aceptar='Agregar Observacion a la Familia'
+        boton_cancelar='Descartar nueva observacion y regresar a detalle familia {}'.format(familia_observacions.familia_crm_id)
+    #print("Socio --> {}".format(observacion))
+
+
+    if request.method == "POST":
+        form = ObservacionForm(request.POST,instance=observacion)
+        form.fields['familia'].disabled = True
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            print("CAMINO 1 familia {}".format(familia_id))
+            return redirect('socios:familia_detalle', familia_id=familia_id)
+    else:
+        print("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_observacions.familia_crm_id))
+
+        form = ObservacionForm(instance=observacion)
+        form.fields['familia'].disabled = True
+        #print("From:{}".format(form))
+    
+    op_title='Nueva Observacion'
+    
+
+    print("Socio nuevo END")
+    return render(request, 'socios/observacion_nuevo.html', {'form': form, "familia": familia_observacions, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
+
+def observacion_borrar(request, observacion_id):
+    
+    print("Observacion borrar  {}".format(observacion_id))
+    observacion = Observaciones.objects.get(pk=observacion_id)
+    #post = get_object_or_404(Socio, pk=socio_id)
+    familia_socios = Familia.objects.get(pk=observacion.familia.id)
+
+   
+    if request.method == "POST":
+        form = ObservacionForm(request.POST, instance=observacion)
+        #socio_id = int(request.POST.get('socio_id'))  
+        #observacion = Observaciones.objects.get(id=observacion_id)       
+        observacion.delete()
+        print("CAMINO 1 borrar observacion {} - familia {}".format(observacion.id,familia_socios.id))
+        return redirect('socios:familia_detalle', familia_id=familia_socios.id)
+
+    else:
+        print("CAMINO 2 borrar socio {} - familia {}".format(observacion.id,familia_socios.id))
+        form = ObservacionForm(instance=observacion)
+        form.fields['detalle'].disabled = True
+        form.fields['familia'].disabled = True
+        print("From:{}".format(form))
+    print("Observacion borrar END")
+    return render(request, 'socios/observacion_borrar.html', {'form': form, "familia": familia_socios })
 
 @register.filter(name='unquote_raw')
 def unquote_raw(value):

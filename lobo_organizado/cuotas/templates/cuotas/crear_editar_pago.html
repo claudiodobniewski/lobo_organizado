@@ -1,13 +1,15 @@
 {% extends "base_site.html" %}
 
 {% block content %}
+{% load crispy_forms_tags %}
 
 <h1>Pago de cuota social familia {{ familia.crm_id }} # {{ familia.familia_crm_id }}</h1>
 
 {% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message }}</div>{% endif %}
 
 
-<form action="{% url 'cuotas:procesa_nuevo_pago' familia_id=familia.id %}" method="post">
+<div class="post">
+<form action="{% url 'cuotas:procesa_nuevo_pago' familia_id=familia.id %}" method="post" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
     {% csrf_token %}
     <div class="form-group">
         <label for="seleccion_de_plan">Seleccione el plan al cual cargar el pago</label>
@@ -39,11 +41,13 @@
 
     </select>
     <div class="form-group">
-        <button class="btn btn-success" type="submit">Aplicar pago</button> <a href="{% url 'socios:familia_detalle_error' familia_id=familia.id error_message=pago_error_message|urlencode %}" class="btn btn-danger"
+        <button class="btn btn-success" type="submit">Aplicar pago</button>
+         <a href="{% url 'socios:familia_detalle_error' familia_id=familia.id error_message=pago_error_message|urlencode %}" class="btn btn-danger"
             type="submit">Cancelar</a>
      
         <!--<input type="submit" value="Aplicar pago"> -->
     </div>
 </form>
+</div>
 
 {% endblock content %}
