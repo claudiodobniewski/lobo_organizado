@@ -11,17 +11,7 @@
 <div class="post">
   <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
     {% csrf_token %}
-    {% for field in form %}
-    <div class="form-group">
-        {{ field.errors }}
-        {% if not field.is_hidden %}
-          {{ field.label_tag|crispy- }} {{ field }} 
-        {% endif %}
-        {% if field.help_text %}
-        <p class="help">{{ field.help_text|safe }}</p>
-        {% endif %}
-    </div>
-{% endfor %}
+    {{ form|crispy }}
     <button type="submit" class="btn btn-success" type="submit" >{{ boton_aceptar }}</button>
   </form>
 
@@ -29,5 +19,5 @@
 
 
 
-<a type="button" class="btn btn-danger" href="/socios/familia/{{ familia.id }}">{{ boton_cancelar }}</a>
+<a type="button" class="btn btn-danger" href="{% url 'socios:familia_listado' error_message='Operacion cancelada' %}">{{ boton_cancelar }}</a>
 {% endblock content %}

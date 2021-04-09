@@ -1,3 +1,4 @@
+from django import forms
 from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -7,7 +8,7 @@ from cuotas.models import CuotaSocialFamilia,CuotaPago
 from django.template.defaulttags import register
 from urllib.parse import unquote
 
-from .forms import SocioForm, ObservacionForm
+from .forms import FamiliaForm, SocioForm, ObservacionForm
 from .models import Familia, Socio, Observaciones
 
 
@@ -118,7 +119,7 @@ def socio_borrar(request, socio_id):
 def lookup(value, arg):
     return value[arg]
 
-def familia_index(request):
+def familia_index(request,error_message=''):
 
     lista_familias = Familia.objects.all()
 
@@ -145,8 +146,8 @@ def familia_index(request):
 
     print(familia_estadisticas_socios)
 
-    
-    return render(request, 'socios/familia_listado.html', {'familias': lista_familias,'familias_categorias':familia_estadisticas_socios} )
+
+    return render(request, 'socios/familia_listado.html', {'familias': lista_familias, 'error_message': error_message} )
 
 def familia_detalle(request, familia_id, error_message=''):
     
@@ -169,6 +170,43 @@ def familia_detalle(request, familia_id, error_message=''):
         raise Http404("Unexpected error: {0}".format(err))
     return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':plan_de_pago,'pagos':pagos, 'observaciones':observaciones, 'error_message': error_message })
 
+def familia_nuevo(request,familia_id, error_message=''):
+    print("Socio nuevo a familia {}".format(familia_id))
+
+    
+
+    if familia_id :
+        familia_socios = Familia.objects.get_or_create(pk=familia_id)
+        op_title='Editar Familia'
+        boton_aceptar='Guardar cambios'
+        boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_socios.familia_crm_id)
+    else:
+        familia_socios = Familia()
+        op_title='Nueva Familia'
+        boton_aceptar='Agregar Observacion a la Familia'
+        boton_cancelar='Descartar nueva familia y regresas al listado de  familias '
+    #print("Socio --> {}".format(observacion))
+
+    if request.method == "POST":
+        form = FamiliaForm(request.POST,instance=familia_socios)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            print("CAMINO 1 familia {}".format(familia_socios.pk))
+            return redirect('socios:familia_detalle', familia_id=familia_socios.pk)
+    else:
+        print("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_socios.familia_crm_id))
+
+        form = FamiliaForm(instance=familia_socios)
+        #print("From:{}".format(form))
+    
+    op_title='Nueva Familia'
+    boton_aceptar='Generar nueva Familia'
+    boton_cancelar='Descartar cambios y regresar a listado de familias.'
+
+    print("Socio nuevo END")
+    return render(request, 'socios/familia_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
+
 def familia_observacion_editar(request, observacion_id):
     return HttpResponse("Hello, world. ACA VA OBSERVACIONES EDITAR.")
 
@@ -182,10 +220,12 @@ def observacion_nuevo(request,familia_id,observacion_id):
     familia_observacions = Familia.objects.get(pk=familia_id)
     if observacion_id :
         observacion = Observaciones.objects.get(pk=observacion_id)
+        op_title='Editar Observacion'
         boton_aceptar='Guardar cambios'
         boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_observacions.familia_crm_id)
     else:
         observacion = Observaciones(familia_id=familia_observacions)
+        op_title='Nueva Observacion'
         boton_aceptar='Agregar Observacion a la Familia'
         boton_cancelar='Descartar nueva observacion y regresar a detalle familia {}'.format(familia_observacions.familia_crm_id)
     #print("Socio --> {}".format(observacion))
@@ -198,17 +238,15 @@ def observacion_nuevo(request,familia_id,observacion_id):
             post = form.save(commit=False)
             post.save()
             print("CAMINO 1 familia {}".format(familia_id))
-            return redirect('socios:familia_detalle', familia_id=familia_id)
+            return redirect('socios:familias', familia_id=familia_id)
     else:
         print("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_observacions.familia_crm_id))
 
         form = ObservacionForm(instance=observacion)
         form.fields['familia'].disabled = True
+        form.fields['familia'].widget = forms.HiddenInput()
         #print("From:{}".format(form))
     
-    op_title='Nueva Observacion'
-    
-
     print("Socio nuevo END")
     return render(request, 'socios/observacion_nuevo.html', {'form': form, "familia": familia_observacions, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
@@ -233,6 +271,7 @@ def observacion_borrar(request, observacion_id):
         form = ObservacionForm(instance=observacion)
         form.fields['detalle'].disabled = True
         form.fields['familia'].disabled = True
+        form.fields['familia'].widget = forms.HiddenInput()
         print("From:{}".format(form))
     print("Observacion borrar END")
     return render(request, 'socios/observacion_borrar.html', {'form': form, "familia": familia_socios })
