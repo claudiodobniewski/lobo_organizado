@@ -1,0 +1,52 @@
+{% block familia_info %}
+
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">Calle</span>
+  </div>
+  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_calle %}{{ familia.direccion_calle }}{% else %}----{% endif %}">
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">Numero</span>
+  </div>
+  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_numero %}{{ familia.direccion_numero }}{% else %}----{% endif %}">
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">Depto/unidad/timbre</span>
+  </div>
+  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_depto %}{{ familia.direccion_depto }}{% else %}----{% endif %}">
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">Localidad</span>
+  </div>
+  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_localidad %}{{ familia.direccion_localidad }}{% else %}----{% endif %}">
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">Provincia</span>
+  </div>
+  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_provincia %}{{ familia.direccion_provincia }}{% else %}----{% endif %}">
+</div>
+
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">Contacto</span>
+  </div>
+  <textarea readonly class="form-control"  aria-label="Username" aria-label="With textarea" >
+    {% if familia.contacto %}{{ familia.contacto }}{% else %}----{% endif %}
+  </textarea>
+</div>
+
+
+
+
+<a class="btn btn-warning" href="{% url 'socios:familia_nuevo' familia_id=familia.pk %}">EDITAR INFO</a>
+{% endblock familia_info %}

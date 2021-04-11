@@ -18,6 +18,14 @@ class Familia(models.Model):
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     
+    class Meta:
+        permissions = (
+                       ( "familia_crear","Agregar nueva familia"),
+                       ( "familia_editar","Editar familia"),
+                       ( "familia_borrar","Eliminar familia"),
+                       ( "familia_ver","Ver informacion de familia" ),
+                      )
+
     def __str__(self):
         return  self.familia_crm_id
 
@@ -50,6 +58,14 @@ class Socio(models.Model):
     categoria=models.IntegerField(default=0, choices=CATEGORIAS_CHOISES)
     rama=models.IntegerField(default=0, choices=RAMAS_CHOISES)
 
+    class Meta:
+        permissions = (
+                       ( "socio_crear","Agregar nuevo socio a una familia"),
+                       ( "socio_editar","Editar socio"),
+                       ( "socio_borrar","Eliminar socio"),
+                       ( "socio_ver","Ver informacion de un socio" ),
+                      )
+
     def __str__(self):
         return  "{}, {}".format(self.apellidos,self.nombres)
 
@@ -61,6 +77,14 @@ class Observaciones(models.Model):
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     
+    class Meta:
+        permissions = (
+                       ( "familia_obs_crear","Agregar nueva observacion a una familia"),
+                       ( "familia_obs_editar","Editar una observacion"),
+                       ( "familia_obs_borrar","Eliminar una observacion"),
+                       ( "familia_obs_ver","Ver una observacion" ),
+                      )
+
     def __str__(self):
         return  "{}, {}".format(self.familia.familia_crm_id,self.pk)
 
