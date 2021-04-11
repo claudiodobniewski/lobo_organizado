@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-import os
+
+LOGIN_REDIRECT_URL = '/'
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +28,7 @@ SECRET_KEY = '5!0m-1s+_g7nkj367&#qvjbbbiz2!jkvuu2e+4w^@o5rhk(j5='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37','192.168.1.40']
+ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37','192.168.1.38','192.168.1.*']
 
 
 # Application definition
@@ -61,7 +63,7 @@ ROOT_URLCONF = 'lobo_organizado.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates',],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

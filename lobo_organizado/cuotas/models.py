@@ -15,6 +15,14 @@ class PlanDePago(models.Model):
     vto_primera_cuota = models.DateField('vto_primera_cuota')
     importe_cuota = models.FloatField() 
 
+    class Meta:
+        permissions = (
+                       ( "planpago_crear","Agregar nuevo plan de pago"),
+                       ( "planpago_editar","Editar plan de pago"),
+                       ( "planpagos_borrar","Eliminar un plan de pago"),
+                       ( "planpago_ver","Ver detalle de plan de pago" ),
+                      )
+
     def __str__(self):
         return  "{}".format(self.nombre)
 # cuotas del plan generadas a una familia
@@ -38,6 +46,14 @@ class CuotaPago(models.Model):
     #aplica_cuota = models.ForeignKey(CuotaSocialFamilia, on_delete=models.CASCADE)
     aplica_pago_plan = models.ForeignKey(PlanDePago, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
+
+    class Meta:
+        permissions = (
+                       ( "plan_cuota_crear","Agregar nuevas cuotas de un plan a familia"),
+                       ( "plan_cuota_editar","Editar cuotas de un plan a familia"),
+                       ( "plan_cuota_borrar","Eliminar cuotas de un plan a familia"),
+                       ( "plan_cuota_ver","Ver detalle de cuotas del plan a familia" ),
+                      )
     
     def __str__(self):
         return  "Concepto: {} | Familia:{} | Vto:{}".format(self.aplica_pago_plan,self.familia, self.importe)

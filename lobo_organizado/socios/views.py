@@ -15,7 +15,7 @@ from .models import Familia, Socio, Observaciones
 logger = logging.getLogger(__name__)
 
 def index(request):
-    return familias_index(request)
+    return render(request, 'index.html', {})
 
 def socio_index(request):
 

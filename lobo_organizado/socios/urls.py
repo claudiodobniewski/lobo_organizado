@@ -7,6 +7,8 @@ from . import views
 app_name = 'socios'
 urlpatterns = [
     path('', views.index, name='index'),
+    path('index', views.index, name='index'),
+    path('index.html', views.index, name='index'),
     path('socio/<int:socio_id>', views.socio_detalle, name='socio_detalle'),
     path('socio/nuevo/<int:familia_id>', views.socio_nuevo, name='socio_nuevo'),
     path('socio/editar/<int:socio_id>', views.socio_editar, name='socio_editar'),
