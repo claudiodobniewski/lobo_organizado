@@ -8,6 +8,7 @@
 
     <!-- Bootstrap CSS -->
     {% load bootstrap4 %}
+    {% load static %}
 
     {# Load CSS and JavaScript #}
     {% bootstrap_css %}
@@ -15,6 +16,9 @@
 
     {# Display django.contrib.messages as Bootstrap alerts #}
     {% bootstrap_messages %}
+    
+
+    <link rel="icon"href="{% static 'favicon.ico' %}">
 
     <title>
         {% block title %}
