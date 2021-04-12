@@ -1,0 +1,26 @@
+{% extends 'base_site.html' %}
+
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="card" style="width: 18rem;">
+    <img src="/static/favicon.ico" class="card-img-top" alt="Aplicativo Lobo Organizado">
+    <h5 class="card-title">Card title</h5>
+    <div class="card-body">
+        
+        {% if user.is_authenticated %}
+        <p class="card-text">
+        Hola {{ user.username }}!
+        </p>
+        {% else %}
+        <p class="card-text">You are not logged in</p>
+        <a href="{% url 'login' %}" class="card-link">Log In</a>
+        {% endif %}
+    </div>
+</div>
+
+
+
+{% endblock %}

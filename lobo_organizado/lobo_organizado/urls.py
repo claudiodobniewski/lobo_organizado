@@ -18,14 +18,19 @@ from django.urls import include, path
 
 from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import TemplateView
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path(
         "favicon.ico",
         RedirectView.as_view(url=staticfiles_storage.url("favicon.ico")),
     ),
+    path('accounts/', include('django.contrib.auth.urls')), # new
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='lobo_organizado/login.html')),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('cuotas/', include('cuotas.urls')),
     path('socios/', include('socios.urls')),
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')), # new
+    
 ]

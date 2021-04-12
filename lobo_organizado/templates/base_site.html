@@ -1,3 +1,6 @@
+
+
+
 <!doctype html>
 <html>
 
@@ -27,23 +30,23 @@
     </title>
 </head>
 
-
+{% block body %}
 <body>
+    <div class="container-fluid">
 
-    {% if not user.is_authenticated %}
-
-    <div class="container-md">
-        <a href="{% url 'admin:index' %}" class="top-menu"><span class="glyphicon glyphicon-plus">SOLO USUARIOS
-                REGISTRADOS, ir al login</span></a>
-    </div>
-
-    {% else %}
-
-
+   
     <div class="container-md">
 
         {% block logstatus %}
+        <div>
         {{ request.user.username }} | <a class="btn btn-warning" href="/admin/logout/" >LOG OUT</a>
+    </div>
+    <div>
+        {{ request.user.username }} | <a class="btn btn-warning" href="% url 'accounts:logout' %" >LOG OUT</a>
+    </div>
+    <div>
+        {{ request.user.username }} | <a class="btn btn-warning" href="/accounts/logout" >LOG OUT</a>
+    </div>
 
         {% endblock logstatus %}
 
@@ -53,8 +56,8 @@
         <p>Placeholder text in base template. Replace with page content.</p>
         {% endblock content %}
     </div>
-    {% endif %}
 
+</div>
 </body>
-
+{% endblock body %}
 </html>
