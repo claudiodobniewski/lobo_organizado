@@ -38,14 +38,9 @@
     <div class="container-md">
 
         {% block logstatus %}
-        <div>
-        {{ request.user.username }} | <a class="btn btn-warning" href="/admin/logout/" >LOG OUT</a>
-    </div>
+
     <div>
-        {{ request.user.username }} | <a class="btn btn-warning" href="% url 'accounts:logout' %" >LOG OUT</a>
-    </div>
-    <div>
-        {{ request.user.username }} | <a class="btn btn-warning" href="/accounts/logout" >LOG OUT</a>
+        <span>{% if user.is_authenticated %}{{ request.user.username }} | <a class="btn btn-warning" href="/accounts/logout" >LOG OUT</a> {% else %} Debe ingresar con su usuario  <a class="btn btn-warning" href="/accounts/login" >LOG IN</a> {% endif %}</span> 
     </div>
 
         {% endblock logstatus %}
