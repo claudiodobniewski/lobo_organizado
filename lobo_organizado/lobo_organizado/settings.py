@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
-LOGIN_REDIRECT_URL = '/register'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,6 +47,14 @@ INSTALLED_APPS = [
     "bootstrap4",
     "crispy_forms",
 ]
+
+EMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "socios.context_processors.login_url_with_redirect",
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
