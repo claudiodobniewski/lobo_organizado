@@ -13,10 +13,13 @@
         {% if user.is_authenticated %}
         <p class="card-text">
         Hola {{ user.username }}!
+        {#  {%  if user.is_authenticated and self.is_superuser %} #}
+            <a href="{% url 'admin:index' %}" class="btn btn-primary">Administracion</a>
+            {# {% endif %} #}
         </p>
         {% else %}
         <p class="card-text">You are not logged in</p>
-        <a href="{% url 'login' %}" class="card-link">Log In</a>
+        <a href="{% url 'login' %}" class="btn btn-primary">Log In</a>
         {% endif %}
     </div>
 </div>
