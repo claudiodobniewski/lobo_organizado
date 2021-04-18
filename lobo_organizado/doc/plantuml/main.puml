@@ -1,0 +1,117 @@
+@startuml
+
+
+
+left to right direction
+actor Operador as op
+
+package Familias {
+  usecase "listado" as fasli
+  usecase "item ver" as fasve
+  usecase "nueva" as fasnu
+}
+
+package Familia {
+    
+  usecase "ver" as fave
+  usecase "nueva" as fanu
+  usecase "editar" as faed
+  usecase "eliminar" as fael
+  usecase "socios flia" as soc_f_list
+  usecase "socio flia nuevo" as soc_f_nvo
+  usecase "socio flia editar" as soc_f_ed
+  
+  usecase "cuotas" as cuo_f_lista
+  usecase "cuota nueva" as cuo_f_nu 
+  usecase "cuota editar" as cuo_f_ed 
+  usecase "cuota eliminar" as cuo_f_el
+
+  usecase "pagos" as pag_f_lista
+  usecase "pago nuevo" as pag_f_nu 
+  usecase "pago editar" as pag_f_ed 
+  usecase "pago eliminar" as pag_f_el
+
+
+  note right of fael: "borrado logico"
+  note "familia_id=0" as NEWFAM
+  note right of faed : nuevo y editar\nmisma view/template.
+
+  fanu ..> NEWFAM
+  NEWFAM ..> faed
+
+}
+
+package Socio {
+    usecase "nuevo" as sonu
+    usecase "editar" as soed
+    usecase "eliminar" as soel
+    note "familia_id=0." as NEWSOC
+
+    sonu ..> NEWSOC
+    NEWSOC ..> soed
+}
+
+package Cobranza {
+    usecase "Planes de pago" as cob_pp
+    usecase "Cuotas de plan a familia" as cob_cta_fa 
+    usecase "Pagos de familia \ncuotas de un plan" as cob_pago_flia
+
+}
+
+package "Plan de pago" as plan_de_pago {
+    usecase "nuevo" as cob_pl_nue
+    usecase "editar" as cob_pl_ed 
+    usecase "eliminar" as cob_pl_al
+    note "plan_id=0" as NEW_COB_PLAN
+
+    cob_pl_nue ..> NEW_COB_PLAN
+    NEW_COB_PLAN ..> cob_pl_ed
+}
+
+package "Cuotas familia" as cuo_fa {
+    usecase "nuevo" as cuo_pl_nue
+    usecase "editar" as cuo_pl_ed 
+    usecase "eliminar" as cuo_pl_el
+    note "cuota_id=0" as NEW_CUO_PLAN
+
+    cuo_pl_nue ..> NEW_CUO_PLAN
+    NEW_CUO_PLAN ..> cuo_pl_ed
+}
+
+package "Pagos a cuotas familia" as pag_fa {
+    usecase "nuevo" as pag_pl_nue
+    usecase "editar" as pag_pl_ed 
+    usecase "eliminar" as pag_pl_el
+    note "pago_id=0" as NEW_PAG_PLAN
+
+    cuo_pl_nue ..> NEW_CUO_PLAN
+    NEW_CUO_PLAN ..> cuo_pl_ed
+}
+
+op --> Familias
+fasli ..> Familia
+soc_f_list ..> Socio
+cuo_f_lista ..> cuo_fa
+pag_f_lista ..> pag_fa
+
+fasve --> fave
+fasnu --> fanu
+fave --> faed
+
+soc_f_nvo --> sonu
+soc_f_ed --> soed
+
+cuo_f_nu --> cuo_pl_nue 
+cuo_f_ed --> cuo_pl_ed
+cuo_f_el --> cuo_pl_el
+
+pag_f_nu --> pag_pl_nue 
+pag_f_ed --> pag_pl_ed
+pag_f_el --> pag_pl_el
+
+
+
+
+
+
+@enduml
