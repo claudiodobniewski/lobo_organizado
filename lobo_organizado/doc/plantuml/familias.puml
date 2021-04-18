@@ -1,0 +1,26 @@
+@startuml
+
+@startuml
+
+start
+
+repeat :login;
+:check_session;
+repeat while (valid_session) is (no)
+->yes;
+
+:home;
+if (seccion) then (yes)
+    fork 
+        :Administracion;
+    fork again
+        :Familias;
+    fork again
+        :Cobranzas;
+    end fork
+
+endif
+stop
+
+
+@enduml

@@ -196,7 +196,7 @@ def familia_nuevo(request,familia_id, error_message=''):
         familia_socios.crm_id = crm_id_max['crm_id__max'] + 1
         #logger.debug("Maximo CRM a este momento:{}".format(1+crm_id_max['crm_id__max']))
         op_title='Nueva Familia'
-        boton_aceptar='Agregar Observacion a la Familia'
+        boton_aceptar='Agregar nueva Familia'
         boton_cancelar='Descartar nueva familia y regresas al listado de  familias '
     #logger.debug("Socio --> {}".format(observacion))
 
@@ -213,9 +213,9 @@ def familia_nuevo(request,familia_id, error_message=''):
         form = FamiliaForm(instance=familia_socios)
         #logger.debug("From:{}".format(form))
     
-    op_title='Nueva Familia'
-    boton_aceptar='Generar nueva Familia'
-    boton_cancelar='Descartar cambios y regresar a listado de familias.'
+    #op_title='Nueva Familia'
+    #boton_aceptar='Generar nueva Familia'
+    #boton_cancelar='Descartar cambios y regresar a listado de familias.'
 
     logger.debug("Socio nuevo END")
     return render(request, 'socios/familia_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })

@@ -1,0 +1,11 @@
+@startuml
+
+
+package Cobranza {
+    usecase "Planes de pago" as cob_pp
+    usecase "Cuotas de plan a familia" as cob_cta_fa 
+    usecase "Pagos de familia \ncuotas de un plan" as cob_pago_flia
+
+}
+
+@enduml
