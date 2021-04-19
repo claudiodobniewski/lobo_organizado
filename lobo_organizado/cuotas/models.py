@@ -13,7 +13,8 @@ class PlanDePago(models.Model):
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     cantidad_cuotas = models.IntegerField('cantidad_cuotas')
     vto_primera_cuota = models.DateField('vto_primera_cuota')
-    importe_cuota = models.FloatField() 
+    importe_cuota = models.FloatField()
+    eliminado = models.BooleanField(default=False)
 
     class Meta:
         permissions = (

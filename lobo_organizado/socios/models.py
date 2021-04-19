@@ -14,6 +14,7 @@ class Familia(models.Model):
     direccion_localidad = models.CharField(max_length=50,blank=True)
     direccion_provincia = models.CharField(max_length=50,blank=True)
     contacto = models.CharField(max_length=200,blank=True)
+    eliminado = models.BooleanField(default=False)
     
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
