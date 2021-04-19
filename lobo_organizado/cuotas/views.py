@@ -1,10 +1,17 @@
+#
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.urls import reverse
+from django.shortcuts import redirect
 from socios.models import Familia
-from cuotas.models import PlanDePago,CuotaPago
-import  simplejson
+from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
+from .forms import PlanDePagoForm
+
+from dateutil.relativedelta import relativedelta
+import inspect ,logging
+
+logger = logging.getLogger('project.lobo.organizado')
 
 # Create your views here.
 def index(request):
@@ -62,6 +69,79 @@ def borrar_pago(request, pago_id):
 
 def nueva_cuota(request, familia_id):
     return HttpResponse("Hello, world. ACA VA PANTALLA NUEVA CUOTA.")
+
+def nuevo_cuotas_plan_seleccion(request, familia_id):
+
+    familia = Familia.objects.get(pk=familia_id)
+    planes_de_pago = PlanDePago.objects.all()
+
+
+    return render(request, 'cuotas/nuevo_cuotas_plan_seleccion.html', {'familia': familia,'planes_de_pago':planes_de_pago})
+
+
+def nuevo_cuotas_plan(request, familia_id,plan_pagos_id):
+
+    
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.info(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+    familia = Familia.objects.get(pk=familia_id)
+    logger.info("{}) Familia {} plan de pagos {} ".format(func.co_name,familia_id,plan_pagos_id))
+    print(request.POST)
+    if plan_pagos_id :
+        plan_de_pago = PlanDePago.objects.get(pk=plan_pagos_id)
+    else:
+        plan_de_pago = PlanDePago.objects.get(pk=plan_pagos_id)
+    #logger.debug("Socio --> {}".format(socio))
+
+# CUANDO RECIBO UN PLAN CON LAS CUOTAS, RECIBO UN FORM, TENGO QUE GENERAR LAS CUOTAS, NO MODIFICAR EL PLAN!!!!
+    if request.method == "POST":
+        form = PlanDePagoForm(request.POST,instance=plan_de_pago)
+        op_title='Editar Plan de pago'
+        boton_aceptar='Guardar cambios a Plan de pago'
+        boton_cancelar='Descartar cambios y regresar a Plan de pago {}#{}'.format(plan_de_pago.crm_id,plan_de_pago.nombre)
+        form.fields['nombre'].disabled = True
+        form.fields['descripcion'].disabled = True
+        form.fields['crm_id'].disabled = True
+        if form.is_valid():
+            #post = form.save(commit=False)
+            #post.save()
+            print("Recibido para familia {} , sumar {} cuotas de ${} , inicia primera cuota [{}]".format(familia.familia_crm_id,form.data['cantidad_cuotas'],form.data['importe_cuota'],form.data['vto_primera_cuota'] ) )
+            logger.debug("CAMINO 1 Plan de Pago {}".format(plan_pagos_id))
+            cant_cuotas = int(form['cantidad_cuotas'].value())
+            for n in range(cant_cuotas):
+                fecha_vto_cuota = form.cleaned_data['vto_primera_cuota'] + relativedelta(months=n)
+                cuota_nueva = CuotaSocialFamilia( 
+                    vencimiento = fecha_vto_cuota,
+                    importe_cuota = form.data['importe_cuota'], 
+                    plan_de_pago = plan_de_pago, 
+                    familia = familia
+                )
+                print('Cuota nueva {}'.format(cuota_nueva) )
+                cuota_nueva.save()
+
+            return redirect('socios:familia_detalle',{ 'familia_id':familia_id } )
+    else:
+        logger.debug("CAMINO 2 Plan de Pago NUEVO {}".format(plan_pagos_id))
+
+        form = PlanDePagoForm(instance=plan_de_pago)
+        form.fields['nombre'].disabled = True
+        form.fields['descripcion'].disabled = True
+        form.fields['crm_id'].disabled = True
+        #logger.debug("From:{}".format(form))
+    
+    op_title='Nuevo Plan de pago a famlia {}'.format(familia.familia_crm_id)
+    boton_aceptar='Agregar Plan de pago'
+    boton_cancelar='Descartar nuevo Plan de pago'
+
+    logger.debug("Plan de Pago nuevo END")
+    return render(request, 'cuotas/nuevo_cuotas_plan.html', {'form': form, 'plan_de_pago':plan_de_pago, 'familia': familia, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
+    # return render(request, 'socios/familia_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
 def procesa_nueva_cuota(request, familia_id):
     return HttpResponse("Hello, world. ACA VA PANTALLA PROCESAR NUEVA CUOTA.")
