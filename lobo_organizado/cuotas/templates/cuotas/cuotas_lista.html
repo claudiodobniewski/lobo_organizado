@@ -32,6 +32,10 @@
 {% else %}
     <p>No cuotas are available.</p>
 {% endif %}
-<a class="btn btn-warning" href="{% url 'cuotas:nueva_cuota' familia_id=familia.pk %}" >GENERAR NUEVA CUOTA </a>
-
+<div>
+  <a class="btn btn-warning" href="{% url 'cuotas:nueva_cuota' familia_id=familia.pk %}" >GENERAR NUEVA CUOTA </a>
+</div>
+<div>
+  <a class="btn btn-danger" href="{% url 'cuotas:nuevo_cuotas_plan_seleccion' familia_id=familia.pk %}" >GENERAR CUOTAS POR PLAN </a>
+</div>
 {% endblock cuotas_lista %}

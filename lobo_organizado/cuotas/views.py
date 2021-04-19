@@ -125,7 +125,7 @@ def nuevo_cuotas_plan(request, familia_id,plan_pagos_id):
                 print('Cuota nueva {}'.format(cuota_nueva) )
                 cuota_nueva.save()
 
-            return redirect('socios:familia_detalle',{ 'familia_id':familia_id } )
+            return redirect('socios:familia_detalle', familia_id=familia_id  )
     else:
         logger.debug("CAMINO 2 Plan de Pago NUEVO {}".format(plan_pagos_id))
 
