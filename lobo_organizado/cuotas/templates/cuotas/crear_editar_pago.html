@@ -9,6 +9,16 @@
 
 
 <div class="post">
+
+    {% if form.subject.errors %}
+    <ol>
+    {% for error in form.subject.errors %}
+        <li><strong>{{ error|escape }}</strong></li>
+    {% endfor %}
+    </ol>
+{% endif %}
+
+
 <form action="{% url 'cuotas:procesa_nuevo_pago' familia_id=familia.id %}" method="post" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
     {% csrf_token %}
     <div class="form-group">

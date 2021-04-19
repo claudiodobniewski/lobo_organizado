@@ -10,31 +10,64 @@ from urllib.parse import unquote
 from django.utils.http import urlquote
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-import logging
+import inspect ,logging
+
 
 from .forms import FamiliaForm, SocioForm, ObservacionForm
 from .models import Familia, Socio, Observaciones
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('project.lobo.organizado')
 
 def login_url_with_redirect(request):
+    logger.debug('Something went wrong!')
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     login_url = settings.LOGIN_URL
     path = urlquote(request.get_full_path())
     url = '%s?%s=%s' % (settings.LOGIN_URL, REDIRECT_FIELD_NAME, path)
     return {'login_url': url}
     
 def index(request):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
     return render(request, 'index.html', {})
 
 def socio_index(request):
-
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
     lista_socios = Socio.objects.all()
     
     logger.debug(lista_socios)
     return render(request, 'socios/socios_listado.html', {'socios': lista_socios})
 
 def socio_detalle(request, socio_id):
-    
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
     try:
         socio = Socio.objects.get(pk=socio_id)
         logger.debug("Detalle socio:" + socio.apellidos +", "+ socio.nombres)
@@ -43,6 +76,14 @@ def socio_detalle(request, socio_id):
     return render(request, 'socios/socio_detalle.html', {'socio':socio})
 
 def socio_nuevo(request,familia_id):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
     logger.debug("Socio nuevo a familia {}".format(familia_id))
     familia_socios = Familia.objects.get(pk=familia_id)
     socio = Socio(familia_id=familia_socios)
@@ -70,7 +111,15 @@ def socio_nuevo(request,familia_id):
     return render(request, 'socios/socio_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
 def socio_editar(request, socio_id):
-    
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     logger.debug("Socio edicion  {}".format(socio_id))
     socio = Socio.objects.get(pk=socio_id)
     #post = get_object_or_404(Socio, pk=socio_id)
@@ -97,7 +146,15 @@ def socio_editar(request, socio_id):
     return render(request, 'socios/socio_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
 def socio_borrar(request, socio_id):
-    
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     logger.debug("Socio borrar  {}".format(socio_id))
     socio = Socio.objects.get(pk=socio_id)
     #post = get_object_or_404(Socio, pk=socio_id)
@@ -131,6 +188,14 @@ def lookup(value, arg):
     return value[arg]
 
 def familia_index(request,error_message=''):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
 
     lista_familias = Familia.objects.all()
 
@@ -161,7 +226,15 @@ def familia_index(request,error_message=''):
     return render(request, 'socios/familia_listado.html', {'familias': lista_familias, 'error_message': error_message} )
 
 def familia_detalle(request, familia_id, error_message=''):
-    
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     try:
         familia_socios = Familia.objects.get(pk=familia_id)
         socios = Socio.objects.filter(familia_id=familia_socios.id)
@@ -183,6 +256,15 @@ def familia_detalle(request, familia_id, error_message=''):
 
 def familia_nuevo(request,familia_id, error_message=''):
     logger.debug("Socio nuevo a familia {}".format(familia_id))
+
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
 
     if familia_id :
         familia_socios = Familia.objects.get(pk=familia_id)
@@ -221,7 +303,15 @@ def familia_nuevo(request,familia_id, error_message=''):
     return render(request, 'socios/familia_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
 def borrar_borrar(request, familia_id):
-    
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     logger.debug("Socio borrar  {}".format(socio_id))
     socio = Socio.objects.get(pk=socio_id)
     #post = get_object_or_404(Socio, pk=socio_id)
@@ -251,13 +341,40 @@ def borrar_borrar(request, familia_id):
     return render(request, 'socios/socio_borrar.html', {'form': form, "familia": familia_socios })
 
 def familia_observacion_editar(request, observacion_id):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     return HttpResponse("Hello, world. ACA VA OBSERVACIONES EDITAR.")
 
 def familia_observacion_borrar(request, observacion_id):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     return HttpResponse("Hello, world. ACA VA OBSERVACIONES BORRAR.")
 
 
 def observacion_nuevo(request,familia_id,observacion_id):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     logger.debug("Observacion nuevo a familia {}".format(familia_id))
 
     familia_observacions = Familia.objects.get(pk=familia_id)
@@ -294,7 +411,15 @@ def observacion_nuevo(request,familia_id,observacion_id):
     return render(request, 'socios/observacion_nuevo.html', {'form': form, "familia": familia_observacions, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
 def observacion_borrar(request, observacion_id):
-    
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     logger.debug("Observacion borrar  {}".format(observacion_id))
     observacion = Observaciones.objects.get(pk=observacion_id)
     #post = get_object_or_404(Socio, pk=socio_id)

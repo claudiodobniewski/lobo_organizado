@@ -32,6 +32,7 @@ class Familia(models.Model):
 class Socio(models.Model):
 
     CATEGORIAS_CHOISES = [
+        ( -1,"no_socio"),
         ( 0,"inactivo"),
         ( 1,"beneficiario"),
         ( 2,"dirigente"),
