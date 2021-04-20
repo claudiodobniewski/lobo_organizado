@@ -7,9 +7,11 @@
 
 <div class="card" style="width: 18rem;">
     <img src="/static/favicon.ico" class="card-img-top" alt="Aplicativo Lobo Organizado">
-    <h5 class="card-title">Card title</h5>
+    <h5 class="card-title">Lobo Organizado</h5>
     <div class="card-body">
-        
+        <p class="card-text">Sistema de gestion interna</p>
+        <p class="card-text">Asociacion Civil Viejos Lobos </p>
+        <p class="card-text">de Santa Maria</p>
         {% if user.is_authenticated %}
         <p class="card-text">
         Hola {{ user.username }}! 
@@ -18,7 +20,7 @@
             {% endif %} 
         </p>
         {% else %}
-        <p class="card-text">You are not logged in</p>
+        <p class="card-text">Debe iniciar una sesion con su usuario</p>
         <a href="{% url 'login' %}" class="btn btn-primary">Log In</a>
         {% endif %}
     </div>

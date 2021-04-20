@@ -10,13 +10,17 @@
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
         </li>
+        {%  if user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'socios:familia_listado' %}">Listado de Familias Asociadas</a>
+          <a href="{% url 'socios:familia_listado' %}" class="nav-link" >Listado de Familias Asociadas</a>
         </li>
-        <!--
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'socios:socios_listado' %}">Listado de Socios</a>
-        </li>
+        {% endif %} 
+        {%  if user.is_authenticated and request.user.is_staff is True %}
+        <li class="nav-item"></li>
+            <a href="{% url 'admin:index' %}"  class="nav-link">Administracion</a>
+          </li>
+            {% endif %} 
+        
         
       </ul>
       <!--
