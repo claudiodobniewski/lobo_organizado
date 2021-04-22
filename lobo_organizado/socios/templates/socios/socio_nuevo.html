@@ -6,9 +6,9 @@
 
 <h1>Familia {{ familia.familia_crm_id }}</h1>
 
-<h2>{{ op_title }}</h2>
+<h2>{{ op_title }}<h2>
 
-{% include "form_errors.html" %}
+{% comment %}{%  include "form_errors.html" %}{% endcomment %}
 
 <div class="post">
   <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
@@ -16,7 +16,6 @@
     {{ form|crispy }}
     <button type="submit" class="btn btn-success" type="submit" >{{ boton_aceptar }}</button>
   </form>
-
 </div>
 
 

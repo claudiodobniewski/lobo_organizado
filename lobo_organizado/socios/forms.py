@@ -8,9 +8,11 @@ class DateInput(forms.DateInput):
 
 class SocioForm(forms.ModelForm):
 
-    fecha_nacimiento = forms.DateField(
+    nombres = forms.CharField(max_length=50,min_length=4,required=True)
+    apellidos = forms.CharField(max_length=50,min_length=4,required=True)
+    fecha_nacimiento = forms.DateField(required=False,
         widget=DateInput(attrs={'class': 'form-control'}))
-    dni = forms.IntegerField(max_value=999999999999999,help_text='maximo 15 digitos')
+    dni = forms.IntegerField(max_value=999999999999999,help_text='maximo 15 digitos', required=True)
 
     class Meta:
         model = Socio
