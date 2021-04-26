@@ -33,7 +33,14 @@ class SocioForm(forms.ModelForm):
 
 class FamiliaForm(forms.ModelForm):
 
-    contacto = forms.CharField(widget=forms.Textarea(
+    crm_id = forms.IntegerField(label="Familia ID")
+    familia_crm_id = forms.CharField(label="Familia")
+    direccion_calle = forms.CharField(label="Calle")
+    direccion_numero = forms.CharField(label="Numero")
+    direccion_depto = forms.CharField(label="Depto/timbre")
+    direccion_localidad = forms.CharField(label="Localidad")
+    direccion_provincia = forms.CharField(label="Provincia")
+    contacto = forms.CharField(label="Datos de Contacto",widget=forms.Textarea(
         attrs={'class': 'form-control'}))
 
     class Meta:

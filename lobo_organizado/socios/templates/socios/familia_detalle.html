@@ -9,43 +9,48 @@
 {% block error_message %}
 {% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message|unquote_raw }}</div>{% endif %}
 {% endblock error_message %}
-
-<div class="card" id="familia_info">
-    <div class="card-title">
-        <h2 data-toggle="collapse" data-target="#familia_info_block" id="collapseOne" aria-expanded="false" aria-controls="familia_info_block">Informacion</h2>
+<div class="container">
+    <div class="card" id="familia_info">
+        <div class="card-title">
+            <h2 data-toggle="collapse" data-target="#familia_info_block" id="collapseOne" aria-expanded="false" aria-controls="familia_info_block">Informacion</h2>
+        </div>
+        <div class="card-body collapse " id="familia_info_block" aria-labelledby="headingOne" data-parent="#familia_info" >
+            {% include "socios/familia_info.html" %}
+        </div>
     </div>
-    <div class="card-body collapse " id="familia_info_block" aria-labelledby="headingOne" data-parent="#familia_info" >
-        {% include "socios/familia_info.html" %}
+
+    <div class="card">
+        <div class="card-title">
+            <h2 data-toggle="collapse" data-target="#familia_socios_block" id="collapseTwo" aria-expanded="false" aria-controls="familia_socios_block">Miembros de la familia</h2>
+        </div>
+        <div  class="card-body collapse " id="familia_socios_block" aria-labelledby="collapseTwo" data-parent="#familia_info" >
+            {% include "socios/familia_miembros.html" %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <h2 data-toggle="collapse" data-target="#familia_cobranza_block" id="headingTree" aria-expanded="false" aria-controls="familia_cobranza_block">Gestion Cobranza</h2>
+        </div>
+        <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
+            {% include "cuotas/cuotas_lista.html" %}
+        </div>
+        <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
+            {% include "cuotas/pagos_lista.html" %}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">
+            <h2 data-toggle="collapse" data-target="#familia_observaciones_block" id="headingFour" aria-expanded="false" aria-controls="familia_observaciones_block">Observaciones</h2>
+        </div>
+        <div class="card-body collapse " id="familia_observaciones_block" aria-labelledby="headingFour" data-parent="#familia_info">
+            {% include "socios/observaciones.html" %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <a type="button" class="btn btn-warning" href="{% url 'socios:familia_listado' %}">Regresar a listrado de Familias</a>
+        </div>
     </div>
 </div>
-
-<div class="card">
-    <div class="card-title">
-        <h2 data-toggle="collapse" data-target="#familia_socios_block" id="collapseTwo" aria-expanded="false" aria-controls="familia_socios_block">Miembros de la familia</h2>
-    </div>
-    <div  class="card-body collapse " id="familia_socios_block" aria-labelledby="collapseTwo" data-parent="#familia_info" >
-        {% include "socios/familia_miembros.html" %}
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-title">
-        <h2 data-toggle="collapse" data-target="#familia_cobranza_block" id="headingTree" aria-expanded="false" aria-controls="familia_cobranza_block">Gestion Cobranza</h2>
-    </div>
-    <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
-        {% include "cuotas/cuotas_lista.html" %}
-    </div>
-    <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
-        {% include "cuotas/pagos_lista.html" %}
-    </div>
-</div>
-<div class="card">
-    <div class="card-title">
-        <h2 data-toggle="collapse" data-target="#familia_observaciones_block" id="headingFour" aria-expanded="false" aria-controls="familia_observaciones_block">Observaciones</h2>
-    </div>
-    <div class="card-body collapse " id="familia_observaciones_block" aria-labelledby="headingFour" data-parent="#familia_info">
-        {% include "socios/observaciones.html" %}
-    </div>
-</div>
-
 {% endblock content %}

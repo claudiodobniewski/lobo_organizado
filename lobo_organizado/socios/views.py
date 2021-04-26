@@ -303,6 +303,10 @@ def familia_nuevo(request,familia_id, error_message=''):
             return redirect('socios:familia_detalle', familia_id=familia_socios.pk)
     else:
         logger.debug("CAMINO 2 FAMILIA NUEVO - familia  {} - {}".format(familia_id,familia_socios.pk))
+
+        # TODO reemplazar por default data lo de cmr_id_offer
+        # default_data = {'crm_id': crm_id_offer, 'url': 'http://'}
+        # f = CommentForm(default_data, auto_id=False)
         if not familia_socios.crm_id:
             familia_socios.crm_id = crm_id_offer
         form = FamiliaForm(instance=familia_socios)
