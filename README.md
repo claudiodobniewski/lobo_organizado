@@ -115,3 +115,23 @@ pip3 install django-bootstrap4
 * Instalar bootstrap
 pip3 install django-icons
 https://readthedocs.org/projects/django-icons/downloads/pdf/latest/
+
+--------------------------------------------------------------
+> https://docs.djangoproject.com/en/3.2/topics/testing/overview/
+
+
+# Run all the tests
+$ python3 manage.py test
+# Run all the tests in the animals.tests module
+$ python3 manage.py test socios.tests
+
+# Run all the tests found within the 'animals' package
+$ python3 manage.py test socios
+
+# Run just one test case
+$ python3 manage.py test socios.tests.SocioTestCase
+
+# Run just one test method
+$ python3 manage.py test animals.tests.SocioTestCase.test_animals_can_speak
+
+$ python3 manage.py test socios/tests/ --pattern="tests.py"

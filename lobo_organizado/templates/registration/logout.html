@@ -5,7 +5,7 @@
 {% block title %}Lobo Organizado{% endblock %}
 
 {% block content %}
-
+<!-- TODO validar si este template se usa, volarlo -->
 <div class="card" style="width: 20rem;">
   <img src="/static/favicon.ico" class="card-img-top" alt="Aplicativo Lobo Organizado"  >
   <h2 class="card-title">Ingrese con su cuenta</h2>
@@ -13,7 +13,7 @@
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Log In ###</button>
+      <button type="submit" class="btn btn-primary">Log In</button>
     </form>
      
   </div>

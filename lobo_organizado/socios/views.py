@@ -255,7 +255,7 @@ def familia_detalle(request, familia_id, error_message=''):
     return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':plan_de_pago,'pagos':pagos, 'observaciones':observaciones, 'error_message': error_message })
 
 def familia_nuevo(request,familia_id, error_message=''):
-    logger.debug("Socio nuevo a familia {}".format(familia_id))
+    
 
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
@@ -265,22 +265,34 @@ def familia_nuevo(request,familia_id, error_message=''):
         func.co_filename, 
         func.co_firstlineno
     ))
+    logger.debug("Nueva familia {}".format(familia_id))
+    crm_id_offer = False
 
     if familia_id :
         familia_socios = Familia.objects.get(pk=familia_id)
+        logger.debug("Familia  nueva llego el form {} ".format(familia_socios) )
         op_title='Editar Familia'
         boton_aceptar='Guardar cambios'
         boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_socios)
         boton_cancelar='Descartar cambios y regresar a detalle familia {}'.format(familia_socios.familia_crm_id)
+        error_message='Operacion Editar Familia cancelada'
     else:
+        #crm_id = form.cleaned_data['crm_id']
+        familia_id=0
         familia_socios = Familia()
+
         crm_id_max = Familia.objects.aggregate(Max('crm_id'))
-        familia_socios.crm_id = crm_id_max['crm_id__max'] + 1
+        crm_id_offer=crm_id_max['crm_id__max'] + 1
+        logger.debug("Familia nueva crm_id_offer {} ".format(crm_id_offer) )
+        #familia_socios = Familia.objects.create()
+
+        #familia_socios.crm_id = crm_id_max['crm_id__max'] + 1
         #logger.debug("Maximo CRM a este momento:{}".format(1+crm_id_max['crm_id__max']))
         op_title='Nueva Familia'
         boton_aceptar='Agregar nueva Familia'
         boton_cancelar='Descartar nueva familia y regresas al listado de  familias '
-    #logger.debug("Socio --> {}".format(observacion))
+        error_message='Operacion Nueva Familia cancelada'
+    logger.debug("Familia Nueva --> {}".format(familia_socios))
 
     if request.method == "POST":
         form = FamiliaForm(request.POST,instance=familia_socios)
@@ -290,17 +302,17 @@ def familia_nuevo(request,familia_id, error_message=''):
             logger.debug("CAMINO 1 familia {}".format(familia_socios.pk))
             return redirect('socios:familia_detalle', familia_id=familia_socios.pk)
     else:
-        logger.debug("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_socios.familia_crm_id))
+        logger.debug("CAMINO 2 FAMILIA NUEVO - familia  {} - {}".format(familia_id,familia_socios.pk))
 
         form = FamiliaForm(instance=familia_socios)
-        #logger.debug("From:{}".format(form))
+        logger.debug("From:{}".format(form))
     
     #op_title='Nueva Familia'
     #boton_aceptar='Generar nueva Familia'
     #boton_cancelar='Descartar cambios y regresar a listado de familias.'
-
-    logger.debug("Socio nuevo END")
-    return render(request, 'socios/familia_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
+    dict_template = {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title, 'error_message': error_message, 'crm_id_offer': crm_id_offer, 'familia_id': familia_id }
+    logger.debug("Familia  nuevo END {} ".format(dict_template) )
+    return render(request, 'socios/familia_nuevo.html', dict_template)
 
 def borrar_borrar(request, familia_id):
     func = inspect.currentframe().f_back.f_code

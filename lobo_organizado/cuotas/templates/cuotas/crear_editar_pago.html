@@ -52,7 +52,7 @@
     </select>
     <div class="form-group">
         <button class="btn btn-success" type="submit">Aplicar pago</button>
-         <a href="{% url 'socios:familia_detalle_error' familia_id=familia.id error_message=pago_error_message|urlencode %}" class="btn btn-danger"
+         <a href="{% url 'socios:familia_detalle' familia_id=familia.id error_message=pago_error_message|urlencode %}" class="btn btn-danger"
             type="submit">Cancelar</a>
      
         <!--<input type="submit" value="Aplicar pago"> -->
