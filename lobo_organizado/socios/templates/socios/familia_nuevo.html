@@ -18,5 +18,10 @@
 </div>
 
 
-<a type="button" class="btn btn-danger" href="{% url 'socios:familia_detalle' familia_id=familia_id  error_message=error_message|urlencode %}">{{ boton_cancelar }}</a>
+<a type="button" class="btn btn-danger" href="{% if familia_id == 0 %}
+  {% url 'socios:familia_listado'  error_message=error_message|urlencode %}
+{% else %}
+  {% url 'socios:familia_detalle' familia_id=familia_id  error_message=error_message|urlencode %}
+{% endif %}
+">{{ boton_cancelar }}</a>
 {% endblock content %}

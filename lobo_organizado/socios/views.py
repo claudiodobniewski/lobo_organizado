@@ -303,9 +303,12 @@ def familia_nuevo(request,familia_id, error_message=''):
             return redirect('socios:familia_detalle', familia_id=familia_socios.pk)
     else:
         logger.debug("CAMINO 2 FAMILIA NUEVO - familia  {} - {}".format(familia_id,familia_socios.pk))
-
+        if not familia_socios.crm_id:
+            familia_socios.crm_id = crm_id_offer
         form = FamiliaForm(instance=familia_socios)
         logger.debug("From:{}".format(form))
+    
+    
     
     #op_title='Nueva Familia'
     #boton_aceptar='Generar nueva Familia'
