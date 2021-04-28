@@ -1,0 +1,27 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+
+
+<h1>Familia {{ cuota.familia.familia_crm_id }}</h1>
+
+<h2>ELIMINAR cuota social<h2>
+
+  <h3>Esta accion no se puede deshacer<h3>
+
+
+{%  include "form_errors.html" %}
+
+<div class="post">
+  <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-danger" type="submit" >CONFIRMAR ELIMINACION DE CUOTA</button>
+  </form>
+</div>
+
+
+
+<a type="button" class="btn btn-success" href="{% url 'socios:familia_detalle' familia_id=cuota.familia.pk error_message='Operacion Borrar Cuota Social cancelada'|urlencode %}">NO Eliminar cuota</a>
+{% endblock content %}

@@ -1,6 +1,10 @@
-{% for field in form %}
+<div class="btn btn-danger" type="submit">
+    <span>Error en el proceso</span>
+    {% for field in form %}
     <div class="fieldWrapper">
         {{ field.errors }}
         {{ field.label_tag }} {{ field }}
     </div>
-{% endfor %}
+    {% endfor %}
+
+</div>

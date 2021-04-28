@@ -34,6 +34,7 @@ class CuotaSocialFamilia(models.Model):
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     plan_de_pago = models.ForeignKey(PlanDePago, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
+    deleted = models.BooleanField(default=False)
     
     def __str__(self):
         return  "#{} Plan: {} | Familia:{} | Vto:{} | ${}".format(self.pk,self.plan_de_pago,self.familia, self.vencimiento,self.importe_cuota)

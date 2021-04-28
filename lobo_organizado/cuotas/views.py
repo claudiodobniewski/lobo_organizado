@@ -179,22 +179,30 @@ def borrar_cuota(request, familia_id, cuota_id):
     ))
  # GENERAR DELETE DE CUOTA - esto copia el editar_cuota
     cuota = CuotaSocialFamilia.objects.get(pk=cuota_id)
-    logger.info("{}) Cuota {} Familia {} plan de pagos {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota))
+    logger.info("FORM DELETE CUOTA {}) Cuota {} Familia {} plan de pagos {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota))
 
     if request.method == "POST":
         form = CuotaSocialFamiliaForm(request.POST,instance=cuota)
-        logger.info("FORM POST {} ".format(form))
+        logger.info("FORM DELETE CUOTA POST {}) Cuota {} Familia {} plan de pagos {} valid {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota,form.is_valid()))
         # check whether it's valid:
         if form.is_valid():
             post = form.save(commit=False)
+            post.deleted = True
             post.save()
             logger.info("FORM POST {} IS VALID".format(form))
             return redirect('socios:familia_detalle', familia_id=familia_id  )
+        else:
+            logger.info("FORM DELETE CUOTA POST {}) Cuota {} Familia {} plan de pagos {} errores {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota,form.errors))
 
     
     form = CuotaSocialFamiliaForm(instance=cuota)
-    logger.info("FORM EDIT  {} ".format(form))
-    return render(request, 'cuotas/cuota_editar.html', {'form': form, 'cuota': cuota })
+    form.fields['vencimiento'].disabled = True
+    form.fields['importe_cuota'].disabled = True
+    form.fields['plan_de_pago'].disabled = True
+    form.fields['familia'].disabled = True
+    
+    logger.info(" RENDER {}) Cuota {} Familia {} plan de pagos {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota))
+    return render(request, 'cuotas/cuota_borrar.html', {'form': form, 'cuota': cuota })
 
 
 
