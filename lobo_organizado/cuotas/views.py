@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
-from .forms import PlanDePagoForm
+from .forms import CuotaSocialFamiliaForm, PlanDePagoForm
 
 from dateutil.relativedelta import relativedelta
 import inspect ,logging
@@ -66,9 +66,6 @@ def editar_pago(request, pago_id):
 
 def borrar_pago(request, pago_id):
     return HttpResponse("Hello, world. ACA VA PANTALLA BORRAR PAGO.")
-
-def nueva_cuota(request, familia_id):
-    return HttpResponse("Hello, world. ACA VA PANTALLA NUEVA CUOTA.")
 
 def nuevo_cuotas_plan_seleccion(request, familia_id):
 
@@ -143,15 +140,61 @@ def nuevo_cuotas_plan(request, familia_id,plan_pagos_id):
     return render(request, 'cuotas/nuevo_cuotas_plan.html', {'form': form, 'plan_de_pago':plan_de_pago, 'familia': familia, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
     # return render(request, 'socios/familia_nuevo.html', {'form': form, "familia": familia_socios, 'boton_aceptar': boton_aceptar, 'boton_cancelar': boton_cancelar, 'op_title': op_title })
 
-def procesa_nueva_cuota(request, familia_id):
-    return HttpResponse("Hello, world. ACA VA PANTALLA PROCESAR NUEVA CUOTA.")
+def editar_cuota(request, familia_id, cuota_id):
 
-def editar_cuota(request, cuota_id):
-    return HttpResponse("Hello, world. ACA VA PANTALLA EDITAR CUOTA.")
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.info(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
 
-def borrar_cuota(request, cuota_id):
-    return HttpResponse("Hello, world. ACA VA PANTALLA BORRAR CUOTA.")
+    cuota = CuotaSocialFamilia.objects.get(pk=cuota_id)
+    logger.info("{}) Cuota {} Familia {} plan de pagos {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota))
 
+    if request.method == "POST":
+        form = CuotaSocialFamiliaForm(request.POST,instance=cuota)
+        # check whether it's valid:
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            return redirect('socios:familia_detalle', familia_id=familia_id  )
+
+    
+    form = CuotaSocialFamiliaForm(instance=cuota)
+
+    return render(request, 'cuotas/cuota_editar.html', {'form': form, 'cuota': cuota })
+
+def borrar_cuota(request, familia_id, cuota_id):
+
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.info(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+ # GENERAR DELETE DE CUOTA - esto copia el editar_cuota
+    cuota = CuotaSocialFamilia.objects.get(pk=cuota_id)
+    logger.info("{}) Cuota {} Familia {} plan de pagos {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota))
+
+    if request.method == "POST":
+        form = CuotaSocialFamiliaForm(request.POST,instance=cuota)
+        logger.info("FORM POST {} ".format(form))
+        # check whether it's valid:
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            logger.info("FORM POST {} IS VALID".format(form))
+            return redirect('socios:familia_detalle', familia_id=familia_id  )
+
+    
+    form = CuotaSocialFamiliaForm(instance=cuota)
+    logger.info("FORM EDIT  {} ".format(form))
+    return render(request, 'cuotas/cuota_editar.html', {'form': form, 'cuota': cuota })
 
 
 

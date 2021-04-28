@@ -21,8 +21,8 @@
       <td>{{ cuota.plan_de_pago }}</td>
       <td>{{ cuota.familia }}</td>
       <td>{{ cuota.importe_cuota }}</td>
-      <td><a class="btn btn-success" href={% url 'cuotas:editar_cuota' cuota_id=cuota.pk %}>EDITAR</a></td>
-      <td><a class="btn btn-danger" href={% url 'cuotas:borrar_cuota' cuota_id=cuota.pk %}>BORRAR</a></td>
+      <td><a class="btn btn-success" href={% url 'cuotas:editar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>EDITAR</a></td>
+      <td><a class="btn btn-danger" href={% url 'cuotas:borrar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>BORRAR</a></td>
     </tr>
   </tbody>
     {% endfor %}
@@ -32,10 +32,8 @@
 {% else %}
     <p>No cuotas are available.</p>
 {% endif %}
+
 <div>
-  <a class="btn btn-warning" href="{% url 'cuotas:nueva_cuota' familia_id=familia.pk %}" >GENERAR NUEVA CUOTA </a>
-</div>
-<div>
-  <a class="btn btn-danger" href="{% url 'cuotas:nuevo_cuotas_plan_seleccion' familia_id=familia.pk %}" >GENERAR CUOTAS POR PLAN </a>
+  <a class="btn btn-warning" href="{% url 'cuotas:nuevo_cuotas_plan_seleccion' familia_id=familia.pk %}" >GENERAR CUOTAS POR PLAN </a>
 </div>
 {% endblock cuotas_lista %}

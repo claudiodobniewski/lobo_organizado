@@ -36,7 +36,7 @@ class CuotaSocialFamilia(models.Model):
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     
     def __str__(self):
-        return  "Concepto: {} | Familia:{} | Vto:{}".format(self.plan_de_pago,self.familia, self.vencimiento)
+        return  "#{} Plan: {} | Familia:{} | Vto:{} | ${}".format(self.pk,self.plan_de_pago,self.familia, self.vencimiento,self.importe_cuota)
 
 # Pagos de una familia a cuenta de un plan
 class CuotaPago(models.Model):
