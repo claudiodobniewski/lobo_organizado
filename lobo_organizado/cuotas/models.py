@@ -15,6 +15,8 @@ class PlanDePago(models.Model):
     vto_primera_cuota = models.DateField('vto_primera_cuota')
     importe_cuota = models.FloatField()
     eliminado = models.BooleanField(default=False)
+    orden = models.IntegerField(null=True, default=0)
+    plan_default = models.BooleanField(default=False)
 
     class Meta:
         permissions = (
@@ -41,7 +43,7 @@ class CuotaSocialFamilia(models.Model):
 
 # Pagos de una familia a cuenta de un plan
 class CuotaPago(models.Model):
-    importe = models.FloatField('cobrado',default=0.0)
+    importe = models.FloatField('cobrado',default=0.0,min=1.0,decimal_places=2)
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     fecha_cobro = models.DateField('fecha_cobro',default=date.today)
