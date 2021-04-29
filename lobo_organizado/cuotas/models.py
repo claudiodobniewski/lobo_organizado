@@ -48,6 +48,7 @@ class CuotaPago(models.Model):
     #aplica_cuota = models.ForeignKey(CuotaSocialFamilia, on_delete=models.CASCADE)
     aplica_pago_plan = models.ForeignKey(PlanDePago, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
+    deleted = models.BooleanField(default=False)
 
     class Meta:
         permissions = (

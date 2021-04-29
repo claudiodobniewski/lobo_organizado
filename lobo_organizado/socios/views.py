@@ -238,18 +238,11 @@ def familia_detalle(request, familia_id, error_message=''):
     try:
         familia_socios = Familia.objects.get(pk=familia_id)
         socios = Socio.objects.filter(familia_id=familia_socios.id)
-        logger.debug(socios)
 
         cuota_social = CuotaSocialFamilia.objects.filter(familia_id=familia_socios.id,deleted=False)
-       
-        logger.debug(cuota_social)
-        logger.debug("-------------")
-        pagos = CuotaPago.objects.filter(familia_id=familia_socios.id)
-        logger.debug(pagos)
-        logger.debug("-------------")
+        pagos = CuotaPago.objects.filter(familia_id=familia_socios.id,deleted=False)
         observaciones = Observaciones.objects.filter(familia_id=familia_socios.id)
-        logger.debug(pagos)
-        logger.debug("-------------")
+
     except Exception as err:
         raise Http404("Unexpected error: {0}".format(err))
     return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':cuota_social,'pagos':pagos, 'observaciones':observaciones, 'error_message': error_message })

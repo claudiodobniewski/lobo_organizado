@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
-from .forms import CuotaSocialFamiliaForm, PlanDePagoForm
+from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 
 from dateutil.relativedelta import relativedelta
 import inspect ,logging
@@ -61,11 +61,68 @@ def procesa_nuevo_pago(request, familia_id):
 
     return HttpResponseRedirect(reverse('socios:familia_detalle', args=(selected_family.id,)))
 
-def editar_pago(request, pago_id):
-    return HttpResponse("Hello, world. ACA VA PANTALLA EDITAR PAGO.")
+def editar_pago_plan(request, familia_id, pago_id):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.info(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
 
-def borrar_pago(request, pago_id):
-    return HttpResponse("Hello, world. ACA VA PANTALLA BORRAR PAGO.")
+    pago = CuotaPago.objects.get(pk=pago_id)
+    logger.info("{}) Pago {} Familia {} plan de pagos {} ".format(func.co_name,pago.pk,pago.familia.familia_crm_id,pago))
+
+    if request.method == "POST":
+        form = CuotaPagoForm(request.POST,instance=pago)
+        # check whether it's valid:
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            return redirect('socios:familia_detalle', familia_id=familia_id  )
+
+    
+    form = CuotaPagoForm(instance=pago)
+
+    return render(request, 'cuotas/pago_plan_editar.html', {'form': form, 'pago': pago })
+
+def borrar_pago_plan(request, familia_id, pago_id):
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.info(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+ # GENERAR DELETE DE PAGO - esto copia el editar_cuota
+    pago = CuotaPago.objects.get(pk=pago_id)
+    logger.info("FORM DELETE PAGO  {}) Pago {} Familia {} plan de pagos {} ".format(func.co_name,pago.pk,pago.familia.familia_crm_id,pago))
+
+    if request.method == "POST" and 'delete' in request.POST:
+        form = CuotaPagoForm(instance=pago)
+        #logger.info("FORM DELETE PAGO POST {}) Cuota {} Familia {} plan de pagos {} valid {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota,form.is_valid()))
+        # check whether it's valid:
+        #if form.is_valid():
+        form.is_valid()
+        post = form.save(commit=False)
+        post.deleted = True
+        post.save()
+        logger.info("FORM POST {} IS VALID".format(form))
+        return redirect('socios:familia_detalle', familia_id=familia_id  )
+        #else:
+        #    logger.info("FORM DELETE INVALID PAGO POST {}) Cuota {} Familia {} plan de pagos {} errores {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota,form.errors))
+
+    
+    form = CuotaPagoForm(instance=pago)
+    form.fields['importe'].widget.attrs['disabled'] = 'disabled'
+    form.fields['fecha_cobro'].widget.attrs['disabled'] = 'disabled'
+    form.fields['aplica_pago_plan'].widget.attrs['disabled'] = 'disabled'
+    form.fields['familia'].widget.attrs['disabled'] = 'disabled'
+    
+    #logger.info(" RENDER {}) Cuota {} Familia {} plan de pagos {} ".format(func.co_name,cuota.pk,cuota.familia.familia_crm_id,cuota))
+    return render(request, 'cuotas/pago_plan_borrar.html', {'form': form, 'pago': pago })
 
 def nuevo_cuotas_plan_seleccion(request, familia_id):
 
@@ -73,10 +130,10 @@ def nuevo_cuotas_plan_seleccion(request, familia_id):
     planes_de_pago = PlanDePago.objects.all()
 
 
-    return render(request, 'cuotas/nuevo_cuotas_plan_seleccion.html', {'familia': familia,'planes_de_pago':planes_de_pago})
+    return render(request, 'socios/nuevo_cuotas_plan_seleccion.html', {'familia': familia,'planes_de_pago':planes_de_pago})
 
 
-def nuevo_cuotas_plan(request, familia_id,plan_pagos_id):
+def nuevo_cuotas_plan(request, familia_id, plan_pagos_id):
 
     
     func = inspect.currentframe().f_back.f_code

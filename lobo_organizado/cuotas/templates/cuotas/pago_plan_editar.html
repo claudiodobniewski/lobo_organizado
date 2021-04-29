@@ -1,0 +1,24 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+
+
+<h1>Familia {{ pago.familia.familia_crm_id }}</h1>
+
+<h2>Edicion de pago a cuota social<h2>
+
+{% comment %}{%  include "form_errors.html" %}{% endcomment %}
+
+<div class="post">
+  <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success" type="submit" >Confirmar modificacion</button>
+  </form>
+</div>
+
+
+
+<a type="button" class="btn btn-danger" href="{% url 'socios:familia_detalle' familia_id=pago.familia.pk error_message='Operacion Edicion Pago a Social cancelada'|urlencode %}">Cancelar Edicion pago a cuota</a>
+{% endblock content %}

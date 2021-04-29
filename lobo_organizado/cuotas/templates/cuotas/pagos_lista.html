@@ -22,8 +22,8 @@
       <td>{{ pago.aplica_pago_plan }}</td>
       <td>{{ pago.familia }}</td>
       <td>{{ pago.importe }}</td>
-      <td><a class="btn btn-success" href={% url 'cuotas:nuevo_pago' familia_id=familia.pk pago_id=pago.pk %}>EDITAR</a></td>
-      <td><a class="btn btn-danger" href={% url 'cuotas:borrar_pago' pago_id=pago.pk %}>BORRAR</a></td>
+      <td><a class="btn btn-success" href={% url 'cuotas:editar_pago_plan' familia_id=familia.pk pago_id=pago.pk %}>EDITAR</a></td>
+      <td><a class="btn btn-danger" href={% url 'cuotas:borrar_pago_plan' familia_id=familia.pk pago_id=pago.pk %}>BORRAR</a></td>
     </tr>
   
     {% endfor %}
