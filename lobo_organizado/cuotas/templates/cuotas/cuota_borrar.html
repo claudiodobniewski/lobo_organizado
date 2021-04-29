@@ -6,18 +6,20 @@
 
 <h1>Familia {{ cuota.familia.familia_crm_id }}</h1>
 
-<h2>ELIMINAR cuota social<h2>
+<h3>ELIMINAR cuota social<h3>
 
-  <h3>Esta accion no se puede deshacer<h3>
+  <div class="badge bg-danger">
+    <span class=" bg-secondary">Esta accion no se puede deshacer</span>
+    <div>
 
 
-{%  include "form_errors.html" %}
+{% comment %} {%  include "form_errors.html" %} {% endcomment %}
 
 <div class="post">
   <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
     {% csrf_token %}
     {{ form|crispy }}
-    <button type="submit" class="btn btn-danger" type="submit" >CONFIRMAR ELIMINACION DE CUOTA</button>
+    <button type="submit" class="btn btn-outline-warning" type="submit" name="delete" >CONFIRMAR ELIMINACION DE CUOTA</button>
   </form>
 </div>
 
