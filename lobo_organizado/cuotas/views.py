@@ -4,9 +4,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.urls import reverse
 from django.shortcuts import redirect
+
+from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
-from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
+from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 import inspect ,logging
@@ -17,6 +19,7 @@ logger = logging.getLogger('project.lobo.organizado')
 def index(request):
     return HttpResponse("Hello, world. You're at the cuotas index.")
 
+# creo que se puede borrar
 def nuevo_pago(request, familia_id, pago_id=0 ):
 
     familia_socios = Familia.objects.get(pk=familia_id)
@@ -37,6 +40,7 @@ def nuevo_pago(request, familia_id, pago_id=0 ):
     logger.debug("error_message [{}] ".format(pago_error_message) )
     return render(request, 'cuotas/crear_editar_pago.html', {'familia': familia_socios,'planes_de_pago':planes_de_pago,'planes_de_pago_list':planes_de_pago_list, 'pago': pago, 'pago_error_message': pago_error_message })
 
+#creoq ue se puede borrar
 def procesa_nuevo_pago(request, familia_id):
 
   
@@ -61,6 +65,7 @@ def procesa_nuevo_pago(request, familia_id):
 
     return HttpResponseRedirect(reverse('socios:familia_detalle', args=(selected_family.id,)))
 
+# nuevo pago y edicion
 def editar_pago_plan(request, familia_id, pago_id):
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
@@ -71,8 +76,10 @@ def editar_pago_plan(request, familia_id, pago_id):
         func.co_firstlineno
     ))
 
+    error_message = ''
+
     if pago_id:
-        pago = CuotaPago.objects.get(pk=pago_id,delete=False)
+        pago = CuotaPago.objects.get(pk=pago_id,deleted=False)
     else:
         familia = Familia.objects.get(pk=familia_id)
         plan_de_pago = PlanDePago.objects.get(plan_default=True)
@@ -83,16 +90,22 @@ def editar_pago_plan(request, familia_id, pago_id):
 
     if request.method == "POST":
         form = CuotaPagoForm(request.POST,instance=pago)
+        #form.data.importe = Decimal(form.data['importe'].replace(',','.'))
         # check whether it's valid:
-        if form.is_valid():
+        #fecha_vto_cuota = form.cleaned_data['vto_primera_cuota'] + relativedelta(months=n)
+
+        if form.is_valid() : #and form.cleaned_data['importe'] > Decimal(1.0):
             post = form.save(commit=False)
             post.save()
             return redirect('socios:familia_detalle', familia_id=familia_id  )
+        else:
+            pago.delete()
+            error_message = 'Error en los datos'
 
     
     form = CuotaPagoForm(instance=pago)
-
-    return render(request, 'cuotas/pago_plan_editar.html', {'form': form, 'pago': pago })
+    
+    return render(request, 'cuotas/pago_plan_editar.html', {'form': form, 'pago': pago , 'error_message' : error_message })
 
 def borrar_pago_plan(request, familia_id, pago_id):
     func = inspect.currentframe().f_back.f_code

@@ -1,6 +1,8 @@
 from django.db import models
 from socios.models import Familia
 from datetime import date
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 
 # Create your models here.
 
@@ -43,7 +45,7 @@ class CuotaSocialFamilia(models.Model):
 
 # Pagos de una familia a cuenta de un plan
 class CuotaPago(models.Model):
-    importe = models.FloatField('cobrado',default=0.0,min=1.0,decimal_places=2)
+    importe = models.DecimalField('cobrado',default=0.0,max_digits=8,decimal_places=2,validators=[MinValueValidator(Decimal('1.0'))])
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     fecha_cobro = models.DateField('fecha_cobro',default=date.today)
@@ -59,6 +61,10 @@ class CuotaPago(models.Model):
                        ( "plan_cuota_borrar","Eliminar cuotas de un plan a familia"),
                        ( "plan_cuota_ver","Ver detalle de cuotas del plan a familia" ),
                       )
+        
+        #constraints = [
+        #    models.CheckConstraint(check=models.Q(importe__gt=Decimal('0')), name='importe_gt_0'),
+        #]
     
     def __str__(self):
         return  "Concepto: {} | Familia:{} | Vto:{}".format(self.aplica_pago_plan,self.familia, self.importe)

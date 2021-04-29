@@ -7,7 +7,10 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 class CuotaPagoForm(forms.ModelForm):
 
-    fecha_cobro = forms.DateField()
+
+    fecha_cobro = forms.DateField(widget = forms.SelectDateWidget )
+    importe = forms.DecimalField()
+
     class Meta:
         model = CuotaPago
         fields = ('importe', 'fecha_cobro', 'aplica_pago_plan', 'familia')
