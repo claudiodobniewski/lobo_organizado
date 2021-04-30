@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from socios.models import Familia
 from datetime import date
@@ -48,7 +49,7 @@ class CuotaPago(models.Model):
     importe = models.DecimalField('cobrado',default=0.0,max_digits=8,decimal_places=2,validators=[MinValueValidator(Decimal('1.0'))])
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
-    fecha_cobro = models.DateField('fecha_cobro',default=date.today)
+    fecha_cobro = models.DateField('fecha_cobro',default=date.today,)
     #aplica_cuota = models.ForeignKey(CuotaSocialFamilia, on_delete=models.CASCADE)
     aplica_pago_plan = models.ForeignKey(PlanDePago, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
@@ -65,6 +66,11 @@ class CuotaPago(models.Model):
         #constraints = [
         #    models.CheckConstraint(check=models.Q(importe__gt=Decimal('0')), name='importe_gt_0'),
         #]
+    def year_choices():
+        return [(r,r) for r in range(datetime.date.today().year-2, datetime.date.today())]
+
+    def current_year():
+        return datetime.date.today().year
     
     def __str__(self):
         return  "Concepto: {} | Familia:{} | Vto:{}".format(self.aplica_pago_plan,self.familia, self.importe)

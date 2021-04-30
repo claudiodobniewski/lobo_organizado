@@ -1,14 +1,15 @@
 {% block familia_miembros %}
 
 {% if socios %}
+<div class="badge rounded-pill bg-primary" data-toggle="collapse" data-target="#familia_socios_dni_block" id="collapseDni" aria-expanded="false" aria-controls="familia_socios_dni_block">Dni</div>
 <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
   <thead class="thead-light">
     <tr>
       <th scope="col">#</th>
       <th scope="col">Nombre</th>
-      <th scope="col">Dni</th>
-      <th scope="col">Creado</th>
-      <th scope="col">Editado</th>
+      <th scope="col">Cat.</th>
+      <th scope="col">Rama</th>
+      <th scope="col" class="collapse " id="familia_socios_dni_block" aria-labelledby="headingDni" data-parent="#familia_info_block">Dni</th> 
       <th scope="col">editar</th>
       <th scope="col">eliminar</th>
     </tr>
@@ -19,9 +20,10 @@
     <tr>
       <th scope="row">{{ forloop.counter }}</th>
       <td>{{ socio.apellidos }},{{ socio.nombres }}</td>
-      <td>{{ socio.dni }}</td>
-      <td>{{ socio.creado }}</td>
-      <td>{{ socio.actualizado }}</td>
+      <td>{{ socio.get_categoria_display }}</td>
+      <td>{{ socio.get_rama_display }}</td>
+
+      <td class="collapse " id="familia_socios_dni_block" aria-labelledby="headingDni" data-parent="#familia_info_block">{{ socio.dni }}</td>
       <td><a class="btn btn-success" href={% url 'socios:socio_editar' socio_id=socio.pk %}>EDITAR</a></td>
       <td><a class="btn btn-danger" href={% url 'socios:socio_borrar' socio_id=socio.pk %}>BORRAR</a></td>
     </tr>

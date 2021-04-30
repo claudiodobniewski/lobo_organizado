@@ -149,8 +149,7 @@ def nuevo_cuotas_plan_seleccion(request, familia_id):
     familia = Familia.objects.get(pk=familia_id)
     planes_de_pago = PlanDePago.objects.all()
 
-
-    return render(request, 'socios/nuevo_cuotas_plan_seleccion.html', {'familia': familia,'planes_de_pago':planes_de_pago})
+    return render(request, 'cuotas/nuevo_cuotas_plan_seleccion.html', {'familia': familia,'planes_de_pago':planes_de_pago})
 
 
 def nuevo_cuotas_plan(request, familia_id, plan_pagos_id):

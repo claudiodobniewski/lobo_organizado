@@ -1,8 +1,8 @@
 from django.db import models
-
+from django import template
 
 # Create your models here.
-
+register = template.Library()
   
 class Familia(models.Model):
     
@@ -30,6 +30,9 @@ class Familia(models.Model):
     def __str__(self):
         return  self.familia_crm_id
 
+@register.filter(name='display_categorias')
+def categorias_verbose(self):
+    return dict(Socio.CATEGORIAS_CHOISES)[self.categoria]
 class Socio(models.Model):
 
     CATEGORIAS_CHOISES = [
@@ -59,6 +62,10 @@ class Socio(models.Model):
     familia=models.ForeignKey(Familia, on_delete=models.CASCADE)
     categoria=models.IntegerField(default=0, choices=CATEGORIAS_CHOISES)
     rama=models.IntegerField(default=0, choices=RAMAS_CHOISES)
+
+ 
+    
+
 
     class Meta:
         permissions = (
