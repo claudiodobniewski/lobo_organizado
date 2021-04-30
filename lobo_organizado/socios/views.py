@@ -4,13 +4,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
 from django.shortcuts import redirect
-from cuotas.models import CuotaSocialFamilia,CuotaPago
 from django.template.defaulttags import register
 from urllib.parse import unquote
 from django.utils.http import urlquote
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 import inspect ,logging
+from cuotas.models import CuotaSocialFamilia,CuotaPago
+import copy
 
 
 from .forms import FamiliaForm, SocioForm, ObservacionForm
@@ -201,12 +202,53 @@ def familia_index(request,error_message=''):
 
     socios = Socio.objects.all()
 
-    
+    ###
     familia_estadisticas_socios = {}
 
     categorias = {k:0 for k,categoria in Socio.CATEGORIAS_CHOISES }
 
     logger.debug(categorias)
+
+    for familia in lista_familias:
+        print(familia)
+        socios_familia = Socio.objects.filter(familia=familia.id)
+        beneficiarios = 0
+        dirigentes = 0
+        otros = 0
+        manada = 0
+        unidad = 0
+        caminantes = 0
+        rovers = 0
+        print("Socios : {}".format(socios_familia))
+        for socio in socios_familia:
+            print("Socio:{}#{}#{}".format(socio.pk,socio.nombres,socio.categoria))
+            if socio.categoria == 1:
+                beneficiarios += 1
+                if socio.rama == 1:
+                    manada += 1
+                elif socio.rama == 2:
+                    unidad += 1
+                elif socio.rama == 3:
+                    caminantes += 1
+                elif socio.rama == 4:
+                    rovers += 1
+            elif socio.categoria == 2:
+                dirigentes += 1
+            elif socio.categoria > 0:
+                otros += 1
+
+        familia.stat_socios = len(copy.copy(socios_familia))
+        familia.stat_beneficiarios = copy.copy(beneficiarios)
+        familia.stat_dirigentes = copy.copy(dirigentes)
+        familia.stat_otros = copy.copy(otros)
+        familia.stat_rama_manada = copy.copy(manada)
+        familia.stat_rama_unidad = copy.copy(unidad)
+        familia.stat_rama_caminantes = copy.copy(caminantes)
+        familia.stat_rama_rovers = copy.copy(rovers)
+
+        ###
+
+
     for socio in socios:
 
         #logger.debug("familia:{} categoria:{} claves:{}".format(socio.familia.id,socio.categoria,familia_estadisticas_socios.keys()) )
