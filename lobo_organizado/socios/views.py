@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 from django.db.models import Max
 from django.shortcuts import render
@@ -210,6 +211,7 @@ def familia_index(request,error_message=''):
     logger.debug(categorias)
 
     for familia in lista_familias:
+        
         print(familia)
         socios_familia = Socio.objects.filter(familia=familia.id)
         beneficiarios = 0
@@ -220,6 +222,14 @@ def familia_index(request,error_message=''):
         caminantes = 0
         rovers = 0
         print("Socios : {}".format(socios_familia))
+
+        cuotas = CuotaSocialFamilia.objects.filter( familia=familia.id )
+        cuotas_vencidas = cuotas.exclude(vencimiento__gte=datetime.date.today() )
+        cuotas_vencidas_importe = sum([x.importe_cuota for x in cuotas_vencidas ])
+        pagos = CuotaPago.objects.filter( familia=familia.id )
+        pagos_totales = sum([x.importe for x in pagos ])
+        print("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_importe:{} pagos:{} pagos_totales:{}".format(cuotas,cuotas_vencidas,cuotas_vencidas_importe,pagos,pagos_totales))
+
         for socio in socios_familia:
             print("Socio:{}#{}#{}".format(socio.pk,socio.nombres,socio.categoria))
             if socio.categoria == 1:
@@ -248,21 +258,6 @@ def familia_index(request,error_message=''):
 
         ###
 
-
-    for socio in socios:
-
-        #logger.debug("familia:{} categoria:{} claves:{}".format(socio.familia.id,socio.categoria,familia_estadisticas_socios.keys()) )
-        
-        if socio.familia.id not in familia_estadisticas_socios.keys():
-            #logger.debug("seteando dict categorias")
-            familia_estadisticas_socios[socio.familia.id] = {'categorias_counter': categorias.copy(), 'familia':socio.familia }
-
-
-        #logger.debug("familia:{} categoria:{} claves:{}".format(socio.familia.id,socio.categoria,familia_estadisticas_socios.keys()) )
-        #logger.debug(familia_estadisticas_socios)
-        familia_estadisticas_socios[socio.familia.id]['categorias_counter'][socio.categoria] += 1
-
-    logger.debug(familia_estadisticas_socios)
 
 
     return render(request, 'socios/familia_listado.html', {'familias': lista_familias, 'error_message': error_message} )
