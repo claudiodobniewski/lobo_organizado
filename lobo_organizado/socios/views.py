@@ -11,6 +11,7 @@ from django.utils.http import urlquote
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 import inspect ,logging
+import cuotas.models as app_cuotas
 from cuotas.models import CuotaSocialFamilia,CuotaPago
 import copy
 
@@ -222,13 +223,9 @@ def familia_index(request,error_message=''):
         caminantes = 0
         rovers = 0
         print("Socios : {}".format(socios_familia))
+        
 
-        cuotas = CuotaSocialFamilia.objects.filter( familia=familia.id )
-        cuotas_vencidas = cuotas.exclude(vencimiento__gte=datetime.date.today() )
-        cuotas_vencidas_importe = sum([x.importe_cuota for x in cuotas_vencidas ])
-        pagos = CuotaPago.objects.filter( familia=familia.id )
-        pagos_totales = sum([x.importe for x in pagos ])
-        print("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_importe:{} pagos:{} pagos_totales:{}".format(cuotas,cuotas_vencidas,cuotas_vencidas_importe,pagos,pagos_totales))
+        #################
 
         for socio in socios_familia:
             print("Socio:{}#{}#{}".format(socio.pk,socio.nombres,socio.categoria))
@@ -280,9 +277,31 @@ def familia_detalle(request, familia_id, error_message=''):
         pagos = CuotaPago.objects.filter(familia_id=familia_socios.id,deleted=False)
         observaciones = Observaciones.objects.filter(familia_id=familia_socios.id)
 
+        # cuotas_todas,cuotas_plan,cuotas_vencidas,cuotas_suma,pagos_percibidos_queryset,pagos_percibidos_plan,pagos_percibidos_suma
+        cuotas = app_cuotas.cuotas_queryset(familia_id)
+        cuotas_ya_vencidas = app_cuotas.cuotas_vencidas(cuotas,datetime.date.today())
+        cuotas_vencidas_importe = app_cuotas.cuotas_suma(cuotas_ya_vencidas)
+        
+        pagos_totales = app_cuotas.pagos_percibidos_queryset(familia_id)
+        pagos_ya_percibidos_suma = app_cuotas.pagos_percibidos_suma(pagos_totales)
+
+        print("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_suma:{} pagos:{} pagos_suma:{}".format(cuotas,cuotas_ya_vencidas,cuotas_vencidas_importe,pagos_totales,pagos_ya_percibidos_suma))
+
     except Exception as err:
         raise Http404("Unexpected error: {0}".format(err))
-    return render(request, 'socios/familia_detalle.html', {'familia': familia_socios,'socios':socios,'cuotas':cuota_social,'pagos':pagos, 'observaciones':observaciones, 'error_message': error_message })
+    return render(request, 
+    'socios/familia_detalle.html',
+     {
+        'familia': familia_socios,
+        'socios':socios,
+        'cuotas':cuota_social,
+        'cuotas_vencidas': cuotas_ya_vencidas,
+        'cuotas_vencidas_suma': cuotas_vencidas_importe,
+        'pagos':pagos,
+        'pagos_suma': pagos_ya_percibidos_suma,
+        'observaciones':observaciones,
+        'error_message': error_message
+    })
 
 def familia_nuevo(request,familia_id, error_message=''):
     

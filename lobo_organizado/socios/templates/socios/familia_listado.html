@@ -28,10 +28,10 @@
             <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=familia.id %}">{{ forloop.counter }}</a></th>
             <td><a href="{% url 'socios:familia_detalle' familia_id=familia.id %}">{{ familia.crm_id }}</a></td>
             <td>{{ familia.familia_crm_id }}</td>
-            <td>
+            <td data-toggle="tooltip" title="cant [ Benef / Dirig / Otros ]"> 
               {{ familia.stat_socios }} [ {{ familia.stat_beneficiarios }} / {{ familia.stat_dirigentes }} / {{ familia.stat_otros }} ]
             </td>
-            <td>
+            <td data-toggle="tooltip" title="M/U/C/R" >
               {{ familia.stat_rama_manada }} {{ familia.stat_rama_unidad }} {{ familia.stat_rama_caminantes }} {{ familia.stat_rama_rovers }}
             </td>
             <td>{{ familia.actualizado|date:"SHORT_DATE_FORMAT" }}</td>

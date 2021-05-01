@@ -1,5 +1,16 @@
 {% block cuotas_lista %}
+<div>
+<p>
+  Cuotas vencidas: {{ cuotas_vencidas_suma }}
+</p>
+<p>Pagos percibidos {{ pagos_suma }}</p>
 
+{% if pagos_suma >= cuotas_vencidas_suma %}
+<p class="btn btn-success" >AL DIA</p>
+{% else %}
+<p class="btn btn-danger" >EN MORA</p>
+{% endif %}
+</div>
 {% if cuotas %}
 <table id="example" class="table table-striped table-bordered table-hover table-responsive-md" style="width:70%">
   <thead>
@@ -7,7 +18,7 @@
       <th scope="col">#</th>
       <th scope="col">Fecha Vto</th>
       <th scope="col">Concepto</th>
-      <th scope="col">Familia</th>
+      {% comment %}<th scope="col">Familia</th>{% endcomment %}
       <th scope="col">Importe</th>
       <th scope="col">editar</th>
       <th scope="col">eliminar</th>
@@ -19,7 +30,7 @@
       <th scope="row">{{ cuota.id }}</th>
       <td><a href="/cuotas/cuotasocialfamilia/{{ cuota.id }}">{{ cuota.vencimiento }}</a></td>
       <td>{{ cuota.plan_de_pago }}</td>
-      <td>{{ cuota.familia }}</td>
+      {% comment %}<td>{{ cuota.familia }}</td>{% endcomment %}
       <td>{{ cuota.importe_cuota }}</td>
       <td><a class="btn btn-success" href={% url 'cuotas:editar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>EDITAR</a></td>
       <td><a class="btn btn-danger" href={% url 'cuotas:borrar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>BORRAR</a></td>

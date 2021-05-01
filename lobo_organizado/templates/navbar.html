@@ -16,10 +16,16 @@
         </li>
         {% endif %} 
         {%  if user.is_authenticated and request.user.is_staff is True %}
-        <li class="nav-item"></li>
+          <li class="nav-item"></li>
+            <a href="{% url 'socios:familia_listado' %}"  class="nav-link">Cobranzas</a>
+          </li>
+        {% endif %}
+
+        {%  if user.is_authenticated and request.user.is_staff is True %}
+          <li class="nav-item"></li>
             <a href="{% url 'admin:index' %}"  class="nav-link">Administracion</a>
           </li>
-            {% endif %} 
+        {% endif %} 
         
         
       </ul>
