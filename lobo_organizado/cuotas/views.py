@@ -184,7 +184,7 @@ def nuevo_cuotas_plan(request, familia_id, plan_pagos_id):
         if form.is_valid():
             #post = form.save(commit=False)
             #post.save()
-            print("Recibido para familia {} , sumar {} cuotas de ${} , inicia primera cuota [{}]".format(familia.familia_crm_id,form.data['cantidad_cuotas'],form.data['importe_cuota'],form.data['vto_primera_cuota'] ) )
+            print("Recibido para familia {} , sumar {} cuotas de ${} , inicia primera cuota [{}]".format(familia.familia_crm_id,form.cleaned_data['cantidad_cuotas'],form.cleaned_data['importe_cuota'],form.cleaned_data['vto_primera_cuota'] ) )
             logger.debug("CAMINO 1 Plan de Pago {}".format(plan_pagos_id))
             cant_cuotas = int(form['cantidad_cuotas'].value())
             for n in range(cant_cuotas):
