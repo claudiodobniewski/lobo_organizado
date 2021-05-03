@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 import inspect ,logging
 import cuotas.models as app_cuotas
-from cuotas.models import CuotaSocialFamilia,CuotaPago
+from cuotas.models import CuotaSocialFamilia,CuotaPago,PlanDePago
 import copy
 
 
@@ -202,10 +202,9 @@ def familia_index(request,error_message=''):
 
     lista_familias = Familia.objects.all()
 
-    socios = Socio.objects.all()
+    
 
     ###
-    familia_estadisticas_socios = {}
 
     categorias = {k:0 for k,categoria in Socio.CATEGORIAS_CHOISES }
 
@@ -274,16 +273,22 @@ def familia_detalle(request, familia_id, error_message=''):
         socios = Socio.objects.filter(familia_id=familia_socios.id)
 
         cuota_social = CuotaSocialFamilia.objects.filter(familia_id=familia_socios.id,deleted=False)
+
         pagos = CuotaPago.objects.filter(familia_id=familia_socios.id,deleted=False)
+
         observaciones = Observaciones.objects.filter(familia_id=familia_socios.id)
 
-        # cuotas_todas,cuotas_plan,cuotas_vencidas,cuotas_suma,pagos_percibidos_queryset,pagos_percibidos_plan,pagos_percibidos_suma
+        # cuotas_todas,cuotas_por_plan,cuotas_vencidas,cuotas_suma,pagos_percibidos_queryset,pagos_percibidos_plan,pagos_percibidos_suma
         cuotas = app_cuotas.cuotas_queryset(familia_id)
         cuotas_ya_vencidas = app_cuotas.cuotas_vencidas(cuotas,datetime.date.today())
         cuotas_vencidas_importe = app_cuotas.cuotas_suma(cuotas_ya_vencidas)
         
         pagos_totales = app_cuotas.pagos_percibidos_queryset(familia_id)
         pagos_ya_percibidos_suma = app_cuotas.pagos_percibidos_suma(pagos_totales)
+
+        # ahora no es urgente, pero a futuro seria bueno listar los totales de cuotas por plan (si existiera mas de un plan en el año en curso o tuviera deuda de años anteriores)
+        #planes_cuotas = PlanDePago.objects.all()
+        #cuotas_por_plan =  {x.id: app_cuotas.cuotas_por_plan(cuotas,x.id,False) for x in planes_cuotas }
 
         print("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_suma:{} pagos:{} pagos_suma:{}".format(cuotas,cuotas_ya_vencidas,cuotas_vencidas_importe,pagos_totales,pagos_ya_percibidos_suma))
 
@@ -297,6 +302,7 @@ def familia_detalle(request, familia_id, error_message=''):
         'cuotas':cuota_social,
         'cuotas_vencidas': cuotas_ya_vencidas,
         'cuotas_vencidas_suma': cuotas_vencidas_importe,
+        #'cuotas_por_plan': cuotas_por_plan,
         'pagos':pagos,
         'pagos_suma': pagos_ya_percibidos_suma,
         'observaciones':observaciones,

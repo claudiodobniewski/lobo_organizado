@@ -80,7 +80,7 @@ def cuotas_queryset(familia_id,deleted=False):
     return CuotaSocialFamilia.objects.filter( familia=familia_id,deleted=deleted )
 
 ### Filtra un QuerySet de cuotas por el plan_id, retorna subconjunto QuerySet
-def cuotas_plan(cuotas, plan_id):
+def cuotas_por_plan(cuotas, plan_id,deleted=False):
     return cuotas.filter( plan_de_pago=plan_id )
 
 ### Filtra un QuerySet de cuotas por anteriores a la fecha de corte, retorna subconjunto QuerySet
