@@ -65,9 +65,6 @@ class Socio(models.Model):
     categoria=models.IntegerField(default=0, choices=CATEGORIAS_CHOISES)
     rama=models.IntegerField(default=0, choices=RAMAS_CHOISES)
 
- 
-    
-
 
     class Meta:
         permissions = (

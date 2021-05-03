@@ -41,6 +41,14 @@ class CuotaSocialFamilia(models.Model):
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
     
+    class Meta:
+        permissions = (
+                       ( "cuota_crear","Agregar cuotas"),
+                       ( "cuota_editar","Editar cuotas"),
+                       ( "cuota_borrar","Eliminar cuotas"),
+                       ( "cuota_ver","Ver detalle de cuotas" ),
+                      )
+
     def __str__(self):
         return  "#{} Plan: {} | Familia:{} | Vto:{} | ${}".format(self.pk,self.plan_de_pago,self.familia, self.vencimiento,self.importe_cuota)
 
@@ -57,10 +65,10 @@ class CuotaPago(models.Model):
 
     class Meta:
         permissions = (
-                       ( "plan_cuota_crear","Agregar nuevas cuotas de un plan a familia"),
-                       ( "plan_cuota_editar","Editar cuotas de un plan a familia"),
-                       ( "plan_cuota_borrar","Eliminar cuotas de un plan a familia"),
-                       ( "plan_cuota_ver","Ver detalle de cuotas del plan a familia" ),
+                       ( "pago_cuota_crear","Agregar nuevas cuotas de un plan a familia"),
+                       ( "pago_cuota_editar","Editar cuotas de un plan a familia"),
+                       ( "pago_cuota_borrar","Eliminar cuotas de un plan a familia"),
+                       ( "pago_cuota_ver","Ver detalle de cuotas del plan a familia" ),
                       )
         
         #constraints = [

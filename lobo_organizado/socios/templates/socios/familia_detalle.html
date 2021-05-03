@@ -11,6 +11,7 @@
 {% endblock error_message %}
 
 {% if perms.socios.familia_ver %}
+    
     <div class="container">
         <div class="card" id="familia_info">
             <div class="card-title">
@@ -20,7 +21,8 @@
                 {% include "socios/familia_info.html" %}
             </div>
         </div>
-
+        {% if perms.socios.socio_ver %}
+        
         <div class="card">
             <div class="card-title">
                 <h2 data-toggle="collapse" data-target="#familia_socios_block" id="collapseTwo" aria-expanded="false" aria-controls="familia_socios_block">Miembros de la familia</h2>
@@ -29,18 +31,27 @@
                 {% include "socios/familia_miembros.html" %}
             </div>
         </div>
-        TODO aca validar si pueder ver, generar, editar , eliminar
+        {% endif %}
+        
         <div class="card">
+            {% if   perms.cuotas.cuota_ver or  perms.cuotas.pago_cuota_ver  %}
             <div class="card-title">
                 <h2 data-toggle="collapse" data-target="#familia_cobranza_block" id="headingTree" aria-expanded="false" aria-controls="familia_cobranza_block">Gestion Cobranza</h2>
             </div>
+            {% endif %}
+            {% if perms.cuotas.cuota_ver %}
             <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
                 {% include "cuotas/cuotas_lista.html" %}
             </div>
+            {% endif %}
+            {% if perms.cuotas.pago_cuota_ver %}
             <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
                 {% include "cuotas/pagos_lista.html" %}
             </div>
+            {% endif %}
         </div>
+        
+        {% if perms.socios.familia_obs_ver %}
         <div class="card">
             <div class="card-title">
                 <h2 data-toggle="collapse" data-target="#familia_observaciones_block" id="headingFour" aria-expanded="false" aria-controls="familia_observaciones_block">Observaciones</h2>
@@ -49,6 +60,7 @@
                 {% include "socios/observaciones.html" %}
             </div>
         </div>
+        {% endif %}
         <div class="row">
             <div class="col-sm">
                 <a type="button" class="btn btn-warning" href="{% url 'socios:familia_listado' %}">Regresar a listrado de Familias</a>

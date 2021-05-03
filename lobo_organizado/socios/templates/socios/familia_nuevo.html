@@ -12,7 +12,9 @@
   <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
     {% csrf_token %}
     {{ form|crispy }}
-    <button type="submit" class="btn btn-success" type="submit" >{{ boton_aceptar }}</button>
+    {% if perms.socios.familia_crear %}
+      <button type="submit" class="btn btn-success" type="submit" >{{ boton_aceptar }}</button>
+    {% endif %}
   </form>
 
 </div>
@@ -24,4 +26,5 @@
   {% url 'socios:familia_detalle' familia_id=familia_id  error_message=error_message|urlencode %}
 {% endif %}
 ">{{ boton_cancelar }}</a>
+
 {% endblock content %}
