@@ -65,10 +65,10 @@ class CuotaPago(models.Model):
 
     class Meta:
         permissions = (
-                       ( "pago_cuota_crear","Agregar nuevas cuotas de un plan a familia"),
-                       ( "pago_cuota_editar","Editar cuotas de un plan a familia"),
-                       ( "pago_cuota_borrar","Eliminar cuotas de un plan a familia"),
-                       ( "pago_cuota_ver","Ver detalle de cuotas del plan a familia" ),
+                       ( "pago_cuota_crear","Agregar nuevos pagos de un plan a familia"),
+                       ( "pago_cuota_editar","Editar pagos a un plan de la familia"),
+                       ( "pago_cuota_borrar","Eliminar pagos de un plan a familia"),
+                       ( "pago_cuota_ver","Ver detalle de pagos del plan a familia" ),
                       )
         
         #constraints = [

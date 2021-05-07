@@ -15,6 +15,7 @@ import cuotas.models as app_cuotas
 from cuotas.models import CuotaSocialFamilia,CuotaPago,PlanDePago
 import copy
 
+from django.contrib.auth.models import Permission
 
 from .forms import FamiliaForm, SocioForm, ObservacionForm
 from .models import Familia, Socio, Observaciones
@@ -202,7 +203,6 @@ def familia_index(request,error_message=''):
 
     lista_familias = Familia.objects.all()
 
-    
 
     ###
 
@@ -267,6 +267,16 @@ def familia_detalle(request, familia_id, error_message=''):
         func.co_filename, 
         func.co_firstlineno
     ))
+
+    user = request.user
+    if not user.is_anonymous:
+        perm_tuple = [(x.id, x.name,x.codename) for x in Permission.objects.filter(user=user)]
+        #perms = Permission.objects.filter(user=user)
+        print("USUARIO {} PERMISOS {}".format(user,perm_tuple) )
+    else:
+        print("Usuario anonimo....")
+    
+    
 
     try:
         familia_socios = Familia.objects.get(pk=familia_id)

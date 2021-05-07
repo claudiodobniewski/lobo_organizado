@@ -12,40 +12,53 @@
 {% endif %}
 </div>
 
-{% if cuotas %}
-<table id="example" class="table table-striped table-bordered table-hover table-responsive-md" style="width:70%">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Fecha Vto</th>
-      <th scope="col">Concepto</th>
-      {% comment %}<th scope="col">Familia</th>{% endcomment %}
-      <th scope="col">Importe</th>
-      <th scope="col">editar</th>
-      <th scope="col">eliminar</th>
-    </tr>
-  </thead>
-  {% for cuota in cuotas %}
-  <tbody>
-    <tr>
-      <th scope="row">{{ cuota.id }}</th>
-      <td><a href="/cuotas/cuotasocialfamilia/{{ cuota.id }}">{{ cuota.vencimiento }}</a></td>
-      <td>{{ cuota.plan_de_pago }}</td>
-      {% comment %}<td>{{ cuota.familia }}</td>{% endcomment %}
-      <td>{{ cuota.importe_cuota }}</td>
-      <td><a class="btn btn-success" href={% url 'cuotas:editar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>EDITAR</a></td>
-      <td><a class="btn btn-danger" href={% url 'cuotas:borrar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>BORRAR</a></td>
-    </tr>
-  </tbody>
-    {% endfor %}
-  
-  </table>
-   
-{% else %}
-    <p>No cuotas are available.</p>
+{% if perms.cuotas.cuota_ver %}
+  {% if cuotas %}
+  <table id="example" class="table table-striped table-bordered table-hover table-responsive-md" style="width:70%">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Fecha Vto</th>
+        <th scope="col">Concepto</th>
+        {% comment %}<th scope="col">Familia</th>{% endcomment %}
+        <th scope="col">Importe</th>
+        {% if perms.cuotas.cuota_editar %}
+          <th scope="col">editar</th>
+        {% endif %}
+        {% if perms.cuotas.cuota_borrar %}
+          <th scope="col">eliminar</th>
+        {% endif %}
+      </tr>
+    </thead>
+    {% for cuota in cuotas %}
+    <tbody>
+      <tr>
+        <th scope="row">{{ cuota.id }}</th>
+        <td><a href="/cuotas/cuotasocialfamilia/{{ cuota.id }}">{{ cuota.vencimiento }}</a></td>
+        <td>{{ cuota.plan_de_pago }}</td>
+        {% comment %}<td>{{ cuota.familia }}</td>{% endcomment %}
+        <td>{{ cuota.importe_cuota }}</td>
+        {% if perms.cuotas.cuota_editar %}
+          <td><a class="btn btn-success" href={% url 'cuotas:editar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>EDITAR</a></td>
+        {% endif %}
+
+        {% if perms.cuotas.cuota_borrar %}
+          <td><a class="btn btn-danger" href={% url 'cuotas:borrar_cuota' familia_id=familia.pk cuota_id=cuota.pk %}>BORRAR</a></td>
+        {% endif %}
+      </tr>
+    </tbody>
+      {% endfor %}
+    
+    </table>
+    
+  {% else %}
+      <p>No cuotas are available.</p>
+  {% endif %}
 {% endif %}
 
+{% if perms.cuotas.cuota_crear %}
 <div>
   <a class="btn btn-warning" href="{% url 'cuotas:nuevo_cuotas_plan_seleccion' familia_id=familia.pk %}" >GENERAR CUOTAS POR PLAN </a>
 </div>
+{% endif %}
 {% endblock cuotas_lista %}
