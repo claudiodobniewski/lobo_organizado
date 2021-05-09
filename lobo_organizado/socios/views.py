@@ -347,7 +347,12 @@ def familia_nuevo(request,familia_id, error_message=''):
         familia_socios = Familia()
 
         crm_id_max = Familia.objects.aggregate(Max('crm_id'))
-        crm_id_offer=crm_id_max['crm_id__max'] + 1
+        
+        if crm_id_max['crm_id__max']:
+            crm_id_offer=crm_id_max['crm_id__max'] + 1
+        else:
+            crm_id_offer = 1
+
         logger.debug("Familia nueva crm_id_offer {} ".format(crm_id_offer) )
         #familia_socios = Familia.objects.create()
 
@@ -424,31 +429,6 @@ def borrar_borrar(request, familia_id):
     logger.debug("Socio borrar END")
     return render(request, 'socios/socio_borrar.html', {'form': form, "familia": familia_socios })
 
-def familia_observacion_editar(request, observacion_id):
-    func = inspect.currentframe().f_back.f_code
-    # Dump the message + the name of this function to the log.
-    logger.debug(" %s: %s in %s:%i" % (
-        'init ', 
-        func.co_name, 
-        func.co_filename, 
-        func.co_firstlineno
-    ))
-
-    return HttpResponse("Hello, world. ACA VA OBSERVACIONES EDITAR.")
-
-def familia_observacion_borrar(request, observacion_id):
-    func = inspect.currentframe().f_back.f_code
-    # Dump the message + the name of this function to the log.
-    logger.debug(" %s: %s in %s:%i" % (
-        'init ', 
-        func.co_name, 
-        func.co_filename, 
-        func.co_firstlineno
-    ))
-
-    return HttpResponse("Hello, world. ACA VA OBSERVACIONES BORRAR.")
-
-
 def observacion_nuevo(request,familia_id,observacion_id):
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
@@ -482,7 +462,7 @@ def observacion_nuevo(request,familia_id,observacion_id):
             post = form.save(commit=False)
             post.save()
             logger.debug("CAMINO 1 familia {}".format(familia_id))
-            return redirect('socios:familias', familia_id=familia_id)
+            return redirect('socios:familia_detalle', familia_id=familia_id)
     else:
         logger.debug("CAMINO 2 SOCIO NUEVO - familia  {} - {}".format(familia_id,familia_observacions.familia_crm_id))
 
