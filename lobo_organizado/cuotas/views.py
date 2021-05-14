@@ -83,7 +83,7 @@ def editar_pago_plan(request, familia_id, pago_id):
     else:
         familia = Familia.objects.get(pk=familia_id)
         plan_de_pago = PlanDePago.objects.get(plan_default=True)
-        pago = CuotaPago.objects.create(familia=familia,aplica_pago_plan=plan_de_pago)
+        pago = CuotaPago(familia=familia,aplica_pago_plan=plan_de_pago)
         
 
     logger.info("{}) Pago {} Familia {} plan de pagos {} ".format(func.co_name,pago.pk,pago.familia.familia_crm_id,pago))

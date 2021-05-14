@@ -15,7 +15,7 @@
     <div class="form-group">
         {{ field.errors }}
         {% if not field.is_hidden %}
-          {{ field.label_tag|crispy- }} {{ field }} 
+          {{ field.label_tag }} {{ field }} 
         {% endif %}
         {% if field.help_text %}
         <p class="help">{{ field.help_text|safe }}</p>

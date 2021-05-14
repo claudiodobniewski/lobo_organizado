@@ -1,7 +1,8 @@
 
 # LOBO ORGANIZADO
 logs/
-!*/.gitignore
+!.gitignore
+.metedata
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

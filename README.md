@@ -12,6 +12,9 @@ instalado con pyp3 (pip para python 3)
   
 * django-bootstrap4
 > pip3 install django-bootstrap4
+> pip3 install django-bootstrap-icons https://pypi.org/project/django-bootstrap-icons/
+
+> pip3 install django_material_icons https://icons.getbootstrap.com/
 
 * crispy template tag library
 > pip3 install django-crispy

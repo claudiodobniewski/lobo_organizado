@@ -1,40 +1,54 @@
 {% block familia_miembros %}
 
-{% if socios %}
-<div class="badge rounded-pill bg-primary" data-toggle="collapse" data-target="#familia_socios_dni_block" id="collapseDni" aria-expanded="false" aria-controls="familia_socios_dni_block">Dni</div>
-<table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
-  <thead class="thead-light">
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Cat.</th>
-      <th scope="col">Rama</th>
-      <th scope="col" class="collapse " id="familia_socios_dni_block" aria-labelledby="headingDni" data-parent="#familia_info_block">Dni</th> 
-      <th scope="col">editar</th>
-      <th scope="col">eliminar</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for socio in socios %}
+{% if perms.socios.socio_ver %}
+  {% if socios %}
+  <div class="badge rounded-pill bg-primary" data-toggle="collapse" data-target="#familia_socios_dni_block" id="collapseDni" aria-expanded="false" aria-controls="familia_socios_dni_block">Dni</div>
+  <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Cat.</th>
+        <th scope="col">Rama</th>
+        <th scope="col" class="collapse " id="familia_socios_dni_block" aria-labelledby="headingDni" data-parent="#familia_info_block">Dni</th> 
+        {% if perms.socios.socio_editar %}
+          <th scope="col">editar</th>
+        {% endif %}
+        {% if perms.socios.socio_borrar %}
+          <th scope="col">eliminar</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for socio in socios %}
 
-    <tr>
-      <th scope="row">{{ forloop.counter }}</th>
-      <td>{{ socio.apellidos }},{{ socio.nombres }}</td>
-      <td>{{ socio.get_categoria_display }}</td>
-      <td>{{ socio.get_rama_display }}</td>
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ socio.apellidos }},{{ socio.nombres }}</td>
+        <td>{{ socio.get_categoria_display }}</td>
+        <td>{{ socio.get_rama_display }}</td>
 
-      <td class="collapse " id="familia_socios_dni_block" aria-labelledby="headingDni" data-parent="#familia_info_block">{{ socio.dni }}</td>
-      <td><a class="btn btn-success" href={% url 'socios:socio_editar' socio_id=socio.pk %}>EDITAR</a></td>
-      <td><a class="btn btn-danger" href={% url 'socios:socio_borrar' socio_id=socio.pk %}>BORRAR</a></td>
-    </tr>
+        <td class="collapse " id="familia_socios_dni_block" aria-labelledby="headingDni" data-parent="#familia_info_block">{{ socio.dni }}</td>
+        {% if perms.socios.socio_editar %}
+          <td><a class="btn btn-success" href={% url 'socios:socio_editar' socio_id=socio.pk %}>EDITAR</a></td>
+        {% endif %}
+        {% if perms.socios.socio_borrar %}
+          <td><a class="btn btn-danger" href={% url 'socios:socio_borrar' socio_id=socio.pk %}>BORRAR</a></td>
+        {% endif %}
+      </tr>
 
-    {% endfor %}
-  </tbody>
-</table>
+      {% endfor %}
+    </tbody>
+  </table>
 
-{% else %}
-<p>No familias are available.</p>
+  {% else %}
+    <p>No familias are available.</p>
+  {% endif %}
+
 {% endif %}
 
-<a class="btn btn-warning" href="{% url 'socios:socio_nuevo' familia_id=familia.pk %}" >SUMAR SOCIO A LA FAMILIA</a>
+{% if perms.socios.socio_crear %}
+  <a class="btn btn-warning" href="{% url 'socios:socio_nuevo' familia_id=familia.pk %}" >SUMAR SOCIO A LA FAMILIA</a>
+{% endif %}
+
 {% endblock familia_miembros %}

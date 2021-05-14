@@ -41,6 +41,14 @@ class CuotaSocialFamilia(models.Model):
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
     
+    class Meta:
+        permissions = (
+                       ( "cuota_crear","Agregar cuotas"),
+                       ( "cuota_editar","Editar cuotas"),
+                       ( "cuota_borrar","Eliminar cuotas"),
+                       ( "cuota_ver","Ver detalle de cuotas" ),
+                      )
+
     def __str__(self):
         return  "#{} Plan: {} | Familia:{} | Vto:{} | ${}".format(self.pk,self.plan_de_pago,self.familia, self.vencimiento,self.importe_cuota)
 
@@ -57,10 +65,10 @@ class CuotaPago(models.Model):
 
     class Meta:
         permissions = (
-                       ( "plan_cuota_crear","Agregar nuevas cuotas de un plan a familia"),
-                       ( "plan_cuota_editar","Editar cuotas de un plan a familia"),
-                       ( "plan_cuota_borrar","Eliminar cuotas de un plan a familia"),
-                       ( "plan_cuota_ver","Ver detalle de cuotas del plan a familia" ),
+                       ( "pago_cuota_crear","Agregar nuevos pagos de un plan a familia"),
+                       ( "pago_cuota_editar","Editar pagos a un plan de la familia"),
+                       ( "pago_cuota_borrar","Eliminar pagos de un plan a familia"),
+                       ( "pago_cuota_ver","Ver detalle de pagos del plan a familia" ),
                       )
         
         #constraints = [
@@ -74,3 +82,34 @@ class CuotaPago(models.Model):
     
     def __str__(self):
         return  "Concepto: {} | Familia:{} | Vto:{}".format(self.aplica_pago_plan,self.familia, self.importe)
+
+
+def cuotas_queryset(familia_id,deleted=False):
+    return CuotaSocialFamilia.objects.filter( familia=familia_id,deleted=deleted )
+
+### Filtra un QuerySet de cuotas por el plan_id, retorna subconjunto QuerySet
+def cuotas_por_plan(cuotas, plan_id,deleted=False):
+    return cuotas.filter( plan_de_pago=plan_id )
+
+### Filtra un QuerySet de cuotas por anteriores a la fecha de corte, retorna subconjunto QuerySet
+def cuotas_vencidas(cuotas,fecha_de_corte):
+    # hoy datetime.date.today()
+    return cuotas.exclude(vencimiento__gte=fecha_de_corte )
+
+### Suma el importe de las cuotas, retorna un numero Decimal
+def cuotas_suma(cuotas):
+    return sum([x.importe_cuota for x in cuotas ])
+
+def pagos_percibidos_queryset(familia_id,deleted=False):
+    return CuotaPago.objects.filter( familia=familia_id,deleted=deleted )
+
+### Filtra un QuerySet de pagos por plan, retorna subconjunto QuerySet
+# valor sumado de los pagos
+def pagos_percibidos_plan(pagos, plan_id):
+    pagos.filter( plan_id=plan_id )
+
+### Suma el valor de los pagos, retorna un numero Decimal
+def pagos_percibidos_suma(pagos):
+    if not pagos:
+        return 0
+    return sum([x.importe for x in pagos ])

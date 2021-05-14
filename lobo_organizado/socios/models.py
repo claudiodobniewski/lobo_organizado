@@ -1,5 +1,6 @@
 from django.db import models
 from django import template
+#from cuotas.models import CuotaSocialFamilia,CuotaPago
 
 # Create your models here.
 register = template.Library()
@@ -28,7 +29,8 @@ class Familia(models.Model):
                       )
 
     def __str__(self):
-        return  self.familia_crm_id
+        return  "{}#{}".format(self.crm_id,self.familia_crm_id)
+
 
 @register.filter(name='display_categorias')
 def categorias_verbose(self):
@@ -62,9 +64,6 @@ class Socio(models.Model):
     familia=models.ForeignKey(Familia, on_delete=models.CASCADE)
     categoria=models.IntegerField(default=0, choices=CATEGORIAS_CHOISES)
     rama=models.IntegerField(default=0, choices=RAMAS_CHOISES)
-
- 
-    
 
 
     class Meta:

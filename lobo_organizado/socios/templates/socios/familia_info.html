@@ -4,16 +4,16 @@
 {%  if request.user.is_staff is True %}
 <div class="input-group mb-3">
   <div class="input-group-prepend">
-    <span class="input-group-text" id="basic-addon1">Calle</span>
+    <span class="input-group-text" id="basic-addon1">Familia ID</span>
   </div>
-  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_calle %}{{ familia.familia_crm_id }}{% else %}-COMPLETAR-{% endif %}">
+  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_calle %}{{ familia.crm_id }}{% else %}-COMPLETAR-{% endif %}">
 </div>
 
 <div class="input-group mb-3">
   <div class="input-group-prepend">
-    <span class="input-group-text" id="basic-addon1">Calle</span>
+    <span class="input-group-text" id="basic-addon1">Familia</span>
   </div>
-  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_calle %}{{ familia.crm_id }}{% else %}-COMPLETAR-{% endif %}">
+  <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_calle %}{{ familia.familia_crm_id }}{% else %}-COMPLETAR-{% endif %}">
 </div>
 {% endif %}
 <div class="input-group mb-3">
@@ -37,21 +37,21 @@
   <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_depto %}{{ familia.direccion_depto }}{% else %}----{% endif %}">
 </div>
 
-<div class="input-group mb-3">
+<div class="input-group mb-2">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">Localidad</span>
   </div>
   <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_localidad %}{{ familia.direccion_localidad }}{% else %}----{% endif %}">
 </div>
 
-<div class="input-group mb-3">
+<div class="input-group mb-2">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">Provincia</span>
   </div>
   <input type="text" readonly class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{% if familia.direccion_provincia %}{{ familia.direccion_provincia }}{% else %}----{% endif %}">
 </div>
 
-<div class="input-group mb-3">
+<div class="input-group mb-2">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">Contacto</span>
   </div>

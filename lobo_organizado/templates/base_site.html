@@ -11,6 +11,7 @@
 
     <!-- Bootstrap CSS -->
     {% load bootstrap4 %}
+    {% load bootstrap_icons %}
     {% load static %}
 
     {# Load CSS and JavaScript #}
@@ -46,7 +47,7 @@
         {% endblock logstatus %}
 
         {% include 'navbar.html' %}
-
+        {% comment %}{% bs_icon 'alarm' %}{% endcomment %}
         {% block content %}
         <p>Placeholder text in base template. Replace with page content.</p>
         {% endblock content %}

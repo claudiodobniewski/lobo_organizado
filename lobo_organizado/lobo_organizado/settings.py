@@ -44,8 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "bootstrap4",
-    "crispy_forms",
+    'bootstrap4',
+    'django_bootstrap_icons',
+    'crispy_forms',
 ]
 
 EMPLATE_CONTEXT_PROCESSORS = (
