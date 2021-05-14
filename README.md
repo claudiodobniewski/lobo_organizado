@@ -8,8 +8,10 @@ Desarrollado sobre
 * python 3.6 
 instalado con pyp3 (pip para python 3)  
 
-* django python 3.1
-  
+* django python 3.2.0
+
+usar pip3.6 o pip3 segun ambientes
+
 * django-bootstrap4
 > pip3 install django-bootstrap4
 > pip3 install django-bootstrap-icons https://pypi.org/project/django-bootstrap-icons/
@@ -19,6 +21,13 @@ instalado con pyp3 (pip para python 3)
 * crispy template tag library
 > pip3 install django-crispy
 
+# pythonanywhere
+
+para mysql se requiere
+> pip3 install mysqlclient
+
+Daba error no encontraba libreria dateutil
+> pip install python-dateutil
 ## Comandos dentro de proyecto git "lobo_organizado"
 
 Iniciar webserver dev python default port 8000
@@ -138,3 +147,7 @@ $ python3 manage.py test socios.tests.SocioTestCase
 $ python3 manage.py test animals.tests.SocioTestCase.test_animals_can_speak
 
 $ python3 manage.py test socios/tests/ --pattern="tests.py"
+
+
+# Virtual env the
+* source .virtualenvs/lobo_organizado-virtualenv/bin/activate
