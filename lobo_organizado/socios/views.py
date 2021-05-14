@@ -10,6 +10,8 @@ from urllib.parse import unquote
 from django.utils.http import urlquote
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.core.paginator import Paginator
+from django.views.generic import ListView
 import inspect ,logging
 import cuotas.models as app_cuotas
 from cuotas.models import CuotaSocialFamilia,CuotaPago,PlanDePago
@@ -21,6 +23,11 @@ from .forms import FamiliaForm, SocioForm, ObservacionForm
 from .models import Familia, Socio, Observaciones
 
 logger = logging.getLogger('project.lobo.organizado')
+
+#ver si esto es util, no se utiliza, lo puse probando paginado
+class FamiliaListView(ListView):
+    paginate_by = 2
+    model = Familia
 
 def login_url_with_redirect(request):
     logger.debug('Something went wrong!')
@@ -201,8 +208,21 @@ def familia_index(request,error_message=''):
         func.co_firstlineno
     ))
 
-    lista_familias = Familia.objects.all()
+    # BUSQUEDA
+    if request.method == 'GET': # If the form is submitted
+        search_query = request.GET.get('search_box', None)
 
+    if search_query:
+        lista_familias = Familia.objects.filter(familia_crm_id__icontains=search_query).order_by('familia_crm_id')
+    else:
+        lista_familias = Familia.objects.all().order_by('familia_crm_id')
+    print("GET:{} POST:{}  search_query:{}  FAMILIAS:{}".format(request.GET.get('search_box', None),request.POST.get('search_box', None),search_query,lista_familias ))
+    # Paginacion
+    paginator = Paginator(lista_familias, 5) # Show 25 contacts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    print("page_obj {}".format(page_obj))
 
     ###
 
@@ -212,7 +232,7 @@ def familia_index(request,error_message=''):
 
     for familia in lista_familias:
         
-        print(familia)
+        #print(familia)
         socios_familia = Socio.objects.filter(familia=familia.id)
         beneficiarios = 0
         dirigentes = 0
@@ -221,13 +241,13 @@ def familia_index(request,error_message=''):
         unidad = 0
         caminantes = 0
         rovers = 0
-        print("Socios : {}".format(socios_familia))
+        #print("Socios : {}".format(socios_familia))
         
 
         #################
 
         for socio in socios_familia:
-            print("Socio:{}#{}#{}".format(socio.pk,socio.nombres,socio.categoria))
+            #print("Socio:{}#{}#{}".format(socio.pk,socio.nombres,socio.categoria))
             if socio.categoria == 1:
                 beneficiarios += 1
                 if socio.rama == 1:
@@ -256,7 +276,7 @@ def familia_index(request,error_message=''):
 
 
 
-    return render(request, 'socios/familia_listado.html', {'familias': lista_familias, 'error_message': error_message} )
+    return render(request, 'socios/familia_listado.html', {'familias': lista_familias, 'error_message': error_message,'page_obj': page_obj, "search_query": search_query} )
 
 def familia_detalle(request, familia_id, error_message=''):
     func = inspect.currentframe().f_back.f_code
