@@ -35,7 +35,7 @@ class FamiliaForm(forms.ModelForm):
     familia_crm_id = forms.CharField(label="Familia")
     direccion_calle = forms.CharField(label="Calle")
     direccion_numero = forms.CharField(label="Numero")
-    direccion_depto = forms.CharField(label="Depto/timbre")
+    direccion_depto = forms.CharField(label="Depto/timbre",required=False)
     direccion_localidad = forms.CharField(label="Localidad")
     direccion_provincia = forms.CharField(label="Provincia")
     contacto = forms.CharField(label="Datos de Contacto",widget=forms.Textarea(

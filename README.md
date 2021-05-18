@@ -131,6 +131,12 @@ https://readthedocs.org/projects/django-icons/downloads/pdf/latest/
 --------------------------------------------------------------
 > https://docs.djangoproject.com/en/3.2/topics/testing/overview/
 
+> pip install django-auditlog <---
+
+
+to install dictdiff to compare models dict https://github.com/inveniosoftware/dictdiffer
+> pip3 install dictdiffer
+
 
 # Run all the tests
 $ python3 manage.py test
