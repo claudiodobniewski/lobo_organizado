@@ -131,11 +131,13 @@ https://readthedocs.org/projects/django-icons/downloads/pdf/latest/
 --------------------------------------------------------------
 > https://docs.djangoproject.com/en/3.2/topics/testing/overview/
 
-> pip install django-auditlog <---
+# usar auditlog de django
+##  dependencia 
+> NO pip3 install six  <-- https://stackoverflow.com/questions/20741754/python-2-unicode-compatible-error
+> NO pip3 install django-six <-- https://github.com/geex-arts/django-jet/issues/418
+>  pip3 install django-utils-six <--  Y EJECUTAR migrate | https://github.com/jazzband/django-auditlog/issues/265
+> pip3 install django-auditlog==1.0a1 <--- verion default 0.4 no funciona  https://django-auditlog.readthedocs.io/
 
-
-to install dictdiff to compare models dict https://github.com/inveniosoftware/dictdiffer
-> pip3 install dictdiffer
 
 
 # Run all the tests

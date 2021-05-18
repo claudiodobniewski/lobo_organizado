@@ -1,5 +1,6 @@
 from django.db import models
 from django import template
+from auditlog.registry import auditlog
 #from cuotas.models import CuotaSocialFamilia,CuotaPago
 
 # Create your models here.
@@ -96,3 +97,6 @@ class Observaciones(models.Model):
     def __str__(self):
         return  "{}, {}".format(self.familia.familia_crm_id,self.pk)
 
+auditlog.register(Familia,exclude_fields=['creado','actualizado'])
+auditlog.register(Socio,exclude_fields=['creado','actualizado'])
+auditlog.register(Observaciones,exclude_fields=['creado','actualizado'])

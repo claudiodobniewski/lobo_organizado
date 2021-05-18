@@ -30,7 +30,7 @@ SECRET_KEY = '5!0m-1s+_g7nkj367&#qvjbbbiz2!jkvuu2e+4w^@o5rhk(j5='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37','192.168.1.38','192.168.1.*','claudiodob.pythonanywhere.com']
+ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37','192.168.1.42','192.168.1.*','claudiodob.pythonanywhere.com']
 
 
 # Application definition
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'django_bootstrap_icons',
     'crispy_forms',
+    'auditlog'
 ]
 
 EMPLATE_CONTEXT_PROCESSORS = (
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

@@ -5,6 +5,8 @@ from datetime import date
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 
+from auditlog.registry import auditlog
+
 # Create your models here.
 
 # template de plan de pagos para generar las cuotas del plan e identificarlas
@@ -113,3 +115,9 @@ def pagos_percibidos_suma(pagos):
     if not pagos:
         return 0
     return sum([x.importe for x in pagos ])
+
+
+
+auditlog.register(PlanDePago,exclude_fields=['creado','actualizado'])
+auditlog.register(CuotaSocialFamilia,exclude_fields=['creado','actualizado'])
+auditlog.register(CuotaPago,exclude_fields=['creado','actualizado'])
