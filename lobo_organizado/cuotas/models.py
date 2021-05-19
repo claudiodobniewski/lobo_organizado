@@ -32,7 +32,7 @@ class PlanDePago(models.Model):
                       )
 
     def __str__(self):
-        return  "{}".format(self.nombre)
+        return  "Pla{}:{}".format(self.pk,self.crm_id)
 # cuotas del plan generadas a una familia
 class CuotaSocialFamilia(models.Model):
     vencimiento = models.DateField('vencimiento')
@@ -52,7 +52,7 @@ class CuotaSocialFamilia(models.Model):
                       )
 
     def __str__(self):
-        return  "#{} Plan: {} | Familia:{} | Vto:{} | ${}".format(self.pk,self.plan_de_pago,self.familia, self.vencimiento,self.importe_cuota)
+        return  "Cuo{}:{}:${}".format(self.pk,self.vencimiento,self.importe_cuota)
 
 # Pagos de una familia a cuenta de un plan
 class CuotaPago(models.Model):
@@ -83,7 +83,7 @@ class CuotaPago(models.Model):
         return datetime.date.today().year
     
     def __str__(self):
-        return  "Concepto: {} | Familia:{} | Vto:{}".format(self.aplica_pago_plan,self.familia, self.importe)
+        return  "Cob{}:{}:${}".format(self.pk,self.fecha_cobro,self.importe)
 
 
 def cuotas_queryset(familia_id,deleted=False):

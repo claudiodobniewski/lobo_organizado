@@ -30,7 +30,7 @@ class Familia(models.Model):
                       )
 
     def __str__(self):
-        return  "{}#{}".format(self.crm_id,self.familia_crm_id)
+        return  "Flia{}:{}#{}".format(self.pk,self.crm_id,self.familia_crm_id)
 
 
 @register.filter(name='display_categorias')
@@ -76,7 +76,7 @@ class Socio(models.Model):
                       )
 
     def __str__(self):
-        return  "{}, {}".format(self.apellidos,self.nombres)
+        return  "Soc:{}:{},{}".format(self.pk,self.apellidos,self.nombres)
 
  
 class Observaciones(models.Model):
@@ -95,7 +95,7 @@ class Observaciones(models.Model):
                       )
 
     def __str__(self):
-        return  "{}, {}".format(self.familia.familia_crm_id,self.pk)
+        return  "Obs:{}:{}".format(self.pk,self.familia.familia_crm_id)
 
 auditlog.register(Familia,exclude_fields=['creado','actualizado'])
 auditlog.register(Socio,exclude_fields=['creado','actualizado'])
