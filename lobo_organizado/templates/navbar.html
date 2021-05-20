@@ -17,7 +17,7 @@
         {% endif %} 
         {%  if user.is_authenticated and request.user.is_staff is True %}
           <li class="nav-item"></li>
-            <a href="{% url 'socios:familia_listado' %}"  class="nav-link">Cobranzas</a>
+            <a href="{% url 'cuotas:gestion_cobranza_listado' %}"  class="nav-link">Gestion Cobranzas</a>
           </li>
         {% endif %}
 

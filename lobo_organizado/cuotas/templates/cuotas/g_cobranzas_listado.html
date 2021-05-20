@@ -1,0 +1,86 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<h1>Listado de cuotas vencidas</h1>
+
+{% block error_message %}
+{% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message|unquote_raw }}</div>{% endif %}
+{% endblock error_message %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
+        <input id="search_box" type="date" name="search_box" placeholder="Busquea por familia..."
+          value="{{ search_query|default:'' }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+        <button id="search_submit" type="submit">Buscar!</button>
+      </form>
+      <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
+        <button formaction="{% url 'cuotas:gestion_cobranza_listado' %}" id="search_submit" type="submit"
+          title="Limpiar Filtro"><span>Limpiar Filtro</span></button>
+      </form>
+
+
+    </div>
+  </div>
+</div>
+
+
+{% if perms.cuotas.cuota_ver %}
+{% if cuotas %}
+  <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Plan</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">importe</th>
+        <th scope="col">Familia</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cuota in page_obj %}
+
+      <tr>
+        <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=cuota.familia.id %}">{{ forloop.counter }}</a></th>
+        <td>{{ cuota.plan_de_pago }}</td>
+        <td>{{ cuota.vencimiento|date:"SHORT_DATE_FORMAT" }}</td>
+        <td>{{ cuota.importe_cuota }}</td>
+        <td><a href="{% url 'socios:familia_detalle' familia_id=cuota.familia.id %} "
+            title="{{ cuota.familia.familia_crm_id }}">{{ cuota.familia.crm_id }}#{{ cuota.familia.familia_crm_id }}</a></td>
+
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+  <!--Pagination-->
+  <div class="container">
+    <div class="pagination justify-content-center">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination"></ul>
+          {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link"  href="?page=1&search_box={{ search_query|default:'' }}">&laquo; 1</a></li>
+          <li class="page-item"><a class="page-link"  href="?page={{ page_obj.previous_page_number }}&search_box={{ search_query|default:'' }}">previous</a></li>
+          {% endif %}
+          <li class="page-item">
+            <span class="page-link active" >
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+          </li>
+          {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link"  href="?page={{ page_obj.next_page_number }}&search_box={{ search_query|default:'' }}">next</a></li>
+          <li class="page-item"><a class="page-link"href="?page={{ page_obj.paginator.num_pages }}&search_box={{ search_query|default:'' }}">last &raquo;</a></li>
+          {% endif %}
+          </ul>
+        </nav>
+        </div>
+    </div>
+  <!--end of Pagination-->
+{% endif %}
+{% else %}
+  <label class="btn btn-secondary">NO AUTORIZADO "VER CUOTAS"</label>
+{% endif %}
+
+
+{% endblock content %}

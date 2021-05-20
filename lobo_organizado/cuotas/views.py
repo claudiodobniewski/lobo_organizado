@@ -6,12 +6,15 @@ from django.urls import reverse
 from django.shortcuts import redirect
 
 from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
-from socios.models import Familia
-from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 import inspect ,logging
+
+
+from socios.models import Familia
+from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
+from cuotas.view_cobranzas import *
 
 logger = logging.getLogger('project.lobo.organizado')
 
