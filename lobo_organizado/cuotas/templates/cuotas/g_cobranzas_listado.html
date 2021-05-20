@@ -11,8 +11,16 @@
   <div class="row">
     <div class="col-sm">
       <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
-        <input id="search_box" type="date" name="search_box" placeholder="Busquea por familia..."
-          value="{{ search_query|default:'' }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+        <label>Desde</label>
+        <input id="f_start_date" type="date" name="f_start_date" placeholder="Busquea por familia..."
+          value="{{ f_start_date }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+        <label>Hasta</label>
+        <input id="f_end_date" type="date" name="f_end_date" placeholder="Busquea por familia..."
+          value="{{ f_end_date|default:'' }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+        <label>Solo plan</label>
+        <!-- TODO  CONVERTIR A LISTA PARA SELECCIONAR 1 , o TODOS por default -->
+        <input id="f_plan" type="number" name="f_plan" placeholder="Busquea por familia..."
+          value="{{ f_plan|default:'1' }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
         <button id="search_submit" type="submit">Buscar!</button>
       </form>
       <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
@@ -43,7 +51,7 @@
 
       <tr>
         <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=cuota.familia.id %}">{{ forloop.counter }}</a></th>
-        <td>{{ cuota.plan_de_pago }}</td>
+        <td>{{ cuota.plan_de_pago.crm_id }}</td>
         <td>{{ cuota.vencimiento|date:"SHORT_DATE_FORMAT" }}</td>
         <td>{{ cuota.importe_cuota }}</td>
         <td><a href="{% url 'socios:familia_detalle' familia_id=cuota.familia.id %} "
