@@ -30,7 +30,10 @@ class EstadoPlan():
 @register.filter(name='absolute')
 def absolute(value):
     """Removes all values of arg from the given string"""
-    return abs(value)
+    if value:
+        return abs(value)
+    else:
+        return 0.0
 
 def gestion_cobranza_listado(request, error_message=''):
 
@@ -63,15 +66,6 @@ def gestion_cobranza_listado(request, error_message=''):
         plan = f_plan
         if plan:
             lista_cuotas = lista_cuotas.filter(plan_de_pago=plan)
-        
-    
-    
-    
-    print("START_DATE:{} END_DATE:{}".format(start_date,end_date) )
-    
-    
-
-    lista_cuotas = lista_cuotas.order_by('vencimiento')
     
     
 
@@ -88,7 +82,7 @@ def gestion_cobranza_listado(request, error_message=''):
     
     reporte = []
     
-    print(" FECHA DESDE:{} HASTA:{}".format(start_date,end_date))
+    print(" FECHA DESDE:{} HASTA:{} PLAN:{} PLANES:{}".format(start_date,end_date,plan,lista_planes))
     for familia in lista_familias:
 
         # cuotas_todas,cuotas_por_plan,cuotas_vencidas,cuotas_suma,pagos_percibidos_queryset,pagos_percibidos_plan,pagos_percibidos_suma
@@ -98,6 +92,7 @@ def gestion_cobranza_listado(request, error_message=''):
         estado_plan = EstadoPlan()
         estado_plan.familia = familia
         if plan:
+            print("Entro en 1 plan")
             estado_plan.plan_de_pago = lista_planes
             estado_plan.cuotas = app_cuotas.cuotas_por_plan(cuotas,lista_planes)
             estado_plan.cuotas_vencidas = app_cuotas.cuotas_vencidas(cuotas,end_date)
@@ -109,9 +104,12 @@ def gestion_cobranza_listado(request, error_message=''):
             estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
             print("FLIA:{} ESTADOD EL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,lista_planes,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
             reporte.append(estado_plan)
+            
         else:
+            print("Entro en varios planes")
             for un_plan in lista_planes:
-                cuotas_por_plan[un_plan.crm_id] = app_cuotas.cuotas_por_plan(cuotas,un_plan)
+                estado_plan.plan_de_pago = app_cuotas.cuotas_por_plan(cuotas,un_plan)
+            reporte.append(estado_plan)
 
         #####
         # Paginacion
@@ -120,7 +118,6 @@ def gestion_cobranza_listado(request, error_message=''):
         page_obj = paginator.get_page(page_number)
 
     return render(request, 'cuotas/g_cobranzas_listado.html', {
-        'cuotas': lista_cuotas, 
         'error_message': error_message,
         'page_obj': page_obj,
         'f_start_date': f_start_date,
