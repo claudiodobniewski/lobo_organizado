@@ -40,23 +40,26 @@
     <thead class="thead-light">
       <tr>
         <th scope="col">#</th>
+        <th scope="col">Flia</th>
         <th scope="col">Plan</th>
-        <th scope="col">Fecha</th>
-        <th scope="col">importe</th>
-        <th scope="col">Familia</th>
+        <th scope="col">Vencido</th>
+        <th scope="col">Cobrado</th>
+        <th scope="col">Saldo Vdo</th>
+        <th scope="col">Estado</th>
       </tr>
     </thead>
     <tbody>
-      {% for cuota in page_obj %}
+      {% for registro in page_obj %}
 
       <tr>
-        <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=cuota.familia.id %}">{{ forloop.counter }}</a></th>
-        <td>{{ cuota.plan_de_pago.crm_id }}</td>
-        <td>{{ cuota.vencimiento|date:"SHORT_DATE_FORMAT" }}</td>
-        <td>{{ cuota.importe_cuota }}</td>
-        <td><a href="{% url 'socios:familia_detalle' familia_id=cuota.familia.id %} "
-            title="{{ cuota.familia.familia_crm_id }}">{{ cuota.familia.crm_id }}#{{ cuota.familia.familia_crm_id }}</a></td>
-
+        <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %}">{{ forloop.counter }}</a></th>
+        <td><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %} "
+          title="{{ cuota.familia.familia_crm_id }}">{{ registro.familia.crm_id }}#{{ registro.familia.familia_crm_id }}</a></td>
+        <td>{{ registro.plan_de_pago.crm_id }}</td>
+        <td>{{ registro.cuotas_vencidas_importe }}</td>
+        <td>{{ registro.pagos_importe }}</td>
+        <td>{% if registro.balance < 0  %} A/C {% endif %} {{ registro.balance|absolute }}</td>
+        <td>{{ registro.estado }}</td>
       </tr>
 
       {% endfor %}
