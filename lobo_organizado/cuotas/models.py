@@ -87,31 +87,38 @@ class CuotaPago(models.Model):
 
 
 def cuotas_queryset(familia_id,deleted=False):
+    '''return cuotas todas por familia '''
     return CuotaSocialFamilia.objects.filter( familia=familia_id,deleted=deleted )
 
 ### Filtra un QuerySet de cuotas por el plan_id, retorna subconjunto QuerySet
 def cuotas_por_plan(cuotas, plan_id,deleted=False):
-    return cuotas.filter( plan_de_pago=plan_id )
+    '''return solo las cuotas del plan'''
+    return cuotas.filter( plan_de_pago=plan_id,deleted=deleted )
 
 ### Filtra un QuerySet de cuotas por anteriores a la fecha de corte, retorna subconjunto QuerySet
 def cuotas_vencidas(cuotas,fecha_de_corte):
+    '''return cuotas con fecha anterior o igual a la fecha de corte'''
     # hoy datetime.date.today()
     return cuotas.exclude(vencimiento__gte=fecha_de_corte )
 
 ### Suma el importe de las cuotas, retorna un numero Decimal
 def cuotas_suma(cuotas):
+    '''suma importe total de las cuotas'''
     return sum([x.importe_cuota for x in cuotas ])
 
 def pagos_percibidos_queryset(familia_id,deleted=False):
+    '''return todas las cuotas de la familia'''
     return CuotaPago.objects.filter( familia=familia_id,deleted=deleted )
 
 ### Filtra un QuerySet de pagos por plan, retorna subconjunto QuerySet
 # valor sumado de los pagos
 def pagos_percibidos_plan(pagos, plan_id):
+    '''return pagos correspondientes al plan'''
     return pagos.filter( aplica_pago_plan=plan_id )
 
 ### Suma el valor de los pagos, retorna un numero Decimal
 def pagos_percibidos_suma(pagos):
+    '''return suma total cobrada'''
     if not pagos:
         return 0
     return sum([x.importe for x in pagos ])

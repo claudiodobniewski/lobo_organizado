@@ -55,7 +55,8 @@
         <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %}">{{ forloop.counter }}</a></th>
         <td><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %} "
           title="{{ cuota.familia.familia_crm_id }}">{{ registro.familia.crm_id }}#{{ registro.familia.familia_crm_id }}</a></td>
-        <td>{{ registro.plan_de_pago.crm_id }}</td>
+        <td><a href="{% url 'cuotas:gestion_cobranza_familia' familia_id=registro.familia.id %} "
+          title="detalle cuotas y pagos">{{ registro.plan_de_pago.crm_id }}</a></td>
         <td>{{ registro.cuotas_vencidas_importe }}</td>
         <td>{{ registro.pagos_importe }}</td>
         <td>{% if registro.balance < 0  %} A/C {% endif %} {{ registro.balance|absolute }}</td>

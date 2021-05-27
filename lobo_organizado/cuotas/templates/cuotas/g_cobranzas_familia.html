@@ -1,0 +1,33 @@
+{% extends "base_site.html" %}
+
+{% block content %}
+<h1>Familia saldos x movimiento</h1>
+
+{% block error_message %}
+{% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message|unquote_raw }}</div>{% endif %}
+{% endblock error_message %}
+
+<div class="container">
+  <div class="col">
+    <div class="row">
+      <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
+      <tbody>
+      {% for registro in registros %}
+        <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ registro.fecha }}</td>
+        <td>{{ registro.cuota }}</td>
+        <td>{{ registro.pago }}</td>
+        <td>{{ registro.saldo }}</td>
+        <td>{{ registro.tipo }}</td>
+        <td>{{ registro.plan }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}

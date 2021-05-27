@@ -27,6 +27,143 @@ class EstadoPlan():
     balance = None
     estado = None
 
+class SaldosFamilia():
+
+    cuotas = None
+    pagos = None 
+    registros = []
+    saldo = 0.0
+    CUOTA='c'
+    PAGO='p'
+
+    def __init__(self,q_cuotas,q_pagos):
+
+        self.cuotas = list( q_cuotas.order_by('vencimiento') )
+        self.pagos = list( q_pagos.order_by('fecha_cobro') )
+        print("cuotas cantidad:{}  pagos cantidad:{}".format( len(self.cuotas),len(self.pagos) ))
+    
+    def proceso_corto(self):
+        ''' proceso corto si cuotas o pagos esta vacia
+            @return True si no requiere proceso adicional.
+        '''
+
+        if not len(self.cuotas) and not len(self.pagos):
+            return True
+        elif not len(self.pagos) :
+            print("* aplica_solo_cuotas()")
+            self.aplica_solo_cuotas()
+            return True
+
+        elif not len(self.cuotas) :
+            print("* aplica_solo_pagos()")
+            self.aplica_solo_pagos()
+            return True
+
+        return False
+
+    def aplica_solo_pagos(self):
+
+        while len(self.pagos) :
+            pago=self.pagos.pop(0)
+            self.registros.append(self.aplica_un_pago(pago))
+    
+    def aplica_un_pago(self,pago):
+        
+        self.saldo += float ( pago.importe )
+        reg = {
+            "fecha": pago.fecha_cobro , 
+            "cuota": 0.0,
+            "pago" : float ( pago.importe ),
+            "saldo" : self.saldo,
+            "tipo": self.PAGO,
+            "plan": pago.aplica_pago_plan.id
+        }
+        return reg
+
+
+    def aplica_solo_cuotas(self):
+
+        while len(self.cuotas) > 0 :
+            cuota=self.cuotas.pop(0)
+            self.registros.append(self.aplica_una_cuota(cuota))
+
+    def aplica_una_cuota(self,cuota):
+
+        self.saldo -= cuota.importe_cuota
+        reg = {
+            "fecha": cuota.vencimiento , 
+            "cuota": cuota.importe_cuota ,
+            "pago" : 0.0 ,
+            "saldo" : self.saldo,
+            "tipo": self.CUOTA,
+            "plan": cuota.plan_de_pago.id
+        }
+        return reg
+
+    def aplica_cuota_mas_vieja(self,cuota,pago):
+        ''' '''
+        print("vencimiento < cobro ? {} ".format(cuota.vencimiento < pago.fecha_cobro))
+        if cuota.vencimiento < pago.fecha_cobro:
+            self.registros.append(self.aplica_una_cuota(cuota))
+            cuota = None
+        else:
+            self.registros.append(self.aplica_un_pago(pago))
+            pago = None
+        return (cuota,pago)
+
+    def procesar(self):
+
+        # si hay cutoas y pagos...
+
+        if self.proceso_corto():
+            print("Return en proceso_corto() inicial")
+            return 
+        
+        #first_loop = True
+        c=None
+        p=None
+        print("Start loop")
+        while len(self.cuotas) or len(self.pagos):
+            print("Nest loop....")
+            #if first_loop:
+            #    print("Firts loop!")
+            #    c = self.cuotas.pop()
+            #    p = self.pagos.pop()
+
+            if not c and len(self.cuotas):
+                c = self.cuotas.pop(0)
+                print("C.pop({})".format(c))
+            elif not c and not len(self.cuotas):
+                print("C no tiene mas elementos, break loop")
+                break
+            
+            if not p and len(self.pagos) :
+                p = self.pagos.pop(0)
+                print("P.pop({})".format(p))
+            elif not p  and not len(self.pagos) :
+                print("P no tiene mas elementos, break loop")
+                break
+            
+            print("* cuotas:{}  pagos:{}".format( len(self.cuotas),len(self.pagos) ))
+            print("* cuota:{}  pagos:{}".format( c,p ))
+
+            c,p = self.aplica_cuota_mas_vieja(c,p)
+            print("* Registros: {}".format(self.registros))
+            print("end loop")
+            
+            
+
+        # finalmente, o no hay mas cuotas o no hay mas pagos...
+        self.proceso_corto()
+        print("** Registros: {}".format(self.registros))
+        print("end procesar()")
+
+    def get_registros(self):
+        return self.registros
+
+
+    
+
 @register.filter(name='absolute')
 def absolute(value):
     """Removes all values of arg from the given string"""
@@ -101,7 +238,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         estado_plan = EstadoPlan()
        
         if plan:
-            print("Entro en 1 plan")
+            print("Entro en plan filtro="+plan)
             estado_plan.familia = familia
             estado_plan.plan_de_pago = lista_planes
             estado_plan.cuotas = app_cuotas.cuotas_por_plan(cuotas,lista_planes)
@@ -131,7 +268,6 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
                 estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
                 print("FLIA:{} ESTADOD EL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
                 reporte.append(estado_plan)
-            reporte.append(estado_plan)
 
         #####
         # Paginacion
@@ -146,5 +282,43 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         'f_end_date': f_end_date,
         'f_plan': f_plan
          } )
+
+def gestion_cobranza_familia(request, familia_id):
+    '''detalla cuotas y pagos de la familia, con saldo por movimiento'''
+
+    familia = Familia.objects.get(pk=familia_id,eliminado=False)
+    cuotas = app_cuotas.cuotas_queryset(familia.id)
+    pagos = app_cuotas.pagos_percibidos_queryset(familia.id)
+    planes_de_pago =  PlanDePago.objects.all().order_by('id')
+    registros=[]
+    
+    for plan in planes_de_pago:
+        cuotas_plan = app_cuotas.cuotas_por_plan(cuotas,plan.id)
+        pagos_plan = app_cuotas.pagos_percibidos_plan(pagos,plan.id)
+        print("Cuotas: {}".format(cuotas_plan))
+        print("Pagos: {}".format(pagos_plan))
+        gestion = SaldosFamilia(cuotas_plan,pagos_plan)
+        gestion.procesar()
+
+        registros= gestion.get_registros()
+
+    print("REGISTROS: {}".format(registros))
+    for i in registros:
+        print("Item: {}".format(i))
+        print("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo'
+        ]))
+    
+    return render(request, 'cuotas/g_cobranzas_familia.html', {
+        #'error_message': '',
+        #'page_obj': page_obj,
+        #'f_start_date': f_start_date,
+        #'f_end_date': f_end_date,
+        #'f_plan': f_plan
+        'registros': registros
+         } )
+        
+
+
+
 
 
