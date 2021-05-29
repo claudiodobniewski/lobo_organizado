@@ -48,6 +48,7 @@ class SaldosFamilia():
         '''
 
         if not len(self.cuotas) and not len(self.pagos):
+            print("* No hay cuotas ni pagos! C:{} P:{}".format(len(self.cuotas) ,len(self.pagos)) )
             return True
         elif not len(self.pagos) :
             print("* aplica_solo_cuotas()")
@@ -84,6 +85,7 @@ class SaldosFamilia():
     def aplica_solo_cuotas(self):
 
         while len(self.cuotas) > 0 :
+            print("Aplicando cuota...")
             cuota=self.cuotas.pop(0)
             self.registros.append(self.aplica_una_cuota(cuota))
 
@@ -102,11 +104,13 @@ class SaldosFamilia():
 
     def aplica_cuota_mas_vieja(self,cuota,pago):
         ''' '''
-        print("vencimiento < cobro ? {} ".format(cuota.vencimiento < pago.fecha_cobro))
+        print("older vencimiento < cobro ? {} ".format(cuota.vencimiento < pago.fecha_cobro))
         if cuota.vencimiento < pago.fecha_cobro:
+            print("aplicando Cuota...")
             self.registros.append(self.aplica_una_cuota(cuota))
             cuota = None
         else:
+            print("aplicando Pago...")
             self.registros.append(self.aplica_un_pago(pago))
             pago = None
         return (cuota,pago)
@@ -123,7 +127,7 @@ class SaldosFamilia():
         c=None
         p=None
         print("Start loop")
-        while len(self.cuotas) or len(self.pagos):
+        while len(self.cuotas) or len(self.pagos) or not c or not p:
             print("Nest loop....")
             #if first_loop:
             #    print("Firts loop!")
@@ -134,6 +138,8 @@ class SaldosFamilia():
                 c = self.cuotas.pop(0)
                 print("C.pop({})".format(c))
             elif not c and not len(self.cuotas):
+                if p :
+                    self.pagos.insert(0,p)
                 print("C no tiene mas elementos, break loop")
                 break
             
@@ -141,6 +147,8 @@ class SaldosFamilia():
                 p = self.pagos.pop(0)
                 print("P.pop({})".format(p))
             elif not p  and not len(self.pagos) :
+                if c:
+                    self.cuotas.insert(0,c)
                 print("P no tiene mas elementos, break loop")
                 break
             
@@ -148,14 +156,16 @@ class SaldosFamilia():
             print("* cuota:{}  pagos:{}".format( c,p ))
 
             c,p = self.aplica_cuota_mas_vieja(c,p)
+            print("* post aplicar c,p :: {} ## {}".format(c,p))
             print("* Registros: {}".format(self.registros))
+            print("CHECK LOOP CONDITION: lenC:{}, lenP{}, NOT c:{} , NOT p:{}, BOOLEAN:{}".format(len(self.cuotas) , len(self.pagos) , not c , not p,len(self.cuotas) or len(self.pagos) or not c or not p))
             print("end loop")
             
             
 
         # finalmente, o no hay mas cuotas o no hay mas pagos...
-        self.proceso_corto()
-        print("** Registros: {}".format(self.registros))
+        result_corto = self.proceso_corto()
+        print("** result:{} Registros: {}".format(result_corto,self.registros))
         print("end procesar()")
 
     def get_registros(self):
@@ -235,10 +245,11 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
         cuotas = app_cuotas.cuotas_queryset(familia.id)
         pagos =  app_cuotas.pagos_percibidos_queryset(familia.id)
-        estado_plan = EstadoPlan()
+        
        
         if plan:
             print("Entro en plan filtro="+plan)
+            estado_plan = EstadoPlan()
             estado_plan.familia = familia
             estado_plan.plan_de_pago = lista_planes
             estado_plan.cuotas = app_cuotas.cuotas_por_plan(cuotas,lista_planes)
@@ -255,6 +266,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         else:
             print("Entro en varios planes")
             for un_plan in lista_planes:
+                estado_plan = EstadoPlan()
                 estado_plan.familia = familia
                 estado_plan.plan_de_pago = app_cuotas.cuotas_por_plan(cuotas,un_plan)
                 estado_plan.plan_de_pago = un_plan
@@ -293,6 +305,7 @@ def gestion_cobranza_familia(request, familia_id):
     registros=[]
     
     for plan in planes_de_pago:
+        print("planes de pago...gestion cobranza")
         cuotas_plan = app_cuotas.cuotas_por_plan(cuotas,plan.id)
         pagos_plan = app_cuotas.pagos_percibidos_plan(pagos,plan.id)
         print("Cuotas: {}".format(cuotas_plan))
@@ -300,7 +313,8 @@ def gestion_cobranza_familia(request, familia_id):
         gestion = SaldosFamilia(cuotas_plan,pagos_plan)
         gestion.procesar()
 
-        registros= gestion.get_registros()
+        registros = gestion.get_registros()
+        del gestion
 
     print("REGISTROS: {}".format(registros))
     for i in registros:
