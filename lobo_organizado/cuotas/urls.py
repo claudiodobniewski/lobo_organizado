@@ -15,5 +15,7 @@ urlpatterns = [
     path('familia/editar_cuota/<int:familia_id>/<int:cuota_id>', views.editar_cuota, name='editar_cuota'),
     path('familia/borrar_cuota/<int:familia_id>/<int:cuota_id>', views.borrar_cuota, name='borrar_cuota'),
     path('gestion/cobranza/listado', views.gestion_cobranza_listado, name='gestion_cobranza_listado'),
+    path('gestion/cobranza/listado/<str:clean_filters>', views.gestion_cobranza_listado, name='gestion_cobranza_listado'), 
+    path('gestion/cobranza/familia/<int:familia_id>', views.gestion_cobranza_familia, name='gestion_cobranza_familia'),
     path('', views.index, name='index'),
 ]

@@ -8,27 +8,26 @@
 {% endblock error_message %}
 
 <div class="container">
-  <div class="row">
-    <div class="col-sm">
+  <div class="col">
+    <div class="row">
       <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
-        <label>Desde</label>
-        <input id="f_start_date" type="date" name="f_start_date" placeholder="Busquea por familia..."
-          value="{{ f_start_date }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
-        <label>Hasta</label>
-        <input id="f_end_date" type="date" name="f_end_date" placeholder="Busquea por familia..."
-          value="{{ f_end_date|default:'' }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
-        <label>Solo plan</label>
+        
+          <label for="f_start_date" class="form-label">Desde</label>
+          <input id="f_start_date"   class="form-control" type="date" name="f_start_date" placeholder="Busquea por familia..."
+          value="{{ f_start_date }}" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+      
+          <label for="f_end_date" class="form-label">Hasta</label>
+          <input id="f_end_date" class="form-control" type="date" name="f_end_date" placeholder="Busquea por familia..."
+          value="{{ f_end_date|default:'99' }}" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+        
+        <label class="form-label">Solo plan</label>
         <!-- TODO  CONVERTIR A LISTA PARA SELECCIONAR 1 , o TODOS por default -->
-        <input id="f_plan" type="number" name="f_plan" placeholder="Busquea por familia..."
+        <input id="f_plan" class="form-control"  type="number" name="f_plan" placeholder="Busquea por familia..."
           value="{{ f_plan|default:'1' }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
-        <button id="search_submit" type="submit">Buscar!</button>
-      </form>
-      <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
-        <button formaction="{% url 'cuotas:gestion_cobranza_listado' %}" id="search_submit" type="submit"
+        <button id="search_submit" class="btn btn-info" type="submit">Buscar!</button>
+        <button formaction="{% url 'cuotas:gestion_cobranza_listado' clean_filters='true' %}" id="search_submit" class="btn btn-info" type="submit"
           title="Limpiar Filtro"><span>Limpiar Filtro</span></button>
       </form>
-
-
     </div>
   </div>
 </div>
@@ -56,7 +55,8 @@
         <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %}">{{ forloop.counter }}</a></th>
         <td><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %} "
           title="{{ cuota.familia.familia_crm_id }}">{{ registro.familia.crm_id }}#{{ registro.familia.familia_crm_id }}</a></td>
-        <td>{{ registro.plan_de_pago.crm_id }}</td>
+        <td><a href="{% url 'cuotas:gestion_cobranza_familia' familia_id=registro.familia.id %} "
+          title="detalle cuotas y pagos">{{ registro.plan_de_pago.crm_id }}</a></td>
         <td>{{ registro.cuotas_vencidas_importe }}</td>
         <td>{{ registro.pagos_importe }}</td>
         <td>{% if registro.balance < 0  %} A/C {% endif %} {{ registro.balance|absolute }}</td>
