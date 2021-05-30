@@ -29,17 +29,20 @@ class EstadoPlan():
 
 class SaldosFamilia():
 
-    cuotas = None
-    pagos = None 
-    registros = []
-    saldo = 0.0
     CUOTA='c'
     PAGO='p'
 
-    def __init__(self,q_cuotas,q_pagos):
+    def __init__(self,q_cuotas,q_pagos,planes_de_pago):
 
+        #cuotas = None
+        #pagos = None 
+        self.registros = []
+        self.saldo = 0.0
+        
         self.cuotas = list( q_cuotas.order_by('vencimiento') )
         self.pagos = list( q_pagos.order_by('fecha_cobro') )
+
+        self.planes_de_pago = planes_de_pago
         print("cuotas cantidad:{}  pagos cantidad:{}".format( len(self.cuotas),len(self.pagos) ))
     
     def proceso_corto(self):
@@ -77,7 +80,7 @@ class SaldosFamilia():
             "pago" : float ( pago.importe ),
             "saldo" : self.saldo,
             "tipo": self.PAGO,
-            "plan": pago.aplica_pago_plan.id
+            "plan": self.planes_de_pago.filter(pk=pago.aplica_pago_plan.id)[0].crm_id
         }
         return reg
 
@@ -98,7 +101,7 @@ class SaldosFamilia():
             "pago" : 0.0 ,
             "saldo" : self.saldo,
             "tipo": self.CUOTA,
-            "plan": cuota.plan_de_pago.id
+            "plan": self.planes_de_pago.filter(pk=cuota.plan_de_pago.id)[0].crm_id
         }
         return reg
 
@@ -310,9 +313,8 @@ def gestion_cobranza_familia(request, familia_id):
         pagos_plan = app_cuotas.pagos_percibidos_plan(pagos,plan.id)
         print("Cuotas: {}".format(cuotas_plan))
         print("Pagos: {}".format(pagos_plan))
-        gestion = SaldosFamilia(cuotas_plan,pagos_plan)
+        gestion = SaldosFamilia(cuotas_plan,pagos_plan,planes_de_pago)
         gestion.procesar()
-
         registros = gestion.get_registros()
         del gestion
 
@@ -328,6 +330,7 @@ def gestion_cobranza_familia(request, familia_id):
         #'f_start_date': f_start_date,
         #'f_end_date': f_end_date,
         #'f_plan': f_plan
+        'familia': familia,
         'registros': registros
          } )
         
