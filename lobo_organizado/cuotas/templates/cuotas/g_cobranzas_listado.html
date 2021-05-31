@@ -11,6 +11,8 @@
   <div class="col">
     <div class="row">
       <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
+        <label for="f_familia" class="form-label">Nombre Familia </label>
+        <input  id="f_familia" class="form-control" type="text" name="f_familia"  placeholder="Busquea por familia..." value="{{ f_familia|default:'' }}" title="busqueda por parte o todo el nombre de familia" \>
         
           <label for="f_start_date" class="form-label">Desde</label>
           <input id="f_start_date"   class="form-control" type="date" name="f_start_date" placeholder="Busquea por familia..."

@@ -10,6 +10,8 @@
 {% else %}
 <p class="btn btn-danger" >EN MORA</p>
 {% endif %}
+<a class="btn btn-info" href="{% url 'cuotas:gestion_cobranza_familia' familia_id=familia.id %} "
+          title="detalle cuotas y pagos">Ficha de cuotas y pagos ordenado</a>
 </div>
 
 {% if perms.cuotas.cuota_ver %}

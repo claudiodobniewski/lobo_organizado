@@ -190,6 +190,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     start_date = None
     end_date = None
     plan = None
+    f_familia = None
     lista_cuotas = CuotaSocialFamilia.objects.all().filter(deleted=False)
     
 
@@ -200,6 +201,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
         f_plan=request.GET.get('f_plan', None)
+        f_familia = request.GET.get('f_familia', None)
         
         if not f_start_date:
             start_date = date.today() # - timedelta(months = 1)
@@ -216,6 +218,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         plan = f_plan
         if plan:
             lista_cuotas = lista_cuotas.filter(plan_de_pago=plan)
+
+
     else:
         print("NO FILTERS {}: {}".format(clean_filters,request.GET) )
         f_start_date=''
@@ -224,11 +228,17 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         f_plan=None
     
     print(date.today())
-    print("GET:{} POST:{}  PLAN:{}  CUOTAS:{}".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),f_plan,lista_cuotas ))
+    print("GET:{} POST:{} FAMILIA:{} PLAN:{}  CUOTAS:{}".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),request.POST.get('f_familia', None),f_plan,lista_cuotas ))
     
 
     ###############################
-    lista_familias = Familia.objects.all().filter(eliminado=False).order_by('familia_crm_id')
+    # BUSQUEDA
+    
+
+    if f_familia:
+        lista_familias = Familia.objects.filter(familia_crm_id__icontains=f_familia).filter(eliminado=False).order_by('familia_crm_id')
+    else:
+        lista_familias = Familia.objects.all().filter(eliminado=False).order_by('familia_crm_id')
     
     if plan:
         lista_planes = PlanDePago.objects.get(id=plan)
@@ -286,7 +296,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
         #####
         # Paginacion
-        paginator = Paginator(reporte, 100) # Show x contacts per page.
+        paginator = Paginator(reporte, 15) # Show x contacts per page.
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
@@ -295,7 +305,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         'page_obj': page_obj,
         'f_start_date': f_start_date,
         'f_end_date': f_end_date,
-        'f_plan': f_plan
+        'f_plan': f_plan,
+        'f_familia': f_familia
          } )
 
 def gestion_cobranza_familia(request, familia_id):

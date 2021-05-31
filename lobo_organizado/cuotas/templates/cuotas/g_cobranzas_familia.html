@@ -1,7 +1,8 @@
 {% extends "base_site.html" %}
 
 {% block content %}
-<h1>Familia {{ familia.familia_crm_id }} saldos x movimiento</h1>
+<h1>Ficha de cuotas y pagos ordenado </h1>
+<h2>Familia {{ familia.crm_id }}#{{ familia.familia_crm_id }}</h2>
 
 {% block error_message %}
 {% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message|unquote_raw }}</div>{% endif %}
@@ -19,7 +20,7 @@
             <th scope="col">Pago</th>
             <th scope="col">Saldo</th>
             <th scope="col">Tipo</th>
-            <th scope="col">Plan</th>
+            <th scope="col" colspan="2">Plan</th>
           </tr>
         </thead>
       <tbody>
@@ -31,11 +32,14 @@
         <td>{{ registro.pago }}</td>
         <td>{{ registro.saldo }}</td>
         <td>{{ registro.tipo }}</td>
-        <td>{{ registro.plan }}</td>
+        <td colspan="2">{{ registro.plan }}</td>
       </tr>
       {% endfor %}
     </tbody>
     </table>
+    </div>
+    <div class="row">
+      <a class="btn btn-info" href="{% url 'socios:familia_detalle' familia_id=familia.id %}">Ver ficha Familia <span  class="btn btn-dark">{{ familia.crm_id }}#{{ familia.familia_crm_id }}</span></a>
     </div>
   </div>
 </div>

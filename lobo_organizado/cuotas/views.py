@@ -83,10 +83,17 @@ def editar_pago_plan(request, familia_id, pago_id):
 
     if pago_id:
         pago = CuotaPago.objects.get(pk=pago_id,deleted=False)
+
+        boton_aceptar='Confirmar modificacion del pago'
+        boton_cancelar='Descartar modificaicon del pago'
+        cancel_message = 'Descartada la edicion del pago'
     else:
         familia = Familia.objects.get(pk=familia_id)
         plan_de_pago = PlanDePago.objects.get(plan_default=True)
         pago = CuotaPago(familia=familia,aplica_pago_plan=plan_de_pago)
+        boton_aceptar='Registrar nuevo pago'
+        boton_cancelar='Descartar nuevo pago'
+        cancel_message = 'Descartado nuevo pago'
         
 
     logger.info("{}) Pago {} Familia {} plan de pagos {} ".format(func.co_name,pago.pk,pago.familia.familia_crm_id,pago))
@@ -108,7 +115,7 @@ def editar_pago_plan(request, familia_id, pago_id):
     
     form = CuotaPagoForm(instance=pago)
     
-    return render(request, 'cuotas/pago_plan_editar.html', {'form': form, 'pago': pago , 'error_message' : error_message })
+    return render(request, 'cuotas/pago_plan_editar.html', {'form': form, 'pago': pago , 'error_message' : error_message, 'boton_aceptar': boton_aceptar , 'boton_cancelar': boton_cancelar , 'cancel_message': cancel_message })
 
 def borrar_pago_plan(request, familia_id, pago_id):
     func = inspect.currentframe().f_back.f_code
