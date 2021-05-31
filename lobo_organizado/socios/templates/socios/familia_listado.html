@@ -22,7 +22,6 @@
           <thead class="thead-light">
             <tr>
               <th scope="col">#</th>
-              <th scope="col">CRM ID</th>
               <th scope="col">Familia</th>
               {% comment %}<th scope="col">Soc.Cat.</th>{% endcomment %}
               {% comment %}<th scope="col">Ramas</th>{% endcomment %}
@@ -34,8 +33,7 @@
 
             <tr>
               <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=familia.id %}">{{ forloop.counter }}</a></th>
-              <td><a href="{% url 'socios:familia_detalle' familia_id=familia.id %}">{{ familia.crm_id }}</a></td>
-              <td>{{ familia.familia_crm_id }}</td>
+              <td><a href="{% url 'socios:familia_detalle' familia_id=familia.id %}">{{ familia.crm_id }} # {{ familia.familia_crm_id }}</a></td>
              {% comment %}
               <td data-toggle="tooltip" title="cant [ Benef / Dirig / Otros ]"> 
                 {{ familia.stat_socios }} [ {{ familia.stat_beneficiarios }} / {{ familia.stat_dirigentes }} / {{ familia.stat_otros }} ]

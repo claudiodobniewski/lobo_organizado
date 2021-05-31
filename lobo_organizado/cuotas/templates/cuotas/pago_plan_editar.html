@@ -18,7 +18,7 @@
       {% csrf_token %}
       {{ form|crispy }}
       {% if perms.socios.pago_cuota_crear %}
-        <button type="submit" class="btn btn-success" type="submit" >Confirmar modificacion</button>
+        <button type="submit" class="btn btn-success" type="submit" >{{ boton_aceptar }}</button>
       {% endif %}
     </form>
   </div>
@@ -26,5 +26,5 @@
 
 
 
-<a type="button" class="btn btn-danger" href="{% url 'socios:familia_detalle' familia_id=pago.familia.pk error_message='Operacion Edicion Pago a Social cancelada'|urlencode %}">Cancelar Edicion pago a cuota</a>
+<a type="button" class="btn btn-danger" href="{% url 'socios:familia_detalle' familia_id=pago.familia.pk error_message=cancel_message|urlencode %}">{{ boton_cancelar }}</a>
 {% endblock content %}
