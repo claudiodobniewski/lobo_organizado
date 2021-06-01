@@ -32,8 +32,10 @@
             </div>
         </div>
         {% endif %}
-        
+        <div class="row">
+            <div class="col-sm-12">
         {% if   perms.cuotas.cuota_ver or  perms.cuotas.pago_cuota_ver  %}
+        
         <div class="card">
             <div class="card-title">
                 <h2 data-toggle="collapse" data-target="#familia_cobranza_block" id="headingTree" aria-expanded="false" aria-controls="familia_cobranza_block">Gestion Cobranza {% include 'bootstrap/box-arrow-down.html' %}</h2>
@@ -49,6 +51,7 @@
                 {% include "cuotas/pagos_lista.html" %}
             </div>
         </div>
+           
         {% endif %}
         
         {% if perms.socios.familia_obs_ver %}
@@ -61,6 +64,8 @@
             </div>
         </div>
         {% endif %}
+    </div>
+</div>
         <div class="row">
             <div class="col-sm">
                 <a type="button" class="btn btn-warning" href="{% url 'socios:familia_listado' %}">Regresar a listado de Familias</a>
