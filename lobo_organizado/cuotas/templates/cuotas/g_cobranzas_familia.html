@@ -39,6 +39,13 @@
     <div class="row">
       <a class="btn btn-info" href="{% url 'socios:familia_detalle' familia_id=familia.id %}">Ver ficha Familia <span  class="btn btn-dark">{{ familia.crm_id }}#{{ familia.familia_crm_id }}</span></a>
     </div>
+    {% if perms.cuotas.pago_cuota_crear %}
+
+  <br/>
+    <div>
+      <a class="btn btn-warning" href="{% url 'cuotas:editar_pago_plan' familia_id=familia.pk pago_id=0 %}" >INGRESAR NUEVO PAGO </a> 
+    </div>
+  {% endif %}
   </div>
 </div>
 

@@ -40,16 +40,17 @@
             <div class="card-title">
                 <h2 data-toggle="collapse" data-target="#familia_cobranza_block" id="headingTree" aria-expanded="false" aria-controls="familia_cobranza_block">Gestion Cobranza {% include 'bootstrap/box-arrow-down.html' %}</h2>
             </div>
+            
+            {% if perms.cuotas.pago_cuota_ver %}
+            <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
+                {% include "cuotas/pagos_lista.html" %}
+            </div>
             {% endif %}
             {% if perms.cuotas.cuota_ver %}
             <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
                 {% include "cuotas/cuotas_lista.html" %}
             </div>
             {% endif %}
-            {% if perms.cuotas.pago_cuota_ver %}
-            <div class="card-body collapse " id="familia_cobranza_block" aria-labelledby="headingTree" data-parent="#familia_info">
-                {% include "cuotas/pagos_lista.html" %}
-            </div>
         </div>
            
         {% endif %}
