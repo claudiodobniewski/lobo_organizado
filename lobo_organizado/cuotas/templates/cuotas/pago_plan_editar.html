@@ -12,12 +12,12 @@
 
 {% comment %}{%  include "form_errors.html" %}{% endcomment %}
 
-{% if perms.socios.pago_cuota_ver %}
+{% if perms.socios.pago_cuota_ver or perms.cuotas.pago_cuota_crear %}
   <div class="post">
     <form method="POST" class="post-form table table-striped table-bordered table-hover table-responsive-xl">
       {% csrf_token %}
       {{ form|crispy }}
-      {% if perms.socios.pago_cuota_crear %}
+      {% if perms.cuotas.pago_cuota_crear or perms.cuotas.pago_cuota_editar %}
         <button type="submit" class="btn btn-success" type="submit" >{{ boton_aceptar }}</button>
       {% endif %}
     </form>

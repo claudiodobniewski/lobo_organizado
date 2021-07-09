@@ -26,6 +26,10 @@ usar pip3.6 o pip3 segun ambientes
 para mysql se requiere
 > pip3 install mysqlclient
 
+- On ubuntu require mibmysqlclient-dev first:
+> sudo apt-get install libmysqlclient-dev
+> pip3 install mysqlclient
+
 Daba error no encontraba libreria dateutil
 > pip install python-dateutil
 ## Comandos dentro de proyecto git "lobo_organizado"
@@ -159,3 +163,8 @@ $ python3 manage.py test socios/tests/ --pattern="tests.py"
 
 # Virtual env the
 * source .virtualenvs/lobo_organizado-virtualenv/bin/activate
+
+# Collect statics file compila los files staticos (assets de django) en un directorio para incluir en el proyecto
+python3 manage.py collectstatic
+
+

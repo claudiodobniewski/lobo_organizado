@@ -1,6 +1,20 @@
 {% block pagos_lista %}
 
 {% if perms.cuotas.pago_cuota_ver %}
+<div>
+  <p>
+    Cuotas vencidas: {{ cuotas_vencidas_suma }}
+  </p>
+  <p>Pagos percibidos {{ pagos_suma }}</p>
+  
+  {% if pagos_suma >= cuotas_vencidas_suma %}
+  <p class="btn btn-success" >AL DIA</p>
+  {% else %}
+  <p class="btn btn-danger" >EN MORA</p>
+  {% endif %}
+  <a class="btn btn-info" href="{% url 'cuotas:gestion_cobranza_familia' familia_id=familia.id %} "
+            title="detalle cuotas y pagos">Ficha de cuotas y pagos ordenado</a>
+  </div>
   {% if pagos %}
   <table id="example" class="table table-striped table-bordered table-hover table-responsive-md" >
     <thead class="thead-light">
