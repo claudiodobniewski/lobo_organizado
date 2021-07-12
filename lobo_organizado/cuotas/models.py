@@ -55,6 +55,16 @@ class CuotaSocialFamilia(models.Model):
         return  "Cuo{}:{}:${}".format(self.pk,self.vencimiento,self.importe_cuota)
 
 # Pagos de una familia a cuenta de un plan
+
+class CuotaMedioDePago(models.Model):
+    '''Medios de cobrod e cuotas'''
+    medio_id = models.CharField(max_length=10,unique=True)
+    descripcion = models.CharField(max_length=300)
+    disponible = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return  "{} - {}".format(self.medio_id,self.descripcion)
+
 class CuotaPago(models.Model):
     importe = models.DecimalField('cobrado',default=0.0,max_digits=8,decimal_places=2,validators=[MinValueValidator(Decimal('1.0'))])
     creado = models.DateTimeField('creado',auto_now_add=True)
@@ -64,6 +74,8 @@ class CuotaPago(models.Model):
     aplica_pago_plan = models.ForeignKey(PlanDePago, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
+    #forma_de_pago = models.ForeignKey(CuotaMedioDePago,to_field='medio_id', default='EF', on_delete=models.CASCADE,)
+    forma_de_pago = models.ForeignKey(CuotaMedioDePago,default=1, on_delete=models.CASCADE)
 
     class Meta:
         permissions = (
@@ -84,6 +96,8 @@ class CuotaPago(models.Model):
     
     def __str__(self):
         return  "Cob{}:{}:${}".format(self.pk,self.fecha_cobro,self.importe)
+
+
 
 
 def cuotas_queryset(familia_id,deleted=False):

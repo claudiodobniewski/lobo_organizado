@@ -13,7 +13,7 @@ import inspect ,logging
 
 
 from socios.models import Familia
-from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
+from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia,CuotaMedioDePago
 from cuotas.view_cobranzas import *
 
 logger = logging.getLogger('project.lobo.organizado')
@@ -29,6 +29,7 @@ def nuevo_pago(request, familia_id, pago_id=0 ):
 
     planes_de_pago = PlanDePago.objects.all()
     planes_de_pago_list = list(planes_de_pago)
+    formas_de_pago = list(CuotaMedioDePago.objects.all())
     #logger.debug("PLAN DE PAGOS LIST:{}".format(planes_de_pago_list))
     #planes_de_pago_json = simplejson.dumps(planes_de_pago_list)
     #return HttpResponse("Hello, world. ACA VA PANTALLA PAGO NUEVA CUOTA.")
@@ -41,7 +42,7 @@ def nuevo_pago(request, familia_id, pago_id=0 ):
         
         pago_error_message = 'Cancelado edicion de pago ' # concatenar info del pago cancelado
     logger.debug("error_message [{}] ".format(pago_error_message) )
-    return render(request, 'cuotas/crear_editar_pago.html', {'familia': familia_socios,'planes_de_pago':planes_de_pago,'planes_de_pago_list':planes_de_pago_list, 'pago': pago, 'pago_error_message': pago_error_message })
+    return render(request, 'cuotas/crear_editar_pago.html', {'familia': familia_socios,'planes_de_pago':planes_de_pago,'planes_de_pago_list':planes_de_pago_list, 'pago': pago,'formas_de_pago': formas_de_pago, 'pago_error_message': pago_error_message })
 
 #creoq ue se puede borrar
 def procesa_nuevo_pago(request, familia_id):
@@ -64,6 +65,7 @@ def procesa_nuevo_pago(request, familia_id):
     nuevo_pago.familia = selected_family
     nuevo_pago.fecha_cobro = request.POST['fecha_cobrado']
     nuevo_pago.aplica_pago_plan = selected_plan_de_pago
+    nuevo_pago.forma_de_pago = request.POST['forma_de_pago']
     nuevo_pago.save()
 
     return HttpResponseRedirect(reverse('socios:familia_detalle', args=(selected_family.id,)))
@@ -96,7 +98,7 @@ def editar_pago_plan(request, familia_id, pago_id):
         cancel_message = 'Descartado nuevo pago'
         
 
-    logger.info("{}) Pago {} Familia {} plan de pagos {} ".format(func.co_name,pago.pk,pago.familia.familia_crm_id,pago))
+    logger.info("{}) Pago {} Familia {} plan de pagos {} Medio de pago: {} ".format(func.co_name,pago.pk,pago.familia.familia_crm_id,pago,pago.forma_de_pago.medio_id))
 
     if request.method == "POST":
         form = CuotaPagoForm(request.POST,instance=pago)
