@@ -24,6 +24,7 @@
         <th scope="col">Concepto</th>
         <th scope="col">Familia</th>
         <th scope="col">Importe</th>
+        <th scope="col" caption="Medio de pago">Medio</th>
         {% if perms.cuotas.pago_cuota_editar %}
           <th scope="col">editar</th>
         {% endif %}
@@ -41,6 +42,7 @@
         <td>{{ pago.aplica_pago_plan }}</td>
         <td>{{ pago.familia }}</td>
         <td>{{ pago.importe }}</td>
+        <td>{{ pago.forma_de_pago.medio_id }}</td>
         {% if perms.cuotas.pago_cuota_editar %}
           <td><a class="btn btn-success" href={% url 'cuotas:editar_pago_plan' familia_id=familia.pk pago_id=pago.pk %}>EDITAR</a></td>
         {% endif %}
