@@ -23,7 +23,7 @@ class CuotaPagoForm(forms.ModelForm):
 
     class Meta:
         model = CuotaPago
-        fields = ('importe', 'fecha_cobro','forma_de_pago', 'aplica_pago_plan', 'familia')
+        fields = ('importe', 'fecha_cobro','forma_de_pago','comprobante', 'aplica_pago_plan', 'familia')
 
 
 
