@@ -70,12 +70,11 @@ class CuotaPago(models.Model):
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
     fecha_cobro = models.DateField('fecha_cobro',default=date.today,)
-    #aplica_cuota = models.ForeignKey(CuotaSocialFamilia, on_delete=models.CASCADE)
     aplica_pago_plan = models.ForeignKey(PlanDePago, on_delete=models.CASCADE)
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
-    #forma_de_pago = models.ForeignKey(CuotaMedioDePago,to_field='medio_id', default='EF', on_delete=models.CASCADE,)
     forma_de_pago = models.ForeignKey(CuotaMedioDePago,default=1, on_delete=models.CASCADE)
+    comprobante = models.CharField(default="",blank=True,max_length=12)
 
     class Meta:
         permissions = (

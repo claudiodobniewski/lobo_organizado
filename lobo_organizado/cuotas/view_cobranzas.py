@@ -6,13 +6,19 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.template.defaulttags import register
 import datetime
-from datetime import datetime,date #,timedelta
+from datetime import datetime,date, timezone #,timedelta
 from django.core.paginator import Paginator
 from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
 from decimal import Decimal
 import cuotas.models as app_cuotas
+
+from weasyprint import HTML, CSS
+from django.template.loader import get_template
+from django.http import HttpResponse
+
+
 
 
 class EstadoPlan():
@@ -41,7 +47,7 @@ class SaldosFamilia():
         
         self.cuotas = list( q_cuotas.order_by('vencimiento') )
         self.pagos = list( q_pagos.order_by('fecha_cobro') )
-
+        
         self.planes_de_pago = planes_de_pago
         print("cuotas cantidad:{}  pagos cantidad:{}".format( len(self.cuotas),len(self.pagos) ))
     
@@ -80,6 +86,7 @@ class SaldosFamilia():
             "pago" : float ( pago.importe ),
             "saldo" : self.saldo,
             "tipo": self.PAGO,
+            "comprobante": pago.comprobante,
             "plan": self.planes_de_pago.filter(pk=pago.aplica_pago_plan.id)[0].crm_id
         }
         return reg
@@ -335,6 +342,9 @@ def gestion_cobranza_familia(request, familia_id):
         print("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo'
         ]))
     
+    #print("IMPRESION PDF" )
+    #pdf_generation(request)
+
     return render(request, 'cuotas/g_cobranzas_familia.html', {
         #'error_message': '',
         #'page_obj': page_obj,
@@ -345,7 +355,12 @@ def gestion_cobranza_familia(request, familia_id):
         'registros': registros
          } )
         
-
+def pdf_generation(request):
+            html_template = get_template('templates/home_page.html')
+            pdf_file = HTML(string=html_template).write_pdf()
+            response = HttpResponse(pdf_file, content_type='application/pdf')
+            response['Content-Disposition'] = 'filename="home_page.pdf"'
+            return response
 
 
 
