@@ -127,7 +127,9 @@ def pagos_percibidos_queryset(familia_id,deleted=False):
 # valor sumado de los pagos
 def pagos_percibidos_plan(pagos, plan_id):
     '''return pagos correspondientes al plan'''
-    return pagos.filter( aplica_pago_plan=plan_id )
+    if plan_id:
+        return pagos.filter( aplica_pago_plan=plan_id )
+    return pagos
 
 ### Suma el valor de los pagos, retorna un numero Decimal
 def pagos_percibidos_suma(pagos):

@@ -23,15 +23,16 @@ from django.http import HttpResponse
 
 class EstadoPlan():
 
-    familia = None
-    plan_de_pago = None
-    cuotas = None
-    cuotas_vencidas = None
-    cuotas_vencidas_importe = None
-    pagos = None
-    pagos_importe = None
-    balance = None
-    estado = None
+    def __init__(self):
+        familia = None
+        plan_de_pago = None
+        cuotas = None
+        cuotas_vencidas = None
+        cuotas_vencidas_importe = None
+        pagos = None
+        pagos_importe = None
+        balance = None
+        estado = None
 
 class SaldosFamilia():
 
@@ -192,6 +193,15 @@ def absolute(value):
     else:
         return 0.0
 
+@register.filter(name='eq_id')
+def equal_id(plan_id,plan_option_id):
+    """Evalua si ambos integers son iguales
+    @param plan_id integer
+    @param plan_option_iw integer    
+    """
+    print("PLAN_ID:{}  PLAN_OPTION_ID:{}  EQUALL:{}".format(plan_id,plan_option_id,int(plan_id) == int(plan_option_id) ) )
+    return int(plan_id) == int(plan_option_id)
+
 def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
     start_date = None
@@ -199,7 +209,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     plan = None
     f_familia = None
     lista_cuotas = CuotaSocialFamilia.objects.all().filter(deleted=False)
-    
+    #lista_planes = PlanDePago.objects.all().filter(eliminado=False)
 
      # BUSQUEDA
      
@@ -207,7 +217,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         print("GET :{}".format(request.GET) )
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
-        f_plan=request.GET.get('f_plan', None)
+        f_plan=request.GET.get('planes_de_pagos', None)
+        #print("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
         f_familia = request.GET.get('f_familia', None)
         
         if not f_start_date:
@@ -223,8 +234,10 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         lista_cuotas = lista_cuotas.filter(vencimiento__lte=end_date)
         
         plan = f_plan
-        if plan:
-            lista_cuotas = lista_cuotas.filter(plan_de_pago=plan)
+        if f_plan:
+            lista_cuotas = lista_cuotas.filter(plan_de_pago=f_plan)
+
+
 
 
     else:
@@ -232,7 +245,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         f_start_date=''
         f_end_date = date.today().strftime("%Y-%m-%d")
         end_date = date.today()
-        f_plan=None
+        f_plan=0
     
     print(date.today())
     print("GET:{} POST:{} FAMILIA:{} PLAN:{}  CUOTAS:{}".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),request.POST.get('f_familia', None),f_plan,lista_cuotas ))
@@ -247,14 +260,18 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     else:
         lista_familias = Familia.objects.all().filter(eliminado=False).order_by('familia_crm_id')
     
-    if plan:
-        lista_planes = PlanDePago.objects.get(id=plan)
+    lista_planes_view = PlanDePago.objects.all().order_by('id')
+
+    if f_plan:
+        lista_planes = PlanDePago.objects.all().filter(id=f_plan)
     else:
-        lista_planes = PlanDePago.objects.all().order_by('id')
+        lista_planes = lista_planes_view.all()
     
+    #lista_planes = PlanDePago.objects.all().order_by('id')
+
     reporte = []
     
-    print(" FECHA DESDE:{} HASTA:{} PLAN:{} PLANES:{}".format(start_date,end_date,plan,lista_planes))
+    print(" FECHA DESDE:{} HASTA:{} PLAN:{} PLANES:{}".format(start_date,end_date,f_plan,lista_planes))
     for familia in lista_familias:
 
         # cuotas_todas,cuotas_por_plan,cuotas_vencidas,cuotas_suma,pagos_percibidos_queryset,pagos_percibidos_plan,pagos_percibidos_suma
@@ -265,41 +282,23 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
         cuotas = app_cuotas.cuotas_queryset(familia.id)
         pagos =  app_cuotas.pagos_percibidos_queryset(familia.id)
-        
-       
-        if plan:
-            print("Entro en plan filtro="+plan)
+
+        for un_plan in lista_planes:
             estado_plan = EstadoPlan()
             estado_plan.familia = familia
-            estado_plan.plan_de_pago = lista_planes
-            estado_plan.cuotas = app_cuotas.cuotas_por_plan(cuotas,lista_planes)
-            estado_plan.cuotas_vencidas = app_cuotas.cuotas_vencidas(cuotas,end_date)
+            estado_plan.plan_de_pago = un_plan
+            estado_plan.cuotas = app_cuotas.cuotas_por_plan(cuotas,un_plan)
+            estado_plan.cuotas_vencidas = app_cuotas.cuotas_vencidas(estado_plan.cuotas,end_date)
             vencidas_importe = estado_plan.cuotas_vencidas_importe = app_cuotas.cuotas_suma(estado_plan.cuotas_vencidas)
-            estado_plan.pagos = app_cuotas.pagos_percibidos_plan(pagos, lista_planes.id)
-            print(estado_plan.pagos )
+            estado_plan.pagos = app_cuotas.pagos_percibidos_plan(pagos, un_plan.id)
+            if not len( estado_plan.cuotas ) and not len( estado_plan.pagos ):
+                continue
+            print("PLAN:: {}".format(un_plan) )
             pagos_importe = estado_plan.pagos_importe = app_cuotas.pagos_percibidos_suma(estado_plan.pagos)
             balance_plan =  estado_plan.balance = vencidas_importe - float (pagos_importe)
             estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
-            print("FLIA:{} ESTADOD EL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,lista_planes,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
+            print("FLIA:{} ++ ESTADO DEL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
             reporte.append(estado_plan)
-            
-        else:
-            print("Entro en varios planes")
-            for un_plan in lista_planes:
-                estado_plan = EstadoPlan()
-                estado_plan.familia = familia
-                estado_plan.plan_de_pago = app_cuotas.cuotas_por_plan(cuotas,un_plan)
-                estado_plan.plan_de_pago = un_plan
-                estado_plan.cuotas = app_cuotas.cuotas_por_plan(cuotas,un_plan)
-                estado_plan.cuotas_vencidas = app_cuotas.cuotas_vencidas(cuotas,end_date)
-                vencidas_importe = estado_plan.cuotas_vencidas_importe = app_cuotas.cuotas_suma(estado_plan.cuotas_vencidas)
-                estado_plan.pagos = app_cuotas.pagos_percibidos_plan(pagos, un_plan.id)
-                print(estado_plan.pagos )
-                pagos_importe = estado_plan.pagos_importe = app_cuotas.pagos_percibidos_suma(estado_plan.pagos)
-                balance_plan =  estado_plan.balance = vencidas_importe - float (pagos_importe)
-                estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
-                print("FLIA:{} ESTADOD EL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
-                reporte.append(estado_plan)
 
         #####
         # Paginacion
@@ -313,34 +312,38 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         'f_start_date': f_start_date,
         'f_end_date': f_end_date,
         'f_plan': f_plan,
-        'f_familia': f_familia
+        'f_familia': f_familia,
+        'lista_planes': lista_planes_view
          } )
 
 def gestion_cobranza_familia(request, familia_id):
     '''detalla cuotas y pagos de la familia, con saldo por movimiento'''
 
     familia = Familia.objects.get(pk=familia_id,eliminado=False)
-    cuotas = app_cuotas.cuotas_queryset(familia.id)
-    pagos = app_cuotas.pagos_percibidos_queryset(familia.id)
+    cuotas = app_cuotas.cuotas_queryset(familia.id).filter(deleted=False).order_by('vencimiento')
+    pagos = app_cuotas.pagos_percibidos_queryset(familia.id).filter(deleted=False).order_by('fecha_cobro')
     planes_de_pago =  PlanDePago.objects.all().order_by('id')
     registros=[]
     
-    for plan in planes_de_pago:
-        print("planes de pago...gestion cobranza")
-        cuotas_plan = app_cuotas.cuotas_por_plan(cuotas,plan.id)
-        pagos_plan = app_cuotas.pagos_percibidos_plan(pagos,plan.id)
-        print("Cuotas: {}".format(cuotas_plan))
-        print("Pagos: {}".format(pagos_plan))
-        gestion = SaldosFamilia(cuotas_plan,pagos_plan,planes_de_pago)
-        gestion.procesar()
-        registros = gestion.get_registros()
-        del gestion
+    gestion = SaldosFamilia(cuotas,pagos,planes_de_pago)
+    gestion.procesar()
+    registros.extend(gestion.get_registros())
+
+    # for plan in planes_de_pago:
+    #     print("planes de pago...gestion cobranza")
+    #     cuotas_plan = app_cuotas.cuotas_por_plan(cuotas,plan.id)
+    #     pagos_plan = app_cuotas.pagos_percibidos_plan(pagos,plan.id)
+    #     print("Cuotas: {}".format(cuotas_plan))
+    #     print("Pagos: {}".format(pagos_plan))
+    #     gestion = SaldosFamilia(cuotas_plan,pagos_plan,planes_de_pago)
+    #     gestion.procesar()
+    #     registros.extend(gestion.get_registros())
+    #     del gestion
 
     print("REGISTROS: {}".format(registros))
     for i in registros:
         print("Item: {}".format(i))
-        print("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo'
-        ]))
+        print("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo']))
     
     #print("IMPRESION PDF" )
     #pdf_generation(request)

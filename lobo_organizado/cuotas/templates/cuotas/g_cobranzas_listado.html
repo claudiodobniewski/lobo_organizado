@@ -24,8 +24,15 @@
         
         <label class="form-label">Solo plan</label>
         <!-- TODO  CONVERTIR A LISTA PARA SELECCIONAR 1 , o TODOS por default -->
-        <input id="f_plan" class="form-control"  type="number" name="f_plan" placeholder="Busquea por familia..."
-          value="{{ f_plan|default:'1' }}"" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+        <select name="planes_de_pagos" id="planes_de_pagos">
+          <option  value="0" {% if not f_plan or f_plan|add:"0" == 0 %}selected="selected"{% endif %}>--- TODOS ---</option>
+          {% for plan in lista_planes %}
+            <option value="{{plan.id}}"
+              {% if plan.id|add:"0" == f_plan|add:"0"  %}selected="selected"{% endif %}>
+                {{ f_plan|add:"0" }} {{ plan.id|add:"0" }} {{ plan.nombre }}
+              </option>
+          {% endfor %}
+        </select>
         <button id="search_submit" class="btn btn-info" type="submit">Buscar!</button>
         <button formaction="{% url 'cuotas:gestion_cobranza_listado' clean_filters='true' %}" id="search_submit" class="btn btn-info" type="submit"
           title="Limpiar Filtro"><span>Limpiar Filtro</span></button>
