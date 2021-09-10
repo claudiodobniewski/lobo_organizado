@@ -17,5 +17,7 @@ urlpatterns = [
     path('gestion/cobranza/listado', views.gestion_cobranza_listado, name='gestion_cobranza_listado'),
     path('gestion/cobranza/listado/<str:clean_filters>', views.gestion_cobranza_listado, name='gestion_cobranza_listado'), 
     path('gestion/cobranza/familia/<int:familia_id>', views.gestion_cobranza_familia, name='gestion_cobranza_familia'),
+    path('gestion/pagos/listado', views.gestion_pagos_listado, name='gestion_pagos_listado'),
+    path('gestion/pagos/listado/<str:clean_filters>', views.gestion_pagos_listado, name='gestion_pagos_listado'),
     path('', views.index, name='index'),
 ]
