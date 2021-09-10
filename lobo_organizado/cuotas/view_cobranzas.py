@@ -206,7 +206,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
     start_date = None
     end_date = None
-    plan = None
+    f_plan = None
     f_familia = None
     lista_cuotas = CuotaSocialFamilia.objects.all().filter(deleted=False)
     #lista_planes = PlanDePago.objects.all().filter(eliminado=False)
@@ -217,7 +217,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         print("GET :{}".format(request.GET) )
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
-        f_plan=request.GET.get('planes_de_pagos', None)
+        f_plan=int(request.GET.get('planes_de_pagos', None))
         #print("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
         f_familia = request.GET.get('f_familia', None)
         
@@ -233,7 +233,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
             end_date = datetime.date(datetime.strptime(f_end_date,"%Y-%m-%d"))
         lista_cuotas = lista_cuotas.filter(vencimiento__lte=end_date)
         
-        plan = f_plan
+        #plan = f_plan
         if f_plan:
             lista_cuotas = lista_cuotas.filter(plan_de_pago=f_plan)
 
@@ -263,6 +263,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     lista_planes_view = PlanDePago.objects.all().order_by('id')
 
     if f_plan:
+        print(" checkpint planes filtrado '{}' ".format(f_plan))
         lista_planes = PlanDePago.objects.all().filter(id=f_plan)
     else:
         lista_planes = lista_planes_view.all()
@@ -300,11 +301,11 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
             print("FLIA:{} ++ ESTADO DEL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
             reporte.append(estado_plan)
 
-        #####
-        # Paginacion
-        paginator = Paginator(reporte, 15) # Show x contacts per page.
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+    #####
+    # Paginacion
+    paginator = Paginator(reporte, 15) # Show x contacts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'cuotas/g_cobranzas_listado.html', {
         'error_message': error_message,
@@ -329,17 +330,6 @@ def gestion_cobranza_familia(request, familia_id):
     gestion.procesar()
     registros.extend(gestion.get_registros())
 
-    # for plan in planes_de_pago:
-    #     print("planes de pago...gestion cobranza")
-    #     cuotas_plan = app_cuotas.cuotas_por_plan(cuotas,plan.id)
-    #     pagos_plan = app_cuotas.pagos_percibidos_plan(pagos,plan.id)
-    #     print("Cuotas: {}".format(cuotas_plan))
-    #     print("Pagos: {}".format(pagos_plan))
-    #     gestion = SaldosFamilia(cuotas_plan,pagos_plan,planes_de_pago)
-    #     gestion.procesar()
-    #     registros.extend(gestion.get_registros())
-    #     del gestion
-
     print("REGISTROS: {}".format(registros))
     for i in registros:
         print("Item: {}".format(i))
@@ -357,7 +347,89 @@ def gestion_cobranza_familia(request, familia_id):
         'familia': familia,
         'registros': registros
          } )
+
+def gestion_pagos_listado(request, clean_filters=False, error_message=''):
+
+    start_date = None
+    end_date = None
+    f_plan = None
+    f_familia = None
+    lista_pagos = CuotaPago.objects.all().filter(deleted=False).order_by('-fecha_cobro')
+
+    # BUSQUEDA
+    
+    
+
+    if not clean_filters and request.method == 'GET': # If the form is submitted
+        print("GET :{}".format(request.GET) )
+        f_start_date=request.GET.get('f_start_date', None)
+        f_end_date=request.GET.get('f_end_date', None)
+        f_plan=int(request.GET.get('planes_de_pagos', None))
+        #print("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
+        f_familia = request.GET.get('f_familia', None)
         
+        if not f_start_date:
+            start_date = date.today() # - timedelta(months = 1)
+        else:
+            start_date = datetime.date(datetime.strptime(f_start_date,"%Y-%m-%d"))
+            lista_pagos = lista_pagos.filter(fecha_cobro__gte=start_date)
+
+        if not f_end_date:
+            end_date = date.today()
+        else:
+            end_date = datetime.date(datetime.strptime(f_end_date,"%Y-%m-%d"))
+        lista_pagos = lista_pagos.filter(fecha_cobro__lte=end_date)
+        print("Pagos 1 {}".format(lista_pagos))
+        
+        if f_plan:
+            lista_pagos = lista_pagos.filter(aplica_pago_plan=f_plan)
+            print("Pagos 2 {}  {}".format(f_plan,lista_pagos))
+
+        
+        if f_familia:
+            lista_familias = Familia.objects.filter(familia_crm_id__icontains=f_familia).filter(eliminado=False).order_by('familia_crm_id')
+            print("Familias {}".format(lista_familias))
+            print("Pagos 3 {}".format(lista_pagos))
+            lista_pagos = lista_pagos.filter(deleted=False).filter(familia__pk__in=lista_familias)
+            lista_pagos = CuotaPago.objects.all().filter(deleted=False).filter(familia__pk__in=lista_familias).order_by('-fecha_cobro')
+
+            print("Pagos 4 {}".format(lista_pagos))
+            
+        #else:
+        #    lista_familias = Familia.objects.all().filter(eliminado=False).order_by('familia_crm_id')
+
+    else:
+        print("NO FILTERS {}: {}".format(clean_filters,request.GET) )
+        f_start_date=''
+        f_end_date = date.today().strftime("%Y-%m-%d")
+        end_date = date.today()
+        f_plan=0
+
+    lista_planes_view = PlanDePago.objects.all().order_by('id')
+    if f_plan:
+        print(" checkpint planes filtrado '{}' ".format(f_plan))
+        lista_planes = PlanDePago.objects.all().filter(id=f_plan)
+    else:
+        lista_planes = lista_planes_view.all()
+
+    reporte = lista_pagos
+
+    #####
+    # Paginacion
+    paginator = Paginator(reporte, 15) # Show x contacts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'cuotas/g_pagos_listado.html', {
+        'error_message': error_message,
+        'page_obj': page_obj,
+        'f_start_date': f_start_date,
+        'f_end_date': f_end_date,
+        'f_plan': f_plan,
+        'f_familia': f_familia,
+        'lista_planes': lista_planes_view
+         } )
+
 def pdf_generation(request):
             html_template = get_template('templates/home_page.html')
             pdf_file = HTML(string=html_template).write_pdf()

@@ -20,6 +20,11 @@
             <a href="{% url 'cuotas:gestion_cobranza_listado' %}"  class="nav-link">Gestion Cobranzas</a>
           </li>
         {% endif %}
+        {%  if user.is_authenticated and request.user.is_staff is True or perms.pagos.cuota_ver %}
+          <li class="nav-item"></li>
+            <a href="{% url 'cuotas:gestion_pagos_listado' %}"  class="nav-link">Gestion Pagos</a>
+          </li>
+        {% endif %}
 
         {%  if user.is_authenticated and request.user.is_staff is True %}
           <li class="nav-item"></li>
