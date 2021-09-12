@@ -30,7 +30,7 @@ SECRET_KEY = '5!0m-1s+_g7nkj367&#qvjbbbiz2!jkvuu2e+4w^@o5rhk(j5='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37','192.168.1.42','192.168.1.*','claudiodob.pythonanywhere.com']
+ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','192.168.1.37','192.168.1.42','192.168.1.*','claudiodob.pythonanywhere.com','a44a-2802-8010-9424-2f01-f8df-cc79-ee32-9e57.ngrok.io']
 
 
 # Application definition
@@ -101,7 +101,15 @@ DATABASES = {
         'NAME': BASE_DIR / 'db/db_lobo_organizado.sqlite3',
     }
 }
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'lobo_organizado_chkbkp',
+        'USER': 'root',
+        'PASSWORD': 'sofijuli',
+        'HOST': 'localhost',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -127,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-ar'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 USE_I18N = True
 
@@ -147,6 +155,8 @@ LOCALE_PATHS = (
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),] 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # CLAUDIO LOGGING SECTION
 LOGGING = {
