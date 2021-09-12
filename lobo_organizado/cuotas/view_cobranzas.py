@@ -1,4 +1,5 @@
 #
+import inspect ,logging
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
@@ -19,7 +20,7 @@ from django.template.loader import get_template
 from django.http import HttpResponse
 
 
-
+logger = logging.getLogger('project.lobo.organizado')
 
 class EstadoPlan():
 
@@ -204,6 +205,14 @@ def equal_id(plan_id,plan_option_id):
 
 def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
+    func = inspect.currentframe().f_back.f_code
+    logger.info(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
     start_date = None
     end_date = None
     f_plan = None
@@ -217,7 +226,19 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         print("GET :{}".format(request.GET) )
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
-        f_plan=int(request.GET.get('planes_de_pagos', None))
+        try:
+            f_plan=int(request.GET.get('planes_de_pagos', 0))
+        except Exception as e:
+            
+            logger.error(" %s: %s in %s:%i [f_plan must be an integer o string int representation, value: %s , assing default 0]" % (
+                'init ', 
+                func.co_name, 
+                func.co_filename, 
+                func.co_firstlineno,
+                f_plan
+            ))
+            f_plan=0
+
         #print("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
         f_familia = request.GET.get('f_familia', None)
         
@@ -350,6 +371,13 @@ def gestion_cobranza_familia(request, familia_id):
 
 def gestion_pagos_listado(request, clean_filters=False, error_message=''):
 
+    func = inspect.currentframe().f_back.f_code
+    logger.info(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
     start_date = None
     end_date = None
     f_plan = None
@@ -364,8 +392,18 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
         print("GET :{}".format(request.GET) )
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
-        f_plan=int(request.GET.get('planes_de_pagos', None))
-        #print("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
+        try:
+            f_plan=int(request.GET.get('planes_de_pagos', 0))
+        except Exception as e:
+            
+            logger.error(" %s: %s in %s:%i [f_plan must be an integer o string int representation, value: %s , assing default 0]" % (
+                'init ', 
+                func.co_name, 
+                func.co_filename, 
+                func.co_firstlineno,
+                f_plan
+            ))
+            f_plan=0
         f_familia = request.GET.get('f_familia', None)
         
         if not f_start_date:
