@@ -41,7 +41,7 @@
         {% block logstatus %}
 
     <div>
-        <span class="btn btn-outline-dark" disabled="true" >UTC {% now "DATETIME_FORMAT" %}</span>
+        <span class="btn btn-outline-dark" disabled="true" > {% now "DATETIME_FORMAT" %}</span>
         <span class="btn btn-outline-dark" disabled="true" >{% if user.is_authenticated %} USUARIO: {{ request.user.username }} </span>  <a class="btn btn-warning" href="/accounts/logout" >LOG OUT</a> {% else %} Debe ingresar con su usuario  <a class="btn btn-warning" href="/accounts/login" >LOG IN</a> {% endif %} 
     </div>
 
