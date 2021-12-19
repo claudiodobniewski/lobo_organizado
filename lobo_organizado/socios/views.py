@@ -16,11 +16,13 @@ import inspect ,logging
 import cuotas.models as app_cuotas
 from cuotas.models import CuotaSocialFamilia,CuotaPago,PlanDePago
 import copy
+from django.db.models import Q
 
 from django.contrib.auth.models import Permission
 
 from .forms import FamiliaForm, SocioForm, ObservacionForm
 from .models import Familia, Socio, Observaciones
+from itertools import chain
 
 logger = logging.getLogger('project.lobo.organizado')
 
@@ -213,7 +215,15 @@ def familia_index(request,error_message=''):
         search_query = request.GET.get('search_box', None)
 
     if search_query:
-        lista_familias = Familia.objects.filter(familia_crm_id__icontains=search_query).order_by('familia_crm_id')
+
+        busqueda_familias_por_familia = Familia.objects.filter( Q(crm_id__icontains=search_query) | Q(familia_crm_id__icontains=search_query) ) 
+        
+        busqueda_familias_por_socios = Socio.objects.filter(Q(nombres__icontains=search_query) | Q(apellidos__icontains=search_query)  )
+        familias_por_socios_ids = [socio.familia.id for socio in busqueda_familias_por_socios ]
+        
+        lista_familias = (Familia.objects.filter( id__in = familias_por_socios_ids).distinct() | busqueda_familias_por_familia.distinct() ).order_by('familia_crm_id')
+        print("lista_familias *** {}".format(lista_familias))
+    
     else:
         lista_familias = Familia.objects.all().order_by('familia_crm_id')
     print("GET:{} POST:{}  search_query:{}  FAMILIAS:{}".format(request.GET.get('search_box', None),request.POST.get('search_box', None),search_query,lista_familias ))
