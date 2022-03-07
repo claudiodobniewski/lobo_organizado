@@ -98,7 +98,8 @@ def reporte_estado_de_cuenta(data,filter_info):
             "Estado",
         )
     full_width =  sum (len(x) for x in headings )
-    col_widths = [  int((len(x)/full_width)*120)  for x in headings ]
+    page_width = 270
+    col_widths = [  int((len(x)/full_width)*page_width)  for x in headings ]
     logger.debug("PDF WIDTH FULL : {} WEIGHTS: {}".format(full_width , col_widths) )
     
 
@@ -106,7 +107,7 @@ def reporte_estado_de_cuenta(data,filter_info):
     #model_fields = [f.name for f in data._meta.get_fields()]
     #rows = [ r[0] for r in data if model_fields in field_names ]
 
-    pdf = reportes_pdf('P', 'mm', 'A4')
+    pdf = reportes_pdf('L', 'mm', 'A4')
     pdf.set_title( "Viejos Lobos - reporte estados de cuenta SALDOS" )
     pdf.alias_nb_pages()
     pdf.set_image_filter("DCTDecode")
@@ -134,13 +135,13 @@ def reporte_estado_de_cuenta(data,filter_info):
         logger.debug("{}-{}".format(row.familia.crm_id,row.familia.familia_crm_id) )
         pdf.cell(col_widths[1], 6, "{}-{}".format(row.familia.crm_id,row.familia.familia_crm_id), "LR", 0, "L", fill)
         pdf.cell(col_widths[2], 6, str(row.plan_de_pago), "LR", 0, "L", fill)
-        pdf.cell(col_widths[3], 6, str(row.cuotas_vencidas), "LR", 0, "L", fill)
-        pdf.cell(col_widths[4], 6, str(row.pagos), "LR", 0, "L", fill)
+        pdf.cell(col_widths[3], 6, str(row.cuotas_vencidas_importe), "LR", 0, "L", fill)
+        pdf.cell(col_widths[4], 6, str(row.pagos_importe), "LR", 0, "L", fill)
         pdf.cell(col_widths[5], 6, str(row.balance), "LR", 0, "L", fill)
         pdf.cell(col_widths[6], 6, 'OK' if row.balance <= 0 else 'DEUDA', "LR", 0, "L", fill)
         pdf.ln()
         fill = not fill
-    pdf.cell(120, 0, "", "T")
+    pdf.cell(page_width, 0, "", "T")
     pdf.output("vl_reporte_cobranza_saldos.pdf")
     return FileResponse(open('vl_reporte_cobranza_saldos.pdf', 'rb'), as_attachment=True, content_type='application/pdf')
 
