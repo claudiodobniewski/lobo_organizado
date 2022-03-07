@@ -31,6 +31,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('cuotas/', include('cuotas.urls')),
     path('socios/', include('socios.urls')),
+    path('reportes/', include('reportes.urls')),
     path('admin/', admin.site.urls),
     
 ]

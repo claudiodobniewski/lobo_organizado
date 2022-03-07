@@ -9,13 +9,15 @@ from django.template.defaulttags import register
 import datetime
 from datetime import datetime,date, timezone #,timedelta
 from django.core.paginator import Paginator
+
 from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
+from reportes.views import reporte_estado_de_cuenta
 from decimal import Decimal
 import cuotas.models as app_cuotas
 
-from weasyprint import HTML, CSS
+#from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
 
@@ -315,11 +317,11 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
             estado_plan.pagos = app_cuotas.pagos_percibidos_plan(pagos, un_plan.id)
             if not len( estado_plan.cuotas ) and not len( estado_plan.pagos ):
                 continue
-            print("PLAN:: {}".format(un_plan) )
+            logger.debug("PLAN:: {}".format(un_plan) )
             pagos_importe = estado_plan.pagos_importe = app_cuotas.pagos_percibidos_suma(estado_plan.pagos)
             balance_plan =  estado_plan.balance = vencidas_importe - float (pagos_importe)
             estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
-            print("FLIA:{} ++ ESTADO DEL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
+            logger.debug("FLIA:{} ++ ESTADO DEL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
             reporte.append(estado_plan)
 
     #####
@@ -327,6 +329,14 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     paginator = Paginator(reporte, 15) # Show x contacts per page.
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    filter_info = {
+        "start_date": start_date,
+        "end_date" : end_date,
+        "f_plan" : f_plan,
+        'f_familia' : f_familia,
+    }
+    return reporte_estado_de_cuenta(page_obj, filter_info)
 
     return render(request, 'cuotas/g_cobranzas_listado.html', {
         'error_message': error_message,
