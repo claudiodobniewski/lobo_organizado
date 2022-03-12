@@ -226,6 +226,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     report_export_on = False # generate and download report
     report_export_all = True # Report must include all records? True= yes, False=only current page.
 
+    current_user = request.user
      # BUSQUEDA
      
     if not clean_filters and request.method == 'GET': # If the form is submitted
@@ -352,7 +353,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     if report_export_on:
         report_export_on = False
         report_export_all = False
-        return reporte_estado_de_cuenta(page_obj, filter_info)
+        return reporte_estado_de_cuenta(current_user,page_obj, filter_info)
     
 
     return render(request, 'cuotas/g_cobranzas_listado.html', {

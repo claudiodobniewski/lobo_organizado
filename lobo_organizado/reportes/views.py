@@ -15,6 +15,12 @@ logger = logging.getLogger('project.lobo.organizado')
 
 class reportes_pdf(FPDF):
 
+    def __init__(self,orientation = 'P', unit = 'mm', format='A4', current_user=None):
+
+        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%s")
+        self.current_user = current_user
+        super().__init__(orientation , unit , format)
+
     def header(self):
 
         #self.allow_images_transparency = True
@@ -40,7 +46,7 @@ class reportes_pdf(FPDF):
         # Setting font: helvetica italic 8
         self.set_font("helvetica", "I", 8)
         # Printing page number:
-        self.cell(0, 10, f"Page {self.page_no()}/{{nb}}", 0, 0, "C")
+        self.cell(0, 10, f"Page {self.page_no()}/{{nb}}"+" Usuario:{}-{},{} Fecha Reporte {}".format(self.current_user.id,self.current_user.last_name, self.current_user.first_name,self.timestamp), 0, 0, "C")
 
     def basic_table(self, headings, rows, data):
         '''heading: encabezados - rows: nombres de campo en la columna - data: queryset de modelo con la informacion'''
@@ -76,7 +82,9 @@ class reportes_pdf(FPDF):
             fill = not fill
         self.cell(120, 0, "", "T")
 
-def reporte_estado_de_cuenta(data,filter_info):
+#### 
+
+def reporte_estado_de_cuenta(current_user,data,filter_info):
     ''' prueba de listado familia, luego cambiar data por request y adaptar'''
 
     func = inspect.currentframe().f_back.f_code
@@ -103,19 +111,20 @@ def reporte_estado_de_cuenta(data,filter_info):
     page_width = 270
     col_widths = [  int((len(x)/full_width)*page_width)  for x in headings ]
     logger.debug("PDF WIDTH FULL : {} WEIGHTS: {}".format(full_width , col_widths) )
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%s")
-    report_fullpath = os.path.join(settings.DATA_PDF_PATH,"vl_reporte_cobranza_saldos.{}.pdf".format(timestamp))
-
+    
     count = 0
     #model_fields = [f.name for f in data._meta.get_fields()]
     #rows = [ r[0] for r in data if model_fields in field_names ]
 
-    pdf = reportes_pdf('L', 'mm', 'A4')
+    pdf = reportes_pdf('L', 'mm', 'A4',current_user)
+    report_fullpath = os.path.join(settings.DATA_PDF_PATH,"vl_reporte_cobranza_saldos.{}.pdf".format(pdf.timestamp))
     pdf.set_title( "Viejos Lobos - reporte estados de cuenta SALDOS" )
     pdf.alias_nb_pages()
     pdf.set_image_filter("DCTDecode")
     pdf.add_page()
     pdf.set_font("Courier", size=10)
+    #pdf.write(6,"Usuario:{}-{},{} Fecha Reporte {}".format(pdf.current_user.pdf.id,current_user.last_name, pdf.current_user.first_name,pdf.timestamp))
+    #pdf.ln()
     #pdf.basic_table(headers,field_names, data)
     #pdf.colored_table(headers,field_names, data)
     pdf.set_fill_color(255, 100, 0)
