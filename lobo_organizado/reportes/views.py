@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from django.shortcuts import render
 from django.shortcuts import render
@@ -23,7 +24,8 @@ class reportes_pdf(FPDF):
         # Rendering logo:
         self.image(logo_path, 10, 8, 20)
         # Setting font: helvetica bold 15
-        self.set_font("helvetica", "B", 15)
+        self.set_font("Courier", "", 12)
+        #self.set_stretching(100.0)
         # Moving cursor to the right:
         self.cell(80)
         # Printing title:
@@ -43,11 +45,11 @@ class reportes_pdf(FPDF):
     def basic_table(self, headings, rows, data):
         '''heading: encabezados - rows: nombres de campo en la columna - data: queryset de modelo con la informacion'''
         for heading in headings:
-            self.cell(40, 7, heading, 1)
+            self.cell(40, 6, heading, 1)
         self.ln()
         for reg in data:
             for row in rows:
-                self.cell(40, 6, getattr(reg,row), 1)
+                self.cell(40, 5, getattr(reg,row), 1)
             self.ln()
 
     def colored_table(self, headings, rows, data, col_widths=(42, 39, 35, 42)):
@@ -59,7 +61,7 @@ class reportes_pdf(FPDF):
         self.set_line_width(0.3)
         self.set_font(style="B")
         for col_width, heading in zip(col_widths, headings):
-            self.cell(col_width, 5, heading, 1, 0, "C", True)
+            self.cell(col_width, 4, heading, 1, 0, "C", True)
         self.ln()
         # Color and font restoration:
         self.set_fill_color(224, 235, 255)
@@ -101,7 +103,8 @@ def reporte_estado_de_cuenta(data,filter_info):
     page_width = 270
     col_widths = [  int((len(x)/full_width)*page_width)  for x in headings ]
     logger.debug("PDF WIDTH FULL : {} WEIGHTS: {}".format(full_width , col_widths) )
-    
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%s")
+    report_fullpath = os.path.join(settings.DATA_PDF_PATH,"vl_reporte_cobranza_saldos.{}.pdf".format(timestamp))
 
     count = 0
     #model_fields = [f.name for f in data._meta.get_fields()]
@@ -112,7 +115,7 @@ def reporte_estado_de_cuenta(data,filter_info):
     pdf.alias_nb_pages()
     pdf.set_image_filter("DCTDecode")
     pdf.add_page()
-    pdf.set_font("Times", size=12)
+    pdf.set_font("Courier", size=10)
     #pdf.basic_table(headers,field_names, data)
     #pdf.colored_table(headers,field_names, data)
     pdf.set_fill_color(255, 100, 0)
@@ -131,19 +134,20 @@ def reporte_estado_de_cuenta(data,filter_info):
     for row in data:
         print(row.familia)
         count+=1
-        pdf.cell(col_widths[0], 6, str(count), "LR", 0, "L", fill)
+        cell_v=5
+        pdf.cell(col_widths[0], cell_v, str(count), "LR", 0, "L", fill)
         logger.debug("{}-{}".format(row.familia.crm_id,row.familia.familia_crm_id) )
-        pdf.cell(col_widths[1], 6, "{}-{}".format(row.familia.crm_id,row.familia.familia_crm_id), "LR", 0, "L", fill)
-        pdf.cell(col_widths[2], 6, str(row.plan_de_pago), "LR", 0, "L", fill)
-        pdf.cell(col_widths[3], 6, str(row.cuotas_vencidas_importe), "LR", 0, "L", fill)
-        pdf.cell(col_widths[4], 6, str(row.pagos_importe), "LR", 0, "L", fill)
-        pdf.cell(col_widths[5], 6, str(row.balance), "LR", 0, "L", fill)
-        pdf.cell(col_widths[6], 6, 'OK' if row.balance <= 0 else 'DEUDA', "LR", 0, "L", fill)
+        pdf.cell(col_widths[1], cell_v, "{}-{}".format(row.familia.crm_id,row.familia.familia_crm_id), "LR", 0, "L", fill)
+        pdf.cell(col_widths[2], cell_v, str(row.plan_de_pago), "LR", 0, "L", fill)
+        pdf.cell(col_widths[3], cell_v, str(row.cuotas_vencidas_importe), "LR", 0, "L", fill)
+        pdf.cell(col_widths[4], cell_v, str(row.pagos_importe), "LR", 0, "L", fill)
+        pdf.cell(col_widths[5], cell_v, str(row.balance), "LR", 0, "L", fill)
+        pdf.cell(col_widths[6], cell_v, 'OK' if row.balance <= 0 else 'DEUDA', "LR", 0, "L", fill)
         pdf.ln()
         fill = not fill
     pdf.cell(page_width, 0, "", "T")
-    pdf.output("vl_reporte_cobranza_saldos.pdf")
-    return FileResponse(open('vl_reporte_cobranza_saldos.pdf', 'rb'), as_attachment=True, content_type='application/pdf')
+    pdf.output(  report_fullpath)
+    return FileResponse(open(report_fullpath, 'rb'), as_attachment=True, content_type='application/pdf')
 
 
 def test_report_familias_listado(data):

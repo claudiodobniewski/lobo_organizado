@@ -158,6 +158,9 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'lobo_organizado/static')
 
+DATA_PATH = os.path.join(BASE_DIR, 'lobo_organizado/data')
+DATA_PDF_PATH = os.path.join(DATA_PATH, 'pdf_reports')
+
 # CLAUDIO LOGGING SECTION
 LOGGING = {
     'version': 1,
