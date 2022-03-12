@@ -9,13 +9,15 @@ from django.template.defaulttags import register
 import datetime
 from datetime import datetime,date, timezone #,timedelta
 from django.core.paginator import Paginator
+
 from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
+from reportes.views import reporte_estado_de_cuenta
 from decimal import Decimal
 import cuotas.models as app_cuotas
 
-from weasyprint import HTML, CSS
+#from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
 
@@ -220,6 +222,11 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     lista_cuotas = CuotaSocialFamilia.objects.all().filter(deleted=False)
     #lista_planes = PlanDePago.objects.all().filter(eliminado=False)
 
+    # Reporte PDF options
+    report_export_on = False # generate and download report
+    report_export_all = True # Report must include all records? True= yes, False=only current page.
+
+    current_user = request.user
      # BUSQUEDA
      
     if not clean_filters and request.method == 'GET': # If the form is submitted
@@ -241,7 +248,9 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
         #print("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
         f_familia = request.GET.get('f_familia', None)
-        
+        report_export_on = request.GET.get('report_export_on', False)
+        report_export_all = request.GET.get('report_export_all', False)
+
         if not f_start_date:
             start_date = date.today() # - timedelta(months = 1)
         else:
@@ -267,6 +276,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         f_end_date = date.today().strftime("%Y-%m-%d")
         end_date = date.today()
         f_plan=0
+        report_export_on = False # generate and download report
+        report_export_all = True # Report must include all records? True= yes, False=only current page.
     
     print(date.today())
     print("GET:{} POST:{} FAMILIA:{} PLAN:{}  CUOTAS:{}".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),request.POST.get('f_familia', None),f_plan,lista_cuotas ))
@@ -315,18 +326,35 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
             estado_plan.pagos = app_cuotas.pagos_percibidos_plan(pagos, un_plan.id)
             if not len( estado_plan.cuotas ) and not len( estado_plan.pagos ):
                 continue
-            print("PLAN:: {}".format(un_plan) )
+            logger.debug("PLAN:: {}".format(un_plan) )
             pagos_importe = estado_plan.pagos_importe = app_cuotas.pagos_percibidos_suma(estado_plan.pagos)
             balance_plan =  estado_plan.balance = vencidas_importe - float (pagos_importe)
             estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
-            print("FLIA:{} ++ ESTADO DEL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
+            logger.debug("FLIA:{} ++ ESTADO DEL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
             reporte.append(estado_plan)
 
     #####
     # Paginacion
-    paginator = Paginator(reporte, 15) # Show x contacts per page.
+    if report_export_all:
+        paginator = Paginator(reporte, len(reporte)) # Show x contacts per page.
+    else:
+        paginator = Paginator(reporte, 15) # Show x contacts per page.
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    filter_info = {
+        "start_date": start_date,
+        "end_date" : end_date,
+        "f_plan" : f_plan,
+        'f_familia' : f_familia,
+    }
+    
+    
+    if report_export_on:
+        report_export_on = False
+        report_export_all = False
+        return reporte_estado_de_cuenta(current_user,page_obj, filter_info)
+    
 
     return render(request, 'cuotas/g_cobranzas_listado.html', {
         'error_message': error_message,
