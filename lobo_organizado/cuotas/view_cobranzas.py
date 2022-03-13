@@ -353,6 +353,9 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     if report_export_on:
         report_export_on = False
         report_export_all = False
+        filter_info["f_plan"] = "Todos" if not filter_info["f_plan"] else lista_planes
+        filter_info["start_date"] = filter_info["start_date"].strftime("%Y-%m-%d")
+        filter_info["end_date"] = filter_info["end_date"].strftime("%Y-%m-%d")
         return reporte_estado_de_cuenta(current_user,page_obj, filter_info)
     
 

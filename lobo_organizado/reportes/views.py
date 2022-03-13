@@ -127,6 +127,9 @@ def reporte_estado_de_cuenta(current_user,data,filter_info):
     #pdf.ln()
     #pdf.basic_table(headers,field_names, data)
     #pdf.colored_table(headers,field_names, data)
+    
+    pdf.write(6,"Filtros aplicados {}".format(str(filter_info)))
+    pdf.ln()
     pdf.set_fill_color(255, 100, 0)
     pdf.set_text_color(255)
     pdf.set_draw_color(255, 0, 0)
