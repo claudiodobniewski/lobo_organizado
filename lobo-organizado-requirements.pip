@@ -1,0 +1,14 @@
+# Pip install specific versions of multiple packages:
+# pip3  install -r lobo-organizado-requirements.pip
+
+django==3.2.0
+django-bootstrap4
+django-bootstrap-icons
+django-icons
+django_material_icons
+django-crispy
+django-utils-six
+django-auditlog==1.0a1
+mysqlclient
+python-dateutil
+fpdf2==2.5.0 

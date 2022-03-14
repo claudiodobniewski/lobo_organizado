@@ -15,6 +15,7 @@ from django.views.generic import ListView
 import inspect ,logging
 import cuotas.models as app_cuotas
 from cuotas.models import CuotaSocialFamilia,CuotaPago,PlanDePago
+from reportes.views import reporte_estado_familias
 import copy
 from django.db.models import Q
 
@@ -211,8 +212,12 @@ def familia_index(request,error_message=''):
     ))
 
     # BUSQUEDA
+    current_user = request.user
     if request.method == 'GET': # If the form is submitted
         search_query = request.GET.get('search_box', None)
+        # Reporte PDF options
+        report_export_on = request.GET.get('report_export_on', False) # generate and download report
+        report_export_all = request.GET.get('report_export_all', False) # Report must include all records? True= yes, False=only current page.
 
     if search_query:
 
@@ -227,8 +232,12 @@ def familia_index(request,error_message=''):
     else:
         lista_familias = Familia.objects.all().order_by('familia_crm_id')
     print("GET:{} POST:{}  search_query:{}  FAMILIAS:{}".format(request.GET.get('search_box', None),request.POST.get('search_box', None),search_query,lista_familias ))
+    
     # Paginacion
-    paginator = Paginator(lista_familias, 8) # Show x contacts per page.
+    if report_export_all:
+        paginator = Paginator(lista_familias, len(lista_familias)) # Show x contacts per page.
+    else:
+        paginator = Paginator(lista_familias, 10) # Show x contacts per page.
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -284,8 +293,17 @@ def familia_index(request,error_message=''):
 
         ###
 
+    if report_export_on:
 
+        filter_info = {
+            "search_query" : search_query,
+        }
 
+        report_export_on = False
+        report_export_all = False
+        return reporte_estado_familias(current_user,page_obj, filter_info)
+
+    #return test_report_familias_listado(page_obj)
     return render(request, 'socios/familia_listado.html', {'familias': lista_familias, 'error_message': error_message,'page_obj': page_obj, "search_query": search_query} )
 
 def familia_detalle(request, familia_id, error_message=''):
