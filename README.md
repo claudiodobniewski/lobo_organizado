@@ -38,7 +38,7 @@ Iniciar webserver dev python default port 8000
 $ python3 manage.py runserver
 
 puerto 8000
-$python3 manage.py runserver 8080
+$ python3 manage.py runserver 8080
 
 intereface 0.0.0.0 puerto 8080
 $ python3 manage.py runserver 0:8080
@@ -161,10 +161,20 @@ $ python3 manage.py test animals.tests.SocioTestCase.test_animals_can_speak
 $ python3 manage.py test socios/tests/ --pattern="tests.py"
 
 
-# Virtual env the
+# Virtual env CREATE
+* python3 -m venv .virtualenvs/lobo_organizado-virtualenv
+
+# VIrtual env ACTIVATE
 * source .virtualenvs/lobo_organizado-virtualenv/bin/activate
 
 # Collect statics file compila los files staticos (assets de django) en un directorio para incluir en el proyecto
 python3 manage.py collectstatic
 
 
+# PRINT REPORT -- HTML to PDF 
+
+## python weasyprint
+pip3 install WeasyPrint
+pip3 install fpdf2
+## django python WeasyPrint (use este)
+pip3 install -U django-weasyprint
