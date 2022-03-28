@@ -387,8 +387,6 @@ def gestion_cobranza_familia(request, familia_id):
         print("Item: {}".format(i))
         print("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo']))
     
-    #print("IMPRESION PDF" )
-    #pdf_generation(request)
 
     return render(request, 'cuotas/g_cobranzas_familia.html', {
         #'error_message': '',
@@ -499,12 +497,6 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
         'lista_planes': lista_planes_view
          } )
 
-def pdf_generation(request):
-            html_template = get_template('templates/home_page.html')
-            pdf_file = HTML(string=html_template).write_pdf()
-            response = HttpResponse(pdf_file, content_type='application/pdf')
-            response['Content-Disposition'] = 'filename="home_page.pdf"'
-            return response
 
 
 

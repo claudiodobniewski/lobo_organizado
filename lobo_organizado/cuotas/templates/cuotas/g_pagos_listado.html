@@ -69,7 +69,7 @@
           title="detalle cuotas y pagos">{{ registro.aplica_pago_plan.crm_id }}</a></td>
         <td>{{ registro.forma_de_pago.medio_id }}</td>
         <td>{{ registro.importe }}</td>
-        <td>{{ registro.comprobante }}</td>
+        <td>{% if registro.comprobante %}{{ registro.comprobante }}{% else %}{{ registro.hash|cut:"-" }}{% endif %}</td>
       </tr>
 
       {% endfor %}

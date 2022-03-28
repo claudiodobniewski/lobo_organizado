@@ -239,7 +239,8 @@ def familia_index(request,error_message=''):
     else:
         paginator = Paginator(lista_familias, 10) # Show x contacts per page.
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number if page_number > 0 else 1)
+    print("page_number {}".format(page_number))
+    page_obj = paginator.get_page(page_number if not page_number or int(page_number) > 0 else 1)
 
     print("page_obj {}".format(page_obj))
 

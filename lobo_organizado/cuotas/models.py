@@ -4,7 +4,7 @@ from socios.models import Familia
 from datetime import date
 from django.core.validators import MinValueValidator
 from decimal import Decimal
-
+import uuid
 from auditlog.registry import auditlog
 
 # Create your models here.
@@ -66,6 +66,7 @@ class CuotaMedioDePago(models.Model):
         return  "{} - {}".format(self.medio_id,self.descripcion)
 
 class CuotaPago(models.Model):
+
     importe = models.DecimalField('cobrado',default=0.0,max_digits=8,decimal_places=2,validators=[MinValueValidator(Decimal('1.0'))])
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
@@ -75,6 +76,8 @@ class CuotaPago(models.Model):
     deleted = models.BooleanField(default=False)
     forma_de_pago = models.ForeignKey(CuotaMedioDePago,default=1, on_delete=models.CASCADE)
     comprobante = models.CharField(default="",blank=True,max_length=12)
+    #hash = models.UUIDField(default=uuid.uuid4, editable=False)
+    hash = models.CharField(default=uuid.uuid4,max_length=40 ,editable=True)
 
     class Meta:
         permissions = (
@@ -95,6 +98,8 @@ class CuotaPago(models.Model):
     
     def __str__(self):
         return  "Cob{}:{}:${}".format(self.pk,self.fecha_cobro,self.importe)
+    
+
 
 
 
