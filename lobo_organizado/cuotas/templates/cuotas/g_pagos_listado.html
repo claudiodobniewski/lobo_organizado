@@ -33,6 +33,10 @@
               </option>
           {% endfor %}
         </select>
+        <label  for="report_export" class="btn btn-secondary active" class="form-label" >
+          <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF
+          <input id="report_export_all" name="report_export_all"type="checkbox"  class="form-label" checked> Todos los registros
+        </label>
         <button id="search_submit" class="btn btn-info" type="submit">Buscar!</button>
         <button formaction="{% url 'cuotas:gestion_pagos_listado' clean_filters='true' %}" id="search_submit" class="btn btn-info" type="submit"
           title="Limpiar Filtro"><span>Limpiar Filtro</span></button>
