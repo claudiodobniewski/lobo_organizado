@@ -178,3 +178,14 @@ pip3 install WeasyPrint
 pip3 install fpdf2
 ## django python WeasyPrint (use este)
 pip3 install -U django-weasyprint
+
+
+### HACKS
+migration 0026 0027 0028 deberia genererar campo hash en CuotaPago y popular con hashs unicos, pero genera repetido en todos los registros 
+Para solucionar esto, post ejecutar estas migraciones se debe correr en terminal python
+
+>>> from cuotas.models import CuotaPago
+>>> import uuid
+>>> for cuota in all_cuotas:
+...   cuota.hash = uuid.uuid4()
+...   cuota.save(update_fields=['hash'])

@@ -104,6 +104,8 @@ def editar_pago_plan(request, familia_id, pago_id):
 
     if request.method == "POST":
         form = CuotaPagoForm(request.POST,instance=pago)
+        #form.fields['hash'].widget.attrs['readonly'] = True
+        #form.fields['hash'].widget.attrs['disabled'] = 'disabled'
         #form.data.importe = Decimal(form.data['importe'].replace(',','.'))
         # check whether it's valid:
         #fecha_vto_cuota = form.cleaned_data['vto_primera_cuota'] + relativedelta(months=n)
@@ -116,9 +118,10 @@ def editar_pago_plan(request, familia_id, pago_id):
             pago.delete()
             error_message = 'Error en los datos'
 
-    
+    logger.debug("BLA BLA BLA {} {} ".format(pago, pago.hash))
     form = CuotaPagoForm(instance=pago)
-    
+    #form.fields['hash'].widget.attrs['disabled'] = 'true'
+    #form.hash = pago.hash
     return render(request, 'cuotas/pago_plan_editar.html', {'form': form, 'pago': pago , 'error_message' : error_message, 'titulo': titulo , 'boton_aceptar': boton_aceptar , 'boton_cancelar': boton_cancelar , 'cancel_message': cancel_message })
 
 def borrar_pago_plan(request, familia_id, pago_id):

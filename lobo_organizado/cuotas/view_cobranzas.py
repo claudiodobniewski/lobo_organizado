@@ -13,7 +13,7 @@ from django.core.paginator import Paginator
 from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
-from reportes.views import reporte_estado_de_cuenta
+from reportes.views import reporte_estado_de_cuenta,reporte_cobranza
 from decimal import Decimal
 import cuotas.models as app_cuotas
 
@@ -53,7 +53,7 @@ class SaldosFamilia():
         self.pagos = list( q_pagos.order_by('fecha_cobro') )
         
         self.planes_de_pago = planes_de_pago
-        print("cuotas cantidad:{}  pagos cantidad:{}".format( len(self.cuotas),len(self.pagos) ))
+        logger.debug("cuotas cantidad:{}  pagos cantidad:{}".format( len(self.cuotas),len(self.pagos) ))
     
     def proceso_corto(self):
         ''' proceso corto si cuotas o pagos esta vacia
@@ -61,15 +61,15 @@ class SaldosFamilia():
         '''
 
         if not len(self.cuotas) and not len(self.pagos):
-            print("* No hay cuotas ni pagos! C:{} P:{}".format(len(self.cuotas) ,len(self.pagos)) )
+            logger.debug("* No hay cuotas ni pagos! C:{} P:{}".format(len(self.cuotas) ,len(self.pagos)) )
             return True
         elif not len(self.pagos) :
-            print("* aplica_solo_cuotas()")
+            logger.debug("* aplica_solo_cuotas()")
             self.aplica_solo_cuotas()
             return True
 
         elif not len(self.cuotas) :
-            print("* aplica_solo_pagos()")
+            logger.debug("* aplica_solo_pagos()")
             self.aplica_solo_pagos()
             return True
 
@@ -99,7 +99,7 @@ class SaldosFamilia():
     def aplica_solo_cuotas(self):
 
         while len(self.cuotas) > 0 :
-            print("Aplicando cuota...")
+            logger.debug("Aplicando cuota...")
             cuota=self.cuotas.pop(0)
             self.registros.append(self.aplica_una_cuota(cuota))
 
@@ -118,13 +118,13 @@ class SaldosFamilia():
 
     def aplica_cuota_mas_vieja(self,cuota,pago):
         ''' '''
-        print("older vencimiento < cobro ? {} ".format(cuota.vencimiento < pago.fecha_cobro))
+        logger.debug("older vencimiento < cobro ? {} ".format(cuota.vencimiento < pago.fecha_cobro))
         if cuota.vencimiento < pago.fecha_cobro:
-            print("aplicando Cuota...")
+            logger.debug("aplicando Cuota...")
             self.registros.append(self.aplica_una_cuota(cuota))
             cuota = None
         else:
-            print("aplicando Pago...")
+            logger.debug("aplicando Pago...")
             self.registros.append(self.aplica_un_pago(pago))
             pago = None
         return (cuota,pago)
@@ -134,53 +134,53 @@ class SaldosFamilia():
         # si hay cutoas y pagos...
 
         if self.proceso_corto():
-            print("Return en proceso_corto() inicial")
+            logger.debug("Return en proceso_corto() inicial")
             return 
         
         #first_loop = True
         c=None
         p=None
-        print("Start loop")
+        logger.debug("Start loop")
         while len(self.cuotas) or len(self.pagos) or not c or not p:
-            print("Nest loop....")
+            logger.debug("Nest loop....")
             #if first_loop:
-            #    print("Firts loop!")
+            #    logger.debug("Firts loop!")
             #    c = self.cuotas.pop()
             #    p = self.pagos.pop()
 
             if not c and len(self.cuotas):
                 c = self.cuotas.pop(0)
-                print("C.pop({})".format(c))
+                logger.debug("C.pop({})".format(c))
             elif not c and not len(self.cuotas):
                 if p :
                     self.pagos.insert(0,p)
-                print("C no tiene mas elementos, break loop")
+                logger.debug("C no tiene mas elementos, break loop")
                 break
             
             if not p and len(self.pagos) :
                 p = self.pagos.pop(0)
-                print("P.pop({})".format(p))
+                logger.debug("P.pop({})".format(p))
             elif not p  and not len(self.pagos) :
                 if c:
                     self.cuotas.insert(0,c)
-                print("P no tiene mas elementos, break loop")
+                logger.debug("P no tiene mas elementos, break loop")
                 break
             
-            print("* cuotas:{}  pagos:{}".format( len(self.cuotas),len(self.pagos) ))
-            print("* cuota:{}  pagos:{}".format( c,p ))
+            logger.debug("* cuotas:{}  pagos:{}".format( len(self.cuotas),len(self.pagos) ))
+            logger.debug("* cuota:{}  pagos:{}".format( c,p ))
 
             c,p = self.aplica_cuota_mas_vieja(c,p)
-            print("* post aplicar c,p :: {} ## {}".format(c,p))
-            print("* Registros: {}".format(self.registros))
-            print("CHECK LOOP CONDITION: lenC:{}, lenP{}, NOT c:{} , NOT p:{}, BOOLEAN:{}".format(len(self.cuotas) , len(self.pagos) , not c , not p,len(self.cuotas) or len(self.pagos) or not c or not p))
-            print("end loop")
+            logger.debug("* post aplicar c,p :: {} ## {}".format(c,p))
+            logger.debug("* Registros: {}".format(self.registros))
+            logger.debug("CHECK LOOP CONDITION: lenC:{}, lenP{}, NOT c:{} , NOT p:{}, BOOLEAN:{}".format(len(self.cuotas) , len(self.pagos) , not c , not p,len(self.cuotas) or len(self.pagos) or not c or not p))
+            logger.debug("end loop")
             
             
 
         # finalmente, o no hay mas cuotas o no hay mas pagos...
         result_corto = self.proceso_corto()
-        print("** result:{} Registros: {}".format(result_corto,self.registros))
-        print("end procesar()")
+        logger.debug("** result:{} Registros: {}".format(result_corto,self.registros))
+        logger.debug("end procesar()")
 
     def get_registros(self):
         return self.registros
@@ -202,7 +202,7 @@ def equal_id(plan_id,plan_option_id):
     @param plan_id integer
     @param plan_option_iw integer    
     """
-    print("PLAN_ID:{}  PLAN_OPTION_ID:{}  EQUALL:{}".format(plan_id,plan_option_id,int(plan_id) == int(plan_option_id) ) )
+    logger.debug("PLAN_ID:{}  PLAN_OPTION_ID:{}  EQUALL:{}".format(plan_id,plan_option_id,int(plan_id) == int(plan_option_id) ) )
     return int(plan_id) == int(plan_option_id)
 
 def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
@@ -230,7 +230,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
      # BUSQUEDA
      
     if not clean_filters and request.method == 'GET': # If the form is submitted
-        print("GET :{}".format(request.GET) )
+        logger.debug("GET :{}".format(request.GET) )
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
         try:
@@ -246,7 +246,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
             ))
             f_plan=0
 
-        #print("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
+        #logger.debug("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
         f_familia = request.GET.get('f_familia', None)
         report_export_on = request.GET.get('report_export_on', False)
         report_export_all = request.GET.get('report_export_all', False)
@@ -271,7 +271,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
 
     else:
-        print("NO FILTERS {}: {}".format(clean_filters,request.GET) )
+        logger.debug("NO FILTERS {}: {}".format(clean_filters,request.GET) )
         f_start_date=''
         f_end_date = date.today().strftime("%Y-%m-%d")
         end_date = date.today()
@@ -279,8 +279,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         report_export_on = False # generate and download report
         report_export_all = True # Report must include all records? True= yes, False=only current page.
     
-    print(date.today())
-    print("GET:{} POST:{} FAMILIA:{} PLAN:{}  CUOTAS:{}".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),request.POST.get('f_familia', None),f_plan,lista_cuotas ))
+    logger.debug(date.today())
+    logger.debug("GET:{} POST:{} FAMILIA:{} PLAN:{}  CUOTAS:{}".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),request.POST.get('f_familia', None),f_plan,lista_cuotas ))
     
 
     ###############################
@@ -295,7 +295,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     lista_planes_view = PlanDePago.objects.all().order_by('id')
 
     if f_plan:
-        print(" checkpint planes filtrado '{}' ".format(f_plan))
+        logger.debug(" checkpint planes filtrado '{}' ".format(f_plan))
         lista_planes = PlanDePago.objects.all().filter(id=f_plan)
     else:
         lista_planes = lista_planes_view.all()
@@ -304,7 +304,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
 
     reporte = []
     
-    print(" FECHA DESDE:{} HASTA:{} PLAN:{} PLANES:{}".format(start_date,end_date,f_plan,lista_planes))
+    logger.debug(" FECHA DESDE:{} HASTA:{} PLAN:{} PLANES:{}".format(start_date,end_date,f_plan,lista_planes))
     for familia in lista_familias:
 
         # cuotas_todas,cuotas_por_plan,cuotas_vencidas,cuotas_suma,pagos_percibidos_queryset,pagos_percibidos_plan,pagos_percibidos_suma
@@ -382,13 +382,11 @@ def gestion_cobranza_familia(request, familia_id):
     gestion.procesar()
     registros.extend(gestion.get_registros())
 
-    print("REGISTROS: {}".format(registros))
+    logger.debug("REGISTROS: {}".format(registros))
     for i in registros:
-        print("Item: {}".format(i))
-        print("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo']))
+        logger.debug("Item: {}".format(i))
+        logger.debug("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo']))
     
-    #print("IMPRESION PDF" )
-    #pdf_generation(request)
 
     return render(request, 'cuotas/g_cobranzas_familia.html', {
         #'error_message': '',
@@ -414,15 +412,19 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
     f_plan = None
     f_familia = None
     lista_pagos = CuotaPago.objects.all().filter(deleted=False).order_by('-fecha_cobro')
-
+    current_user = request.user
+    # Reporte PDF options
+    report_export_on = False # generate and download report
+    report_export_all = True # Report must include all records? True= yes, False=only current page.
     # BUSQUEDA
     
     
 
     if not clean_filters and request.method == 'GET': # If the form is submitted
-        print("GET :{}".format(request.GET) )
+        logger.debug("GET :{}".format(request.GET) )
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
+        logger.debug(" GET # {}: {}".format(clean_filters,request.GET) )
         try:
             f_plan=int(request.GET.get('planes_de_pagos', 0))
         except Exception as e:
@@ -436,47 +438,54 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
             ))
             f_plan=0
         f_familia = request.GET.get('f_familia', None)
+        report_export_on = request.GET.get('report_export_on', False)
+        report_export_all = request.GET.get('report_export_all', False)
         
         if not f_start_date:
             start_date = date.today() # - timedelta(months = 1)
         else:
             start_date = datetime.date(datetime.strptime(f_start_date,"%Y-%m-%d"))
             lista_pagos = lista_pagos.filter(fecha_cobro__gte=start_date)
+        
+        logger.debug(" GET ## {}: {}".format(clean_filters,request.GET) )
 
+        
         if not f_end_date:
             end_date = date.today()
         else:
             end_date = datetime.date(datetime.strptime(f_end_date,"%Y-%m-%d"))
         lista_pagos = lista_pagos.filter(fecha_cobro__lte=end_date)
-        print("Pagos 1 {}".format(lista_pagos))
+        logger.debug("Pagos 1 {}".format(lista_pagos))
         
         if f_plan:
             lista_pagos = lista_pagos.filter(aplica_pago_plan=f_plan)
-            print("Pagos 2 {}  {}".format(f_plan,lista_pagos))
+            logger.debug("Pagos 2 {}  {}".format(f_plan,lista_pagos))
 
         
         if f_familia:
             lista_familias = Familia.objects.filter(familia_crm_id__icontains=f_familia).filter(eliminado=False).order_by('familia_crm_id')
-            print("Familias {}".format(lista_familias))
-            print("Pagos 3 {}".format(lista_pagos))
+            logger.debug("Familias {}".format(lista_familias))
+            logger.debug("Pagos 3 {}".format(lista_pagos))
             lista_pagos = lista_pagos.filter(deleted=False).filter(familia__pk__in=lista_familias)
             lista_pagos = CuotaPago.objects.all().filter(deleted=False).filter(familia__pk__in=lista_familias).order_by('-fecha_cobro')
 
-            print("Pagos 4 {}".format(lista_pagos))
+            logger.debug("Pagos 4 {}".format(lista_pagos))
             
         #else:
         #    lista_familias = Familia.objects.all().filter(eliminado=False).order_by('familia_crm_id')
 
     else:
-        print("NO FILTERS {}: {}".format(clean_filters,request.GET) )
+        logger.debug("NO FILTERS {}: {}".format(clean_filters,request.GET) )
         f_start_date=''
         f_end_date = date.today().strftime("%Y-%m-%d")
         end_date = date.today()
         f_plan=0
+        report_export_on = False # generate and download report
+        report_export_all = True # Report must include all records? True= yes, False=only current pa
 
     lista_planes_view = PlanDePago.objects.all().order_by('id')
     if f_plan:
-        print(" checkpint planes filtrado '{}' ".format(f_plan))
+        logger.debug(" checkpint planes filtrado '{}' ".format(f_plan))
         lista_planes = PlanDePago.objects.all().filter(id=f_plan)
     else:
         lista_planes = lista_planes_view.all()
@@ -485,9 +494,29 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
 
     #####
     # Paginacion
-    paginator = Paginator(reporte, 15) # Show x contacts per page.
+    if report_export_all:
+        paginator = Paginator(reporte, len(reporte)) # Show x contacts per page.
+    else:
+        paginator = Paginator(reporte, 15) # Show x contacts per page.
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    
+
+    if report_export_on:
+        filter_info = {
+        "start_date": f_start_date,
+        "end_date" : end_date,
+        "f_plan" : f_plan,
+        'f_familia' : f_familia,
+        }
+        report_export_on = False
+        report_export_all = False
+        filter_info["f_plan"] = "Todos" if not filter_info["f_plan"] else lista_planes
+        logger.debug("CHECK FILTERS {}: {}".format(filter_info["start_date"],request.GET) )
+        filter_info["start_date"] = filter_info["start_date"] if filter_info["start_date"] else "---" # para saber si hay una fecha "desde"
+        filter_info["end_date"] = filter_info["end_date"].strftime("%Y-%m-%d")
+        return reporte_cobranza(current_user,page_obj, filter_info)
 
     return render(request, 'cuotas/g_pagos_listado.html', {
         'error_message': error_message,
@@ -499,12 +528,6 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
         'lista_planes': lista_planes_view
          } )
 
-def pdf_generation(request):
-            html_template = get_template('templates/home_page.html')
-            pdf_file = HTML(string=html_template).write_pdf()
-            response = HttpResponse(pdf_file, content_type='application/pdf')
-            response['Content-Disposition'] = 'filename="home_page.pdf"'
-            return response
 
 
 

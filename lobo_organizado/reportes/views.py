@@ -296,7 +296,91 @@ def test_report(request):
     return FileResponse(open('report.pdf', 'rb'), as_attachment=True, content_type='application/pdf')
 
 
+def reporte_cobranza(current_user,data,filter_info):
+    '''Reporte de pago de cuotas percibidos'''
 
+    func = inspect.currentframe().f_back.f_code
+    # Dump the message + the name of this function to the log.
+    logger.debug(" %s: %s in %s:%i" % (
+        'init ', 
+        func.co_name, 
+        func.co_filename, 
+        func.co_firstlineno
+    ))
+
+    logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
+    
+    headings = (
+            "#",
+            "ID",
+            "Familia",
+            "Fecha",
+            "Plan",
+            "$$$",
+            'M#',
+            "Comprobante"
+        )
+    full_width =  sum (len(x) for x in headings )
+    page_width = 270
+    col_widths = [  int((len(x)/full_width)*page_width)  for x in headings ]
+    col_widths = [7,15,50,30,25,23,10,110]
+    logger.debug("PDF WIDTH FULL : {} WEIGHTS: {}".format(full_width , col_widths) )
+    
+    count = 0
+    #model_fields = [f.name for f in data._meta.get_fields()]
+    #rows = [ r[0] for r in data if model_fields in field_names ]
+
+    pdf = reportes_pdf('L', 'mm', 'A4',current_user)
+    report_fullpath = os.path.join(settings.DATA_PDF_PATH,"vl_reporte_cobranza_saldos.{}.pdf".format(pdf.timestamp))
+    pdf.set_title( "Viejos Lobos - reporte Cuotas Cobradas" )
+    pdf.alias_nb_pages()
+    pdf.set_image_filter("DCTDecode")
+    pdf.add_page()
+    pdf.set_font("Courier", size=10)
+    #pdf.write(6,"Usuario:{}-{},{} Fecha Reporte {}".format(pdf.current_user.pdf.id,current_user.last_name, pdf.current_user.first_name,pdf.timestamp))
+    #pdf.ln()
+    #pdf.basic_table(headers,field_names, data)
+    #pdf.colored_table(headers,field_names, data)
+    
+    pdf.write(6,"Filtros aplicados {}".format(str(filter_info)))
+    pdf.ln()
+    pdf.set_fill_color(255, 100, 0)
+    pdf.set_text_color(255)
+    pdf.set_draw_color(255, 0, 0)
+    pdf.set_line_width(0.3)
+    pdf.set_font(style="B")
+    for col_width, heading in zip(col_widths, headings):
+        pdf.cell(col_width, 5, heading, 1, 0, "C", True)
+    pdf.ln()
+    # Color and font restoration:
+    pdf.set_fill_color(224, 235, 255)
+    pdf.set_text_color(0)
+    pdf.set_font()
+    fill = False
+
+    for row in data:
+        #logger.debug(row.hash)
+        count+=1
+        cell_v=5
+        pdf.cell(col_widths[0], cell_v, str(count), "LR", 0, "L", fill)
+        #logger.debug("{}-{}".format(row.id,row.familia.familia_crm_id) )
+        pdf.cell(col_widths[1], cell_v, str(row.id) , "LR", 0, "L", fill)
+        pdf.cell(col_widths[2], cell_v, str(f"{row.familia.crm_id}#{row.familia.familia_crm_id}") , "LR", 0, "L", fill)
+        pdf.cell(col_widths[3], cell_v, str(row.fecha_cobro) , "LR", 0, "L", fill)
+        pdf.cell(col_widths[4], cell_v, str(row.aplica_pago_plan.crm_id), "LR", 0, "L", fill)
+        pdf.cell(col_widths[5], cell_v, str(row.importe), "LR", 0, "L", fill)
+        pdf.cell(col_widths[6], cell_v, str(row.forma_de_pago.medio_id), "LR", 0, "L", fill)
+        if row.comprobante:
+            comprobante = f'{row.comprobante} / {row.hash}'
+        else:
+            comprobante = f'{row.hash}'
+        pdf.cell(col_widths[7], cell_v,comprobante, "LR", 0, "L", fill)
+        
+        pdf.ln()
+        fill = not fill
+    pdf.cell(page_width, 0, "", "T")
+    pdf.output(  report_fullpath)
+    return FileResponse(open(report_fullpath, 'rb'), as_attachment=True, content_type='application/pdf')
 
 
 

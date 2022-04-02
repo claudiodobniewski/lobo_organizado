@@ -33,6 +33,10 @@
               </option>
           {% endfor %}
         </select>
+        <label  for="report_export" class="btn btn-secondary active" class="form-label" >
+          <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF
+          <input id="report_export_all" name="report_export_all"type="checkbox"  class="form-label" checked> Todos los registros
+        </label>
         <button id="search_submit" class="btn btn-info" type="submit">Buscar!</button>
         <button formaction="{% url 'cuotas:gestion_pagos_listado' clean_filters='true' %}" id="search_submit" class="btn btn-info" type="submit"
           title="Limpiar Filtro"><span>Limpiar Filtro</span></button>
@@ -69,7 +73,7 @@
           title="detalle cuotas y pagos">{{ registro.aplica_pago_plan.crm_id }}</a></td>
         <td>{{ registro.forma_de_pago.medio_id }}</td>
         <td>{{ registro.importe }}</td>
-        <td>{{ registro.comprobante }}</td>
+        <td>{% if registro.comprobante %}{{ registro.comprobante }}{% else %}{{ registro.hash|cut:"-" }}{% endif %}</td>
       </tr>
 
       {% endfor %}

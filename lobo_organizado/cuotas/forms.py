@@ -20,12 +20,23 @@ class CuotaPagoForm(forms.ModelForm):
 
     fecha_cobro = forms.DateField(widget = forms.SelectDateWidget(years=range(init_year_pay(), end_year_pay()) ) )
     importe = forms.DecimalField()
+    #hash = forms.UUIDField( widget=forms.TextInput(attrs={'readonly':'readonly'}),required=False)
+    hash = forms.TextInput( )
+    
 
+    def __init__(self, *args, **kwargs):
+         super(CuotaPagoForm, self).__init__(*args, **kwargs)
+         self.fields['hash'].widget.attrs['readonly'] = True
+
+    def __set_readonly( self ):
+        for field in self.fields:                
+            self.fields[field].required = False
+            self.fields[field].widget.attrs['disabled'] = 'disabled'
+            
     class Meta:
         model = CuotaPago
-        fields = ('importe', 'fecha_cobro','forma_de_pago','comprobante', 'aplica_pago_plan', 'familia')
-
-
+        #readonly_fields = ['hash',]
+        fields = ('importe', 'fecha_cobro','forma_de_pago','comprobante','aplica_pago_plan', 'familia','hash')
 
 
 class CuotaSocialFamiliaForm(forms.ModelForm):
