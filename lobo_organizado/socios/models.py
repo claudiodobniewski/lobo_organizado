@@ -1,6 +1,7 @@
 from django.db import models
 from django import template
 from auditlog.registry import auditlog
+from auditlog.models import AuditlogHistoryField
 #from cuotas.models import CuotaSocialFamilia,CuotaPago
 
 # Create your models here.
@@ -20,6 +21,8 @@ class Familia(models.Model):
     
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
+
+    history = AuditlogHistoryField()
     
     class Meta:
         permissions = (
@@ -66,6 +69,8 @@ class Socio(models.Model):
     categoria=models.IntegerField(default=0, choices=CATEGORIAS_CHOISES)
     rama=models.IntegerField(default=0, choices=RAMAS_CHOISES)
 
+    history = AuditlogHistoryField()
+
 
     class Meta:
         permissions = (
@@ -85,6 +90,8 @@ class Observaciones(models.Model):
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE,blank=True, null=True)
     creado = models.DateTimeField('creado',auto_now_add=True)
     actualizado = models.DateTimeField('actualizado',auto_now=True)
+
+    history = AuditlogHistoryField()
     
     class Meta:
         permissions = (

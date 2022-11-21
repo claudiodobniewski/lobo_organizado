@@ -15,6 +15,8 @@ import inspect ,logging
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia,CuotaMedioDePago
 from cuotas.view_cobranzas import *
+from cuotas.view_auditory  import *
+
 
 logger = logging.getLogger('project.lobo.organizado')
 

@@ -24,6 +24,7 @@ class Migration(migrations.Migration):
 # La migracion no genera UUIDs unicos, se debe correr esto manual "python manager shell" para solucionarlo por consola
 # >>> from cuotas.models import CuotaPago
 # >>> import uuid
+# >>> all_cuotas = CuotaPago.objet.all()
 # >>> for cuota in all_cuotas:
 # ...   cuota.hash = uuid.uuid4()
 # ...   cuota.save(update_fields=['hash'])

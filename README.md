@@ -110,6 +110,9 @@ Running migrations:
 > 
 > miembro1.save()
 
+>>> from socios.models import Socio, Familia
+>>> deudores_octubre = Familia.objects.filter(pk__in=[1,2,7,8,14,19,21,22,23,24,28,29,32,33,35,37,39,40,41,46,49,50])
+
 ## Superuser
 
 > python3 manage.py createsuperuser

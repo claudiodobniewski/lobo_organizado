@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator
 from decimal import Decimal
 import uuid
 from auditlog.registry import auditlog
+from auditlog.models import AuditlogHistoryField
 
 # Create your models here.
 
@@ -22,6 +23,8 @@ class PlanDePago(models.Model):
     eliminado = models.BooleanField(default=False)
     orden = models.IntegerField(null=True, default=0)
     plan_default = models.BooleanField(default=False)
+
+    history = AuditlogHistoryField()
 
     class Meta:
         permissions = (
@@ -43,6 +46,7 @@ class CuotaSocialFamilia(models.Model):
     familia = models.ForeignKey(Familia, on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
     
+    history = AuditlogHistoryField()
     class Meta:
         permissions = (
                        ( "cuota_crear","Agregar cuotas"),
@@ -61,6 +65,8 @@ class CuotaMedioDePago(models.Model):
     medio_id = models.CharField(max_length=10,unique=True)
     descripcion = models.CharField(max_length=300)
     disponible = models.BooleanField(default=False)
+
+    history = AuditlogHistoryField()
     
     def __str__(self):
         return  "{} - {}".format(self.medio_id,self.descripcion)
@@ -78,6 +84,8 @@ class CuotaPago(models.Model):
     comprobante = models.CharField(default="",blank=True,max_length=12)
     #hash = models.UUIDField(default=uuid.uuid4, editable=False)
     hash = models.CharField(default=uuid.uuid4,max_length=40 ,editable=True)
+
+    history = AuditlogHistoryField()
 
     class Meta:
         permissions = (
