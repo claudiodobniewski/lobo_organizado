@@ -21,7 +21,7 @@ class SocioForm(forms.ModelForm):
     nombres = forms.CharField(max_length=50,min_length=4,required=True)
     apellidos = forms.CharField(max_length=50,min_length=4,required=True)
     fecha_nacimiento = forms.DateField(required=False,widget = forms.SelectDateWidget(years=range(init_year_birthday(), end_year_birthday())) )
-    dni = forms.IntegerField(max_value=999999999999999,help_text='maximo 15 digitos', required=True)
+    dni = forms.CharField(max_length=15,help_text='maximo 15 digitos', required=True)
 
     class Meta:
         model = Socio
