@@ -8,6 +8,9 @@ Desarrollado sobre
 * python 3.6 
 instalado con pyp3 (pip para python 3)  
 
+Instalacion de dependencias (activado viertualenv)
+> pip3 install -r lobo_organizado/lobo-organizado-requirements.pip
+
 * django python 3.2.0
 
 usar pip3.6 o pip3 segun ambientes

@@ -340,7 +340,11 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     else:
         paginator = Paginator(reporte, 15) # Show x contacts per page.
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+ 
+    if paginator.count:
+        page_obj = paginator.get_page(page_number)
+    else:
+        page_obj = None
 
     filter_info = {
         "start_date": start_date,
@@ -499,7 +503,10 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
     else:
         paginator = Paginator(reporte, 15) # Show x contacts per page.
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    if paginator.count:
+        page_obj = paginator.get_page(page_number)
+    else:
+        page_obj = None
 
     
 

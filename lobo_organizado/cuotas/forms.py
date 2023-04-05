@@ -55,7 +55,7 @@ class PlanDePagoForm(forms.ModelForm):
     class Meta:
         model = PlanDePago
         fields = ('crm_id', 'nombre', 'descripcion',
-                  'cantidad_cuotas', 'vto_primera_cuota','importe_cuota')
+                  'cantidad_cuotas', 'vto_primera_cuota','importe_cuota','plan_default')
         
 class ListadoCobranzaForm(forms.ModelForm):
 
