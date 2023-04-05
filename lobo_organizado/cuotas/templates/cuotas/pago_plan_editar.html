@@ -3,6 +3,7 @@
 {% block content %}
 {% load crispy_forms_tags %}
 
+{% if user.is_authenticated %}
 
 <h1>Familia {{ pago.familia.familia_crm_id }}</h1>
 
@@ -27,4 +28,7 @@
 
 
 <a type="button" class="btn btn-danger" href="{% url 'socios:familia_detalle' familia_id=pago.familia.pk error_message=cancel_message|urlencode %}">{{ boton_cancelar }}</a>
+
+{% endif %}
 {% endblock content %}
+

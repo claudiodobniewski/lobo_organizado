@@ -163,12 +163,15 @@ $ python3 manage.py test animals.tests.SocioTestCase.test_animals_can_speak
 
 $ python3 manage.py test socios/tests/ --pattern="tests.py"
 
+REEMPLAZE venv POR pyenv
+activar
+pyenv activate
 
 # Virtual env CREATE
-* python3 -m venv .virtualenvs/lobo_organizado-virtualenv
+* pyenv 3.6.15 lobo_env
 
 # VIrtual env ACTIVATE
-* source .virtualenvs/lobo_organizado-virtualenv/bin/activate
+* pyenv activate
 
 # Collect statics file compila los files staticos (assets de django) en un directorio para incluir en el proyecto
 python3 manage.py collectstatic
