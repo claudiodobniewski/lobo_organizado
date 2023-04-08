@@ -219,6 +219,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     end_date = None
     f_plan = None
     f_familia = None
+    solo_listar_deudas=False # incluir en el listado solamente las filas flia-plan tengan deuda
     lista_cuotas = CuotaSocialFamilia.objects.all().filter(deleted=False)
     #lista_planes = PlanDePago.objects.all().filter(eliminado=False)
 
@@ -233,6 +234,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         logger.debug("GET :{}".format(request.GET) )
         f_start_date=request.GET.get('f_start_date', None)
         f_end_date=request.GET.get('f_end_date', None)
+        solo_listar_deudas=request.GET.get('solo_listar_deudas',False)
         try:
             f_plan=int(request.GET.get('planes_de_pagos', 0))
         except Exception as e:
@@ -278,9 +280,10 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         f_plan=0
         report_export_on = False # generate and download report
         report_export_all = True # Report must include all records? True= yes, False=only current page.
+        solo_listar_deudas = False
     
     logger.debug(date.today())
-    logger.debug("GET:{} POST:{} FAMILIA:{} PLAN:{}  CUOTAS:{}".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),request.POST.get('f_familia', None),f_plan,lista_cuotas ))
+    logger.debug("GET:{} POST:{} FAMILIA:{} PLAN:{} SOLO_DEUDAS:{} CUOTAS:{} ".format(request.GET.get('f_start_date', None),request.POST.get('f_start_date', None),request.POST.get('f_familia', None),solo_listar_deudas,f_plan,lista_cuotas ))
     
 
     ###############################
@@ -331,7 +334,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
             balance_plan =  estado_plan.balance = vencidas_importe - float (pagos_importe)
             estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
             logger.debug("FLIA:{} ++ ESTADO DEL PLAN [{}] VDO:{} COB:{} BAL:{} EST:{}".format(familia,un_plan,vencidas_importe,pagos_importe,balance_plan,estado_del_plan))
-            reporte.append(estado_plan)
+            if not solo_listar_deudas or estado_del_plan != "OK" :
+                reporte.append(estado_plan)
 
     #####
     # Paginacion
@@ -351,6 +355,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         "end_date" : end_date,
         "f_plan" : f_plan,
         'f_familia' : f_familia,
+        'solo_listar_deudas' : solo_listar_deudas,
     }
     
     
@@ -370,7 +375,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         'f_end_date': f_end_date,
         'f_plan': f_plan,
         'f_familia': f_familia,
-        'lista_planes': lista_planes_view
+        'lista_planes': lista_planes_view,
+        'solo_listar_deudas': solo_listar_deudas,
          } )
 
 def gestion_cobranza_familia(request, familia_id):

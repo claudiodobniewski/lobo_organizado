@@ -11,19 +11,24 @@
   <div class="col">
     <div class="row">
       <form type="get" action="{% url 'cuotas:gestion_cobranza_listado' %}" style="margin: 0">
+
+        
+
         <label for="f_familia" class="form-label">Nombre Familia </label>
-        <input  id="f_familia" class="form-control" type="text" name="f_familia"  placeholder="Busquea por familia..." value="{{ f_familia|default:'' }}" title="busqueda por parte o todo el nombre de familia" \>
-        
-          <label for="f_start_date" class="form-label">Desde</label>
-          <input id="f_start_date"   class="form-control" type="date" name="f_start_date" placeholder="Busquea por familia..."
-          value="{{ f_start_date }}" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
+        <input  id="f_familia" class="form-control" type="text" name="f_familia"  placeholder="Busqueda por familia..." value="{{ f_familia|default:'' }}" title="Busqueda por parte o todo el nombre de familia" \>
+        <div class="col" >
+<!--           <label for="f_start_date" class="form-label">Desde</label>
+          <input id="f_start_date"   class="form-control" type="date" name="f_start_date" placeholder="Busqueda por familia..."
+          value="{{ f_start_date }}" title=" dejar vacio y presionar 'Buscar' para no filtrar" \> -->
       
-          <label for="f_end_date" class="form-label">Hasta</label>
-          <input id="f_end_date" class="form-control" type="date" name="f_end_date" placeholder="Busquea por familia..."
+          <label for="f_end_date" class="form-label">Fecha Corte</label>
+          <input id="f_end_date" class="form-control" type="date" name="f_end_date" placeholder="Busqueda por familia..."
           value="{{ f_end_date|default:'99' }}" title=" dejar vacio y presionar 'Buscar' para no filtrar" \>
-        
+        </div>
+        <div class="col">
         <label class="form-label">Solo plan</label>
         <!-- TODO  CONVERTIR A LISTA PARA SELECCIONAR 1 , o TODOS por default -->
+        
         <select name="planes_de_pagos" id="planes_de_pagos">
           <option  value="0" {% if not f_plan or f_plan|add:"0" == 0 %}selected="selected"{% endif %}>--- TODOS ---</option>
           {% for plan in lista_planes %}
@@ -33,20 +38,26 @@
               </option>
           {% endfor %}
         </select>
-        <label  for="report_export" class="btn btn-secondary active" class="form-label" >
-          <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF
-          <input id="report_export_all" name="report_export_all"type="checkbox"  class="form-label" checked> Todos los registros
-        </label>
+      </div>
+      <div class="col btn btn-secondary active"> 
+          <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF </input>
+          <input id="report_export_all" name="report_export_all" type="checkbox"  class="form-label" checked> Todos los registros</input>
+      
         <button id="search_submit" class="btn btn-info" type="submit">Buscar!</button>
         <button formaction="{% url 'cuotas:gestion_cobranza_listado' clean_filters='true' %}" id="search_submit" class="btn btn-info" type="submit"
           title="Limpiar Filtro"><span>Limpiar Filtro</span></button>
+        </div>
+        <div class="col">
+          <label for="f_familia" class="form-label">Solo deudas</label>
+          <input id="solo_listar_deudas" name="solo_listar_deudas" type="checkbox"  class="form-label" {% if solo_listar_deudas %} checked  {% endif %}> 
+        </div>
       </form>
     </div>
   </div>
 </div>
 
 
-{% if perms.cuotas.cuota_ver %}
+{% if perms.cuotas.cuota_ver   %}
 
   <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
     <thead class="thead-light">
@@ -64,18 +75,17 @@
       {% if page_obj.paginator.count %}
       {% for registro in page_obj %}
 
-      <tr>
-        <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %}">{{ forloop.counter }}</a></th>
-        <td><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %} "
-          title="{{ cuota.familia.familia_crm_id }}">{{ registro.familia.crm_id }}#{{ registro.familia.familia_crm_id }}</a></td>
-        <td><a href="{% url 'cuotas:gestion_cobranza_familia' familia_id=registro.familia.id %} "
-          title="detalle cuotas y pagos">{{ registro.plan_de_pago.crm_id }}</a></td>
-        <td>{{ registro.cuotas_vencidas_importe }}</td>
-        <td>{{ registro.pagos_importe }}</td>
-        <td>{% if registro.balance < 0  %} A/C {% endif %} {{ registro.balance|absolute }}</td>
-        <td>{{ registro.estado }}</td>
-      </tr>
-
+          <tr>
+            <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %}">{{ forloop.counter }}</a></th>
+            <td><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %} "
+              title="{{ cuota.familia.familia_crm_id }}">{{ registro.familia.crm_id }}#{{ registro.familia.familia_crm_id }}</a></td>
+            <td><a href="{% url 'cuotas:gestion_cobranza_familia' familia_id=registro.familia.id %} "
+              title="detalle cuotas y pagos">{{ registro.plan_de_pago.crm_id }}</a></td>
+            <td>{{ registro.cuotas_vencidas_importe }}</td>
+            <td>{{ registro.pagos_importe }}</td>
+            <td>{% if registro.balance < 0  %} A/C {% endif %} {{ registro.balance|absolute }}</td>
+            <td>{{ registro.estado }}</td>
+          </tr>
       {% endfor %}
     </tbody>
   </table>
