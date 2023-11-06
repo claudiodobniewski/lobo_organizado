@@ -6,7 +6,8 @@ django-bootstrap4
 django-bootstrap-icons
 django-icons
 django_material_icons
-django-crispy
+#django-crispy
+django-crispy-forms
 django-utils-six
 django-auditlog==1.0a1
 mysqlclient

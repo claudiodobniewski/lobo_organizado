@@ -33,6 +33,9 @@ para mysql se requiere
 > sudo apt-get install libmysqlclient-dev
 > pip3 install mysqlclient
 
+Para importar el .sql de backup que recrea la BD
+> mysql -u username -p database_name < file.sql
+
 Daba error no encontraba libreria dateutil
 > pip install python-dateutil
 ## Comandos dentro de proyecto git "lobo_organizado"
@@ -195,3 +198,26 @@ Para solucionar esto, post ejecutar estas migraciones se debe correr en terminal
 >>> for cuota in all_cuotas:
 ...   cuota.hash = uuid.uuid4()
 ...   cuota.save(update_fields=['hash'])
+
+
+
+# DOCKER
+
+## Preparar un dockerfile que levante un alpine con todo lo necesario para que corra
+
+https://github.com/pyenv/pyenv#understanding-shims
+https://www.cyberciti.biz/faq/install-git-command-on-alpine-linux/
+https://realpython.com/intro-to-pyenv/
+docker run --rm --name lobo_org -v $(pwd):/tmp/lobo_org -it  python:3.11.3-alpine3.17 /bin/sh
+apk add libffi-dev ncurses-dev openssl-dev readline-dev curl bash jpeg-dev
+apk update \
+    && apk update \
+    && apk add --virtual build-deps gcc python3-dev musl-dev \
+    && apk add --update add libxml2-dev libxslt-dev libffi-dev gcc musl-dev libgcc openssl-dev curl \
+    && apk add --no-cache mariadb-dev \
+    && apk add mysql \
+    && apt install libjpeg-dev zlib1g-dev
+    && pip install mysqlclient
+
+
+crear el container usando --add-host=database:<host-ip>  para que dentro del container encuentra la IP de un servicio en localhost del main host

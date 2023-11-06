@@ -1,0 +1,23 @@
+version: "3"
+services:
+  app:
+    build:
+      context: ./djangomysql
+      dockerfile: Dockerfile
+    entrypoint: ["./wait.sh"]
+    depends-on: #links:
+      - db
+    ports:
+      - "8000:8000"
+
+  db:
+    image: mysql:8.0.21
+    ports:
+      - "30000:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/:ro
+
+
+# docker run --name python37 -w /app python:3.7-alpine sh -c "apk add gcc  build-base ; pip install --upgrade pip setuptools wheel; pip install wheel cx_Oracle mysql-connector-python "
