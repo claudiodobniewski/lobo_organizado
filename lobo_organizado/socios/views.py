@@ -341,6 +341,7 @@ def familia_detalle(request, familia_id, error_message=''):
         observaciones = Observaciones.objects.filter(familia_id=familia_socios.id)
 
         # cuotas_todas,cuotas_por_plan,cuotas_vencidas,cuotas_suma,pagos_percibidos_queryset,pagos_percibidos_plan,pagos_percibidos_suma
+        # TODO discriminar cuotas vencidas, importes pagados POR PLAN y sumar el total, para mejor detalle
         cuotas = app_cuotas.cuotas_queryset(familia_id)
         cuotas_ya_vencidas = app_cuotas.cuotas_vencidas(cuotas,datetime.date.today())
         cuotas_vencidas_importe = app_cuotas.cuotas_suma(cuotas_ya_vencidas)
