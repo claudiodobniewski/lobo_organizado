@@ -7,6 +7,7 @@
 {% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message|unquote_raw }}</div>{% endif %}
 {% endblock error_message %}
 
+{% if perms.cuotas.cuota_ver %}
 <div class="container">
   <div class="col">
     <div class="row">
@@ -34,8 +35,14 @@
           {% endfor %}
         </select>
         <label  for="report_export" class="btn btn-secondary active" class="form-label" >
-          <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF
-          <input id="report_export_all" name="report_export_all"type="checkbox"  class="form-label" checked> Todos los registros
+          <!-- <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF </input> -->
+          <label for="report_export_on" > Exportar :</label>
+          <select id="report_export_on" name="report_export_on" class="form-label">
+            <option value="FALSE" selected>NO</option>
+            <option value="PDF">PDF</option>
+            <option value="CSV">CSV</option>
+          </select>
+          <input id="report_export_all" name="report_export_all"type="checkbox"  class="form-label" checked> Todos los registros</input>
         </label>
         <button id="search_submit" class="btn btn-info" type="submit">Buscar!</button>
         <button formaction="{% url 'cuotas:gestion_pagos_listado' clean_filters='true' %}" id="search_submit" class="btn btn-info" type="submit"
@@ -44,9 +51,6 @@
     </div>
   </div>
 </div>
-
-
-{% if perms.cuotas.cuota_ver %}
 
   <table id="example" class="table table-striped table-bordered table-hover table-responsive-xl" style="width:100%">
     <thead class="thead-light">
@@ -108,7 +112,7 @@
     </tr>
   {% endif %}
 {% else %}
-  <label class="btn btn-secondary">NO AUTORIZADO "VER CUOTAS"</label>
+  <label class="btn btn-secondary">NO AUTORIZADO</label>
 {% endif %}
 
 

@@ -41,7 +41,13 @@
         </select>
       </div>
       <div class="col btn btn-secondary active"> 
-          <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF </input>
+          <!-- <input id="report_export_on" name="report_export_on" type="checkbox"  class="form-label" > Reporte PDF </input> -->
+          <label for="report_export_on" > Exportar :</label>
+          <select id="report_export_on" name="report_export_on" class="form-label">
+            <option value="FALSE" selected>NO</option>
+            <option value="PDF">PDF</option>
+            <option value="CSV">CSV</option>
+          </select>
           <input id="report_export_all" name="report_export_all" type="checkbox"  class="form-label" checked> Todos los registros</input>
       
         <button id="search_submit" class="btn btn-info" type="submit">Buscar!</button>

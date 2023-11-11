@@ -13,7 +13,8 @@ from django.core.paginator import Paginator
 from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
-from reportes.views import reporte_estado_de_cuenta,reporte_cobranza
+from reportes.views import reporte_estado_de_cuenta_pdf,reporte_cobranza
+from reportes.views_export_csv import reporte_estado_de_cuenta_csv
 from decimal import Decimal
 import cuotas.models as app_cuotas
 
@@ -251,6 +252,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         #logger.debug("VERIFICANDO VALOR F_PLAN - GET:{}  VAR:{}".format(request.GET.get('planes_de_pagos', None),f_plan))
         f_familia = request.GET.get('f_familia', None)
         report_export_on = request.GET.get('report_export_on', False)
+        if report_export_on and report_export_on=='FALSE': report_export_on=False
         report_export_all = request.GET.get('report_export_all', False)
 
         if not f_start_date:
@@ -329,7 +331,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
             estado_plan.pagos = app_cuotas.pagos_percibidos_plan(pagos, un_plan.id)
             if not len( estado_plan.cuotas ) and not len( estado_plan.pagos ):
                 continue
-            logger.debug("PLAN:: {}".format(un_plan) )
+            #logger.debug("PLAN:: {}".format(un_plan) )
             pagos_importe = estado_plan.pagos_importe = app_cuotas.pagos_percibidos_suma(estado_plan.pagos)
             balance_plan =  estado_plan.balance = vencidas_importe - float (pagos_importe)
             estado_del_plan =  estado_plan.estado = 'OK' if balance_plan <= 0 else 'DEUDA'
@@ -360,12 +362,18 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     
     
     if report_export_on:
-        report_export_on = False
         report_export_all = False
         filter_info["f_plan"] = "Todos" if not filter_info["f_plan"] else lista_planes
         filter_info["start_date"] = filter_info["start_date"].strftime("%Y-%m-%d")
         filter_info["end_date"] = filter_info["end_date"].strftime("%Y-%m-%d")
-        return reporte_estado_de_cuenta(current_user,page_obj, filter_info)
+        if report_export_on=='PDF':
+            report_export_on = False
+            return reporte_estado_de_cuenta_pdf(current_user,page_obj, filter_info)
+        elif report_export_on=='CSV':
+            report_export_on = False
+            return reporte_estado_de_cuenta_csv(current_user,page_obj, filter_info)
+        else:
+            logger.error("report_export_on EXPORT TYPE invalido  {}".format(report_export_on) )
     
 
     return render(request, 'cuotas/g_cobranzas_listado.html', {
@@ -449,6 +457,7 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
             f_plan=0
         f_familia = request.GET.get('f_familia', None)
         report_export_on = request.GET.get('report_export_on', False)
+        if report_export_on and report_export_on=='FALSE': report_export_on=False
         report_export_all = request.GET.get('report_export_all', False)
         
         if not f_start_date:
@@ -517,6 +526,7 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
     
 
     if report_export_on:
+        if report_export_on and report_export_on=='FALSE': report_export_on=False
         filter_info = {
         "start_date": f_start_date,
         "end_date" : end_date,

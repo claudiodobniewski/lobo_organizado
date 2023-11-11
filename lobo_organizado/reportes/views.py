@@ -8,6 +8,7 @@ import inspect ,logging
 from django.templatetags.static import static
 from django.conf import settings
 from socios.models import Familia
+#from reportes.views_export_csv import *
 #from PIL import Image
 
 logger = logging.getLogger('project.lobo.organizado')
@@ -84,7 +85,7 @@ class reportes_pdf(FPDF):
 
 #### 
 
-def reporte_estado_de_cuenta(current_user,data,filter_info):
+def reporte_estado_de_cuenta_pdf(current_user,data,filter_info):
     ''' prueba de listado familia, luego cambiar data por request y adaptar'''
 
     func = inspect.currentframe().f_back.f_code
