@@ -2,7 +2,7 @@ __ LOBO ORGANIZADO __
 
 # STAGE
 
-# RELEASE 0.3.2 12/11/2023
+# RELEASE 0.3.3 12/11/2023
 
 ## ATENCION
 * Requiere ejecutar migraciones con _python3 manage.py makemigration_
