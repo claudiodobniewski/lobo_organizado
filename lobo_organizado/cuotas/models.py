@@ -22,6 +22,8 @@ class PlanDePago(models.Model):
     eliminado = models.BooleanField(default=False)
     orden = models.IntegerField(null=True, default=0)
     plan_default = models.BooleanField(default=False)
+    excluir = models.BooleanField(default=False)
+
 
     class Meta:
         permissions = (

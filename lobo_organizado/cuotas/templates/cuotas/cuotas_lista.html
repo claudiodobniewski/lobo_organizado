@@ -3,6 +3,10 @@
 
 {% if perms.cuotas.cuota_ver %}
   {% if cuotas %}
+  <h3  data-toggle="collapse" data-target="#familia_cuotas_plan_block" id="headingTree" aria-expanded="false" aria-controls="familia_cuotas_plan_block" >
+    Cuotas sociales {% include 'bootstrap/box-arrow-down.html' %}
+  </h3>
+  <div class="card-body collapse " id="familia_cuotas_plan_block" aria-labelledby="headingTree" data-parent="#familia_info_block">
   <table id="example" class="table table-striped table-bordered table-hover table-responsive-md" >
     <thead>
       <tr>
@@ -39,7 +43,7 @@
       {% endfor %}
     
     </table>
-    
+  </div>
   {% else %}
       <p>No cuotas are available.</p>
   {% endif %}

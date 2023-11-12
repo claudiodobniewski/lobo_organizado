@@ -1,0 +1,15 @@
+FROM python:3.6-alpine
+
+# https://roytuts.com/docker-compose-dockerizing-django-mysql-app/
+
+COPY . /opt/loborg
+WORKDIR /opt/loborg
+
+#RUN apk add --no-cache mariadb-connector-c-dev
+#RUN apk update && apk add python3 python3-dev mariadb-dev build-base && pip3 install mysqlclient && apk del python3-dev mariadb-dev build-base build-deps
+
+# usar --add-host=database:<host-ip> para que encuentre la BD
+
+RUN apk update  ; apk add libffi-dev ncurses-dev openssl-dev readline-dev curl bash jpeg-dev gcc python3-dev musl-dev libgcc mysql-dev libxml2-dev libxslt-dev libxslt-dev mariadb-dev mysql libjpeg zlib tiff freetype lcms2 libwebp tcl openjpeg jpeg-dev zlib-dev freetype-dev  lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev netcat-openbsd
+
+RUN python -m pip install --upgrade pip; pip install -r lobo-organizado-requirements.pip
