@@ -41,12 +41,15 @@ def reporte_estado_de_cuenta_csv(current_user,data,filter_info):
     count = 0
 
     #csv_report = reportes_csv(current_user,headings)
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%s")
-    report_fullpath = os.path.join(settings.DATA_PDF_PATH,"vl_reporte_cobranza_saldos.{}.csv".format(timestamp))
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filter_info_String = []
+    for item in filter_info:
+      filter_info_String.append( item + '_' + str( filter_info[item]) ) 
+    report_fullpath = "vl_reporte_cobranza_saldos.{}.{}.csv".format(timestamp, "__".join(filter_info_String))
 
     response = HttpResponse(
         content_type="text/csv",
-       headers={"Content-Disposition": 'attachment; filename="{}"'.format(report_name)},
+       headers={"Content-Disposition": 'attachment; filename="{}"'.format(report_fullpath)},
     )
     output_csv= csv.writer(response)
     output_csv.writerow( headings)

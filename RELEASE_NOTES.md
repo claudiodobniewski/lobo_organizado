@@ -5,7 +5,7 @@ __ LOBO ORGANIZADO __
 # RELEASE 0.3.3 12/11/2023
 
 ## ATENCION
-* Requiere ejecutar migraciones con _python3 manage.py makemigration_
+* Requiere ejecutar migraciones con _python3 manage.py migrate_
   *  la neueva migracion es lobo_organizado/cuotas/migrations/0030_plandepago_excluir.py
   *  este flag (aun no soportado en codigo) oermitira eliminar de las busquedas planes de pago viejos que ya no se quieran tener en cuenta. 
 
