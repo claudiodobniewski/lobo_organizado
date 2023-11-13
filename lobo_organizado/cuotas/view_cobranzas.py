@@ -13,8 +13,8 @@ from django.core.paginator import Paginator
 from .forms import CuotaPagoForm, CuotaSocialFamiliaForm, PlanDePagoForm
 from socios.models import Familia
 from cuotas.models import PlanDePago,CuotaPago,CuotaSocialFamilia
-from reportes.views import reporte_estado_de_cuenta_pdf,reporte_cobranza
-from reportes.views_export_csv import reporte_estado_de_cuenta_csv
+from reportes.views import reporte_estado_de_cuenta_pdf,reporte_cobranza_pdf
+from reportes.views_export_csv import reporte_estado_de_cuenta_csv,reporte_cobranza_csv
 from decimal import Decimal
 import cuotas.models as app_cuotas
 
@@ -526,20 +526,26 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
     
 
     if report_export_on:
-        if report_export_on and report_export_on=='FALSE': report_export_on=False
+        logger.debug("gestion_pagos_listado REPORTE TIPO: {}".format(report_export_on))
         filter_info = {
         "start_date": f_start_date,
         "end_date" : end_date,
         "f_plan" : f_plan,
         'f_familia' : f_familia,
         }
-        report_export_on = False
         report_export_all = False
         filter_info["f_plan"] = "Todos" if not filter_info["f_plan"] else lista_planes
-        logger.debug("CHECK FILTERS {}: {}".format(filter_info["start_date"],request.GET) )
+        #logger.debug("CHECK FILTERS {}: {}".format(filter_info["start_date"],request.GET) )
         filter_info["start_date"] = filter_info["start_date"] if filter_info["start_date"] else "---" # para saber si hay una fecha "desde"
         filter_info["end_date"] = filter_info["end_date"].strftime("%Y-%m-%d")
-        return reporte_cobranza(current_user,page_obj, filter_info)
+        if report_export_on=='PDF':
+            report_export_on = False
+            return reporte_cobranza_pdf(current_user,page_obj, filter_info)
+        elif report_export_on=='CSV':
+            report_export_on = False
+            return reporte_cobranza_csv(current_user,page_obj, filter_info)
+        else:
+            logger.error("report_export_on EXPORT TYPE invalido  {}".format(report_export_on) )
 
     return render(request, 'cuotas/g_pagos_listado.html', {
         'error_message': error_message,

@@ -2,6 +2,10 @@ __ LOBO ORGANIZADO __
 
 # STAGE
 
+# RELEASE 0.3.4 12/11/2023
+* Fix sobre generacion reportes
+* FEeeature se suma reporte de cuotas a reportes CSV!
+
 # RELEASE 0.3.3 12/11/2023
 
 ## ATENCION

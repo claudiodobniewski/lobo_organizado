@@ -297,7 +297,7 @@ def test_report(request):
     return FileResponse(open('report.pdf', 'rb'), as_attachment=True, content_type='application/pdf')
 
 
-def reporte_cobranza(current_user,data,filter_info):
+def reporte_cobranza_pdf(current_user,data,filter_info):
     '''Reporte de pago de cuotas percibidos'''
 
     func = inspect.currentframe().f_back.f_code
