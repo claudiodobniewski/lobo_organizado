@@ -15,7 +15,7 @@ from django.views.generic import ListView
 import inspect ,logging
 import cuotas.models as app_cuotas
 from cuotas.models import CuotaSocialFamilia,CuotaPago,PlanDePago
-from reportes.views import reporte_estado_familias
+from reportes.views import reporte_estado_familias,reporte_familia_pdf
 import copy
 from django.db.models import Q
 
@@ -310,7 +310,7 @@ def familia_index(request,error_message=''):
     #return test_report_familias_listado(page_obj)
     return render(request, 'socios/familia_listado.html', {'familias': lista_familias, 'error_message': error_message,'page_obj': page_obj, "search_query": search_query} )
 
-def familia_detalle(request, familia_id, error_message=''):
+def familia_detalle(request, familia_id, error_message='',views_export_on='FALSE'):
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
     logger.debug(" %s: %s in %s:%i" % (
@@ -320,13 +320,14 @@ def familia_detalle(request, familia_id, error_message=''):
         func.co_firstlineno
     ))
 
+    logger.debug("familia_id:{} error_message:{} views_export_on:{}".format(familia_id, error_message,views_export_on))
     user = request.user
     if not user.is_anonymous:
         perm_tuple = [(x.id, x.name,x.codename) for x in Permission.objects.filter(user=user)]
         #perms = Permission.objects.filter(user=user)
-        print("USUARIO {} PERMISOS {}".format(user,perm_tuple) )
+        logger.debug("USUARIO {} PERMISOS {}".format(user,perm_tuple) )
     else:
-        print("Usuario anonimo....")
+        logger.debug("Usuario anonimo....")
     
     
 
@@ -353,10 +354,31 @@ def familia_detalle(request, familia_id, error_message=''):
         #planes_cuotas = PlanDePago.objects.all()
         #cuotas_por_plan =  {x.id: app_cuotas.cuotas_por_plan(cuotas,x.id,False) for x in planes_cuotas }
 
-        print("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_suma:{} pagos:{} pagos_suma:{}".format(cuotas,cuotas_ya_vencidas,cuotas_vencidas_importe,pagos_totales,pagos_ya_percibidos_suma))
+        logger.debug("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_suma:{} pagos:{} pagos_suma:{}".format(cuotas,cuotas_ya_vencidas,cuotas_vencidas_importe,pagos_totales,pagos_ya_percibidos_suma))
 
     except Exception as err:
         raise Http404("Unexpected error: {0}".format(err))
+
+    
+    logger.debug("FAMILIA DETALLE GET :{}".format( request.GET.dict()) )
+    #views_export_on=request.GET.get('views_export_on', None)
+
+    if views_export_on == 'PDF':
+        logger.debug("EXPORT FAMILIA DETALLE TO PDF" )
+        return reporte_familia_pdf(data = {
+            'usuario': user,
+            'familia': familia_socios,
+            'socios':socios,
+            'cuotas':cuota_social,
+            'cuotas_vencidas': cuotas_ya_vencidas,
+            'cuotas_vencidas_suma': cuotas_vencidas_importe,
+            #'cuotas_por_plan': cuotas_por_plan,
+            'pagos':pagos,
+            'pagos_suma': pagos_ya_percibidos_suma,
+            'observaciones':observaciones
+        }
+        )
+
     return render(request, 
     'socios/familia_detalle.html',
      {
