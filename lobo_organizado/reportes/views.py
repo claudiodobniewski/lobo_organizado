@@ -8,6 +8,7 @@ import inspect ,logging
 from django.templatetags.static import static
 from django.conf import settings
 from socios.models import Familia,Socio
+from cuotas import view_cobranzas
 from reportes.views_export_csv import *
 
 #from PIL import Image
@@ -170,7 +171,7 @@ def reporte_estado_de_cuenta_pdf(current_user,data,filter_info):
 
 
 def reporte_estado_familias(current_user,data,filter_info):
-    ''' prueba de listado familia, luego cambiar data por request y adaptar'''
+    ''' Reporte de estado de cuptas y pagos de familias segun filtro.'''
 
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
@@ -242,7 +243,7 @@ def reporte_estado_familias(current_user,data,filter_info):
 
 # reporte_familia_pdf
 def reporte_familia_pdf(data):
-    ''' Detalle familia'''
+    ''' Detalle familia domicillio, miembros, estado detallado de cuota social y pagos'''
 
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
@@ -264,18 +265,16 @@ def reporte_familia_pdf(data):
     pagos_suma =  data["pagos_suma"]
     observaciones = data["observaciones"]
 
-    report_data = (
-            ("CRM_ID" , 'familia_crm_id'),
-            ("Calle" , 'direccion_calle'),
-            ("Numero" , "direccion_numero"),
-        )
+
 
     cell_v=5
     col_width=200
     fill=False
     
     pdf = reportes_pdf('P', 'mm', 'A4')
-    title = "Ficha Familia #{} {}  Fecha {}".format(familia.crm_id, familia.familia_crm_id ,pdf.timestamp) 
+    pdf.use_footer="pepinos"
+    title = "Ficha Familia {} {}  Fecha {}".format(familia.crm_id, familia.familia_crm_id ,pdf.timestamp) 
+    report_fullpath = os.path.join(settings.DATA_PDF_PATH,title.replace(" ","_")+".pdf")
     pdf.set_title(title)
     pdf.alias_nb_pages()
     pdf.set_image_filter("DCTDecode")
@@ -294,10 +293,11 @@ def reporte_familia_pdf(data):
         str(familia.direccion_localidad),str(familia.direccion_provincia)
         ) , "LR", 0, "L", fill)
     pdf.ln()
-    pdf.cell(col_width, cell_v, "Contacto: "+str(familia.contacto) , "LR", 0, "L", fill)
+    pdf.multi_cell(col_width, cell_v, "Contacto: "+str(familia.contacto) , 1, 0, 0)
     pdf.ln()
 
     pdf.cell(col_width, cell_v, "Socios: " , "LR", 0, "L", fill)
+    pdf.ln()
     categorias = { k: v for k,v in Socio.CATEGORIAS_CHOISES} # convertir en metodo de Socio model
     for socio in socios:
         pdf.cell(col_width, cell_v, "      {}, {} - DNI {} - F.Nac {} - CAT {}".format(
@@ -307,6 +307,42 @@ def reporte_familia_pdf(data):
         pdf.ln()
     pdf.ln()
 
+    ctacte = view_cobranzas.gestion_cobranza_familia(False,familia.id,only_data=True)
+    logger.debug("PDF CTA CTE: {} ".format(ctacte) )
+    #pdf.add_page()
+    pdf.set_font("Times", size=10)
+    # Text height is the same as current font size
+    th = pdf.font_size+1
+    td_width = 30
+    
+    ctacte_fields = ( ('fecha',30) , ('cuota',20) , ('pago',20) ,('saldo',20),('plan',20) ,('tipo',10),('comprobante',50) )
+    fields = {}
+    for header in ctacte_fields:
+        pdf.cell(header[1], th, str(header[0]), border=1)
+        fields[header[0]] = header[1]
+    pdf.ln()
+
+    for row in ctacte['registros']:
+        print("ROW {}".format(row))
+        #pdf.cell(td_width, th, str(row), border=1)
+        for datum in row:
+            print("DATUM {}".format(row[datum]))
+            # Enter data in colums
+            # Notice the use of the function str to coerce any input to the 
+            # string type. This is needed
+            # since pyFPDF expects a string, not a number.
+            if datum in fields:
+                pdf.cell(fields[datum], th, str(row[datum]), border=1)
+            else:
+                pdf.cell(fields[datum], th, '', border=1)
+
+            #row.cell(td_width, cell_v,datum , "LR", 0, "L", fill)
+    
+        pdf.ln(th)
+    
+    # Line break equivalent to 4 lines
+    pdf.ln(4*th)
+    
     #pdf.basic_table(headers,field_names, data)
     #pdf.colored_table(headers,field_names, data)
     #for h in report_data:
@@ -314,9 +350,9 @@ def reporte_familia_pdf(data):
     #for i in data:
     #    for h in report_data:
     #        pdf.cell(0, 10, getattr(i,h[1]) , 0, 1)
-    pdf.use_footer="pepinos"
-    pdf.output(title.replace(" ","_")+"pdf")
-    return FileResponse(open(title.replace(" ","_")+"pdf", 'rb'), as_attachment=True, content_type='application/pdf')
+    
+    pdf.output(report_fullpath)
+    return FileResponse(open(report_fullpath, 'rb'), as_attachment=True, content_type='application/pdf')
 
 def test_report(request):
     sales = [

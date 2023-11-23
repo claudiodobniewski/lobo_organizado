@@ -366,6 +366,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         filter_info["f_plan"] = "Todos" if not filter_info["f_plan"] else lista_planes
         filter_info["start_date"] = filter_info["start_date"].strftime("%Y-%m-%d")
         filter_info["end_date"] = filter_info["end_date"].strftime("%Y-%m-%d")
+        logger.debug("gestion_cobranza_listado REPORTE TIPO: {}".format(report_export_on))
         if report_export_on=='PDF':
             report_export_on = False
             return reporte_estado_de_cuenta_pdf(current_user,page_obj, filter_info)
@@ -387,7 +388,7 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         'solo_listar_deudas': solo_listar_deudas,
          } )
 
-def gestion_cobranza_familia(request, familia_id):
+def gestion_cobranza_familia(request, familia_id, only_data=False):
     '''detalla cuotas y pagos de la familia, con saldo por movimiento'''
 
     familia = Familia.objects.get(pk=familia_id,eliminado=False)
@@ -405,6 +406,10 @@ def gestion_cobranza_familia(request, familia_id):
         logger.debug("Item: {}".format(i))
         logger.debug("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo']))
     
+    if only_data:
+        return {'familia': familia,
+        'registros': registros
+         }
 
     return render(request, 'cuotas/g_cobranzas_familia.html', {
         #'error_message': '',
