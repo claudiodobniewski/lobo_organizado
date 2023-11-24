@@ -62,15 +62,15 @@ class SaldosFamilia():
         '''
 
         if not len(self.cuotas) and not len(self.pagos):
-            logger.debug("* No hay cuotas ni pagos! C:{} P:{}".format(len(self.cuotas) ,len(self.pagos)) )
+            #logger.debug("* No hay cuotas ni pagos! C:{} P:{}".format(len(self.cuotas) ,len(self.pagos)) )
             return True
         elif not len(self.pagos) :
-            logger.debug("* aplica_solo_cuotas()")
+            #logger.debug("* aplica_solo_cuotas()")
             self.aplica_solo_cuotas()
             return True
 
         elif not len(self.cuotas) :
-            logger.debug("* aplica_solo_pagos()")
+            #logger.debug("* aplica_solo_pagos()")
             self.aplica_solo_pagos()
             return True
 
@@ -91,7 +91,8 @@ class SaldosFamilia():
             "pago" : float ( pago.importe ),
             "saldo" : self.saldo,
             "tipo": self.PAGO,
-            "comprobante": pago.comprobante,
+            "comprobante": pago.comprobante, # MP o id externo
+            "hash": pago.hash, # id interno
             "plan": self.planes_de_pago.filter(pk=pago.aplica_pago_plan.id)[0].crm_id
         }
         return reg
@@ -100,7 +101,7 @@ class SaldosFamilia():
     def aplica_solo_cuotas(self):
 
         while len(self.cuotas) > 0 :
-            logger.debug("Aplicando cuota...")
+            #logger.debug("Aplicando cuota...")
             cuota=self.cuotas.pop(0)
             self.registros.append(self.aplica_una_cuota(cuota))
 
@@ -119,13 +120,13 @@ class SaldosFamilia():
 
     def aplica_cuota_mas_vieja(self,cuota,pago):
         ''' '''
-        logger.debug("older vencimiento < cobro ? {} ".format(cuota.vencimiento < pago.fecha_cobro))
+        #logger.debug("older vencimiento < cobro ? {} ".format(cuota.vencimiento < pago.fecha_cobro))
         if cuota.vencimiento < pago.fecha_cobro:
-            logger.debug("aplicando Cuota...")
+            #logger.debug("aplicando Cuota...")
             self.registros.append(self.aplica_una_cuota(cuota))
             cuota = None
         else:
-            logger.debug("aplicando Pago...")
+            #logger.debug("aplicando Pago...")
             self.registros.append(self.aplica_un_pago(pago))
             pago = None
         return (cuota,pago)
@@ -135,7 +136,7 @@ class SaldosFamilia():
         # si hay cutoas y pagos...
 
         if self.proceso_corto():
-            logger.debug("Return en proceso_corto() inicial")
+            #logger.debug("Return en proceso_corto() inicial")
             return 
         
         #first_loop = True
@@ -143,7 +144,7 @@ class SaldosFamilia():
         p=None
         logger.debug("Start loop")
         while len(self.cuotas) or len(self.pagos) or not c or not p:
-            logger.debug("Nest loop....")
+            #logger.debug("Nest loop....")
             #if first_loop:
             #    logger.debug("Firts loop!")
             #    c = self.cuotas.pop()
@@ -151,36 +152,36 @@ class SaldosFamilia():
 
             if not c and len(self.cuotas):
                 c = self.cuotas.pop(0)
-                logger.debug("C.pop({})".format(c))
+                #logger.debug("C.pop({})".format(c))
             elif not c and not len(self.cuotas):
                 if p :
                     self.pagos.insert(0,p)
-                logger.debug("C no tiene mas elementos, break loop")
+                #logger.debug("C no tiene mas elementos, break loop")
                 break
             
             if not p and len(self.pagos) :
                 p = self.pagos.pop(0)
-                logger.debug("P.pop({})".format(p))
+                #logger.debug("P.pop({})".format(p))
             elif not p  and not len(self.pagos) :
                 if c:
                     self.cuotas.insert(0,c)
-                logger.debug("P no tiene mas elementos, break loop")
+                #logger.debug("P no tiene mas elementos, break loop")
                 break
             
-            logger.debug("* cuotas:{}  pagos:{}".format( len(self.cuotas),len(self.pagos) ))
-            logger.debug("* cuota:{}  pagos:{}".format( c,p ))
+            #logger.debug("* cuotas:{}  pagos:{}".format( len(self.cuotas),len(self.pagos) ))
+            #logger.debug("* cuota:{}  pagos:{}".format( c,p ))
 
             c,p = self.aplica_cuota_mas_vieja(c,p)
-            logger.debug("* post aplicar c,p :: {} ## {}".format(c,p))
-            logger.debug("* Registros: {}".format(self.registros))
-            logger.debug("CHECK LOOP CONDITION: lenC:{}, lenP{}, NOT c:{} , NOT p:{}, BOOLEAN:{}".format(len(self.cuotas) , len(self.pagos) , not c , not p,len(self.cuotas) or len(self.pagos) or not c or not p))
-            logger.debug("end loop")
+            #logger.debug("* post aplicar c,p :: {} ## {}".format(c,p))
+            #logger.debug("* Registros: {}".format(self.registros))
+            #logger.debug("CHECK LOOP CONDITION: lenC:{}, lenP{}, NOT c:{} , NOT p:{}, BOOLEAN:{}".format(len(self.cuotas) , len(self.pagos) , not c , not p,len(self.cuotas) or len(self.pagos) or not c or not p))
+        logger.debug("end loop")
             
             
 
         # finalmente, o no hay mas cuotas o no hay mas pagos...
         result_corto = self.proceso_corto()
-        logger.debug("** result:{} Registros: {}".format(result_corto,self.registros))
+        #logger.debug("** result:{} Registros: {}".format(result_corto,self.registros))
         logger.debug("end procesar()")
 
     def get_registros(self):
@@ -401,10 +402,10 @@ def gestion_cobranza_familia(request, familia_id, only_data=False):
     gestion.procesar()
     registros.extend(gestion.get_registros())
 
-    logger.debug("REGISTROS: {}".format(registros))
-    for i in registros:
-        logger.debug("Item: {}".format(i))
-        logger.debug("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo']))
+    #logger.debug("REGISTROS: {}".format(registros))
+    #for i in registros:
+        #logger.debug("Item: {}".format(i))
+        #logger.debug("fecha:{} cuota:{} pago:{} saldo:{}".format(i['fecha'],i['cuota'],i['pago'],i['saldo']))
     
     if only_data:
         return {'familia': familia,
@@ -561,8 +562,5 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
         'f_familia': f_familia,
         'lista_planes': lista_planes_view
          } )
-
-
-
 
 

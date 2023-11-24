@@ -20,7 +20,7 @@ class reportes_pdf(FPDF):
 
     def __init__(self,orientation = 'P', unit = 'mm', format='A4', current_user=None):
 
-        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%s")
+        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         self.current_user = current_user
         super().__init__(orientation , unit , format)
         self.use_footer=False
@@ -34,13 +34,14 @@ class reportes_pdf(FPDF):
         # Rendering logo:
         self.image(logo_path, 10, 8, 20)
         # Setting font: helvetica bold 15
-        self.set_font("Courier", "", 12)
+        self.set_font("Courier", "B", 11)
         #self.set_stretching(100.0)
         # Moving cursor to the right:
-        self.cell(30)
+        self.cell(25)
         # Printing title:
         width = self.get_string_width(self.title) + 6
-        self.cell(width, 10, self.title, 1, 0, "C")
+        logger.debug("PDF TITLE WIDTH: {} ".format(width) )
+        self.multi_cell(width, 10, self.title, 1, 0, 0)
         # Performing a line break:
         self.ln(20)
 
@@ -104,7 +105,7 @@ def reporte_estado_de_cuenta_pdf(current_user,data,filter_info):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
+    #logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
     
     headings = (
             "#",
@@ -182,7 +183,7 @@ def reporte_estado_familias(current_user,data,filter_info):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
+    #logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
     
     headings = (
             "#",
@@ -231,7 +232,7 @@ def reporte_estado_familias(current_user,data,filter_info):
         count+=1
         cell_v=5
         pdf.cell(col_widths[0], cell_v, str(count), "LR", 0, "L", fill)
-        logger.debug("{}-{}".format(row.crm_id,row.familia_crm_id) )
+        #logger.debug("{}-{}".format(row.crm_id,row.familia_crm_id) )
         pdf.cell(col_widths[1], cell_v, str(row.crm_id) , "LR", 0, "L", fill)
         pdf.cell(col_widths[2], cell_v, str(row.familia_crm_id), "LR", 0, "L", fill)
         pdf.cell(col_widths[3], cell_v, str(row.actualizado), "LR", 0, "L", fill)
@@ -254,7 +255,7 @@ def reporte_familia_pdf(data):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} ".format(data) )
+    #logger.debug("PDF DATA SOURCE: {} ".format(data) )
     usuario = data["usuario"]
     familia = data["familia"]
     socios =  data["socios"]
@@ -268,7 +269,7 @@ def reporte_familia_pdf(data):
 
 
     cell_v=5
-    col_width=200
+    col_width=180
     fill=False
     
     pdf = reportes_pdf('P', 'mm', 'A4')
@@ -279,7 +280,7 @@ def reporte_familia_pdf(data):
     pdf.alias_nb_pages()
     pdf.set_image_filter("DCTDecode")
     pdf.add_page()
-    pdf.set_font("Times", size=12)
+    pdf.set_font("Times", size=10)
     
     pdf.cell(col_width, cell_v,  "Usuario: {}   Fecha {}".format(usuario.username ,pdf.timestamp) ,1, 0, "C")
     pdf.ln()
@@ -308,40 +309,75 @@ def reporte_familia_pdf(data):
     pdf.ln()
 
     ctacte = view_cobranzas.gestion_cobranza_familia(False,familia.id,only_data=True)
-    logger.debug("PDF CTA CTE: {} ".format(ctacte) )
+    #logger.debug("PDF CTA CTE: {} ".format(ctacte) )
     #pdf.add_page()
-    pdf.set_font("Times", size=10)
+    pdf.set_font("Times", "B",size=9)
+    pdf.set_font("Times", size=12)
     # Text height is the same as current font size
-    th = pdf.font_size+1
+    cell_v = pdf.font_size+1
     td_width = 30
-    
-    ctacte_fields = ( ('fecha',30) , ('cuota',20) , ('pago',20) ,('saldo',20),('plan',20) ,('tipo',10),('comprobante',50) )
+    count=0
+    fill = False
+    pdf.set_fill_color(224, 235, 255)
+    pdf.set_text_color(0)
+
+    ctacte_fields = ( ('#', 8), ('fecha',25) , ('cuota',24) , ('pago',24) ,('saldo',30),('plan',20) ,('comprobante',50) ) #f ields['cuota']
     fields = {}
     for header in ctacte_fields:
-        pdf.cell(header[1], th, str(header[0]), border=1)
+        pdf.cell(header[1], cell_v, str(header[0]), border=1)
         fields[header[0]] = header[1]
     pdf.ln()
 
     for row in ctacte['registros']:
-        print("ROW {}".format(row))
-        #pdf.cell(td_width, th, str(row), border=1)
-        for datum in row:
-            print("DATUM {}".format(row[datum]))
-            # Enter data in colums
-            # Notice the use of the function str to coerce any input to the 
-            # string type. This is needed
-            # since pyFPDF expects a string, not a number.
-            if datum in fields:
-                pdf.cell(fields[datum], th, str(row[datum]), border=1)
+        logger.debug("ROW {}".format(row))
+        #pdf.cell(td_width, cell_v, str(row), border=1)
+        
+
+        #logger.debug(row.hash)
+        count+=1
+        cell_v=5
+        pdf.cell(fields['#'], cell_v, str(count), "LR", 0, "L", fill)
+        pdf.cell(fields['fecha'], cell_v, str(row['fecha'].strftime("%d-%m-%Y")) , "LR", 0, "L", fill)
+        #logger.debug("{}-{}".format(row.id,row.familia.familia_crm_id) )
+        if row['tipo'] == 'p' :
+            pdf.cell(fields['cuota'], cell_v, ' ' , 1, 0, "L", fill)
+            pdf.cell(fields['pago'], cell_v, str(row['pago']) , 1, 0, "L", fill)
+        else:
+            pdf.cell(fields['cuota'], cell_v, str(row['cuota']) , 1, 0, "L", fill)
+            pdf.cell(fields['pago'], cell_v, ' ' , 1, 0, "L", fill)
+        pdf.cell(fields['saldo'], cell_v, str(row['saldo']) , 1, 0, "L", fill)
+        pdf.cell(fields['plan'], cell_v, str(row['plan']), 1, 0, "L", fill)
+        #pdf.cell(fields['tipo'], cell_v, str(row['tipo']), "LR", 0, "L", fill)
+        
+        if row['tipo'] == 'p':
+            if 'comprobante' in row and len(row['comprobante'] ):
+                comprobante = "MP-"+row['comprobante']   + f"\n"+row["hash"]
             else:
-                pdf.cell(fields[datum], th, '', border=1)
+                comprobante = row["hash"]
+        else:
+            #comprobante = f'{row.hash}'
+            comprobante = ' - '
+        pdf.multi_cell(fields['comprobante'], cell_v, str(comprobante), 1, 0,  fill)
+        #pdf.cell(col_widths[7], cell_v,comprobante, "LR", 0, "L", fill)
+        
+        #pdf.ln()
+        fill = not fill
+        #logger.debug("DATUM {}".format(row[datum]))
+        # Enter data in colums
+        # Notice the use of the function str to coerce any input to the 
+        # string type. This is needed
+        # since pyFPDF expects a string, not a number.
+        #if datum in fields:
+        #    pdf.cell(fields[datum], th, str(row[datum]), border=1)
+        #else:
+        #    pdf.cell(fields[datum], th, '', border=1)
 
             #row.cell(td_width, cell_v,datum , "LR", 0, "L", fill)
     
-        pdf.ln(th)
+        pdf.ln(cell_v)
     
     # Line break equivalent to 4 lines
-    pdf.ln(4*th)
+    pdf.ln(4*cell_v)
     
     #pdf.basic_table(headers,field_names, data)
     #pdf.colored_table(headers,field_names, data)
@@ -388,7 +424,7 @@ def reporte_cobranza_pdf(current_user,data,filter_info):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
+    #logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
     
     headings = (
             "#",
