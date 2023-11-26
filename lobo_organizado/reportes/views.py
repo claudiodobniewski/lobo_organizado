@@ -266,8 +266,6 @@ def reporte_familia_pdf(data):
     pagos_suma =  data["pagos_suma"]
     observaciones = data["observaciones"]
 
-
-
     cell_v=5
     col_width=180
     fill=False
@@ -282,7 +280,8 @@ def reporte_familia_pdf(data):
     pdf.add_page()
     pdf.set_font("Times", size=10)
     
-    pdf.cell(col_width, cell_v,  "Usuario: {}   Fecha {}".format(usuario.username ,pdf.timestamp) ,1, 0, "C")
+    # DATOS FAMILIA
+    pdf.cell(col_width, cell_v,  "Operador: {}  ".format(usuario.username ) ,1, 0, "C")
     pdf.ln()
     pdf.cell(col_width, cell_v, "Familia ID: "+str(familia.crm_id) , "LR", 0, "L", fill)
     pdf.ln()
@@ -297,6 +296,7 @@ def reporte_familia_pdf(data):
     pdf.multi_cell(col_width, cell_v, "Contacto: "+str(familia.contacto) , 1, 0, 0)
     pdf.ln()
 
+    # DATOS MIEMBROS FAMILIA
     pdf.cell(col_width, cell_v, "Socios: " , "LR", 0, "L", fill)
     pdf.ln()
     categorias = { k: v for k,v in Socio.CATEGORIAS_CHOISES} # convertir en metodo de Socio model
@@ -307,6 +307,8 @@ def reporte_familia_pdf(data):
             ) , "LR", 0, "L", fill)
         pdf.ln()
     pdf.ln()
+
+    #CUENTA CORRIENTE
 
     ctacte = view_cobranzas.gestion_cobranza_familia(False,familia.id,only_data=True)
     #logger.debug("PDF CTA CTE: {} ".format(ctacte) )
@@ -329,64 +331,77 @@ def reporte_familia_pdf(data):
     pdf.ln()
 
     for row in ctacte['registros']:
-        logger.debug("ROW {}".format(row))
+        #logger.debug("ROW {}".format(row))
         #pdf.cell(td_width, cell_v, str(row), border=1)
         
 
         #logger.debug(row.hash)
         count+=1
         cell_v=5
-        pdf.cell(fields['#'], cell_v, str(count), "LR", 0, "L", fill)
-        pdf.cell(fields['fecha'], cell_v, str(row['fecha'].strftime("%d-%m-%Y")) , "LR", 0, "L", fill)
-        #logger.debug("{}-{}".format(row.id,row.familia.familia_crm_id) )
-        if row['tipo'] == 'p' :
-            pdf.cell(fields['cuota'], cell_v, ' ' , 1, 0, "L", fill)
-            pdf.cell(fields['pago'], cell_v, str(row['pago']) , 1, 0, "L", fill)
-        else:
-            pdf.cell(fields['cuota'], cell_v, str(row['cuota']) , 1, 0, "L", fill)
-            pdf.cell(fields['pago'], cell_v, ' ' , 1, 0, "L", fill)
-        pdf.cell(fields['saldo'], cell_v, str(row['saldo']) , 1, 0, "L", fill)
-        pdf.cell(fields['plan'], cell_v, str(row['plan']), 1, 0, "L", fill)
-        #pdf.cell(fields['tipo'], cell_v, str(row['tipo']), "LR", 0, "L", fill)
-        
+
         if row['tipo'] == 'p':
             if 'comprobante' in row and len(row['comprobante'] ):
                 comprobante = "MP-"+row['comprobante']   + f"\n"+row["hash"]
+                multi_cell_v = cell_v * 3
+
             else:
                 comprobante = row["hash"]
+                multi_cell_v = cell_v * 2
         else:
             #comprobante = f'{row.hash}'
             comprobante = ' - '
+            multi_cell_v = cell_v 
+
+        pdf.cell(fields['#'], multi_cell_v, str(count), 1, 0, "L", fill)
+        pdf.cell(fields['fecha'], multi_cell_v, str(row['fecha'].strftime("%d-%m-%Y")) , 1, 0, "L", fill)
+        #logger.debug("{}-{}".format(row.id,row.familia.familia_crm_id) )
+        if row['tipo'] == 'p' :
+            pdf.cell(fields['cuota'], multi_cell_v, ' ' , 1, 0, "L", fill)
+            pdf.cell(fields['pago'], multi_cell_v, str(row['pago']) , 1, 0, "L", fill)
+        else:
+            pdf.cell(fields['cuota'], multi_cell_v, str(row['cuota']) , 1, 0, "L", fill)
+            pdf.cell(fields['pago'], multi_cell_v, ' ' , 1, 0, "L", fill)
+        pdf.cell(fields['saldo'], multi_cell_v, str(row['saldo']) , 1, 0, "L", fill)
+        pdf.cell(fields['plan'], multi_cell_v, str(row['plan']), 1, 0, "L", fill)
+        #pdf.cell(fields['tipo'], cell_v, str(row['tipo']), "LR", 0, "L", fill)
+        
+        
+
         pdf.multi_cell(fields['comprobante'], cell_v, str(comprobante), 1, 0,  fill)
         #pdf.cell(col_widths[7], cell_v,comprobante, "LR", 0, "L", fill)
         
         #pdf.ln()
         fill = not fill
-        #logger.debug("DATUM {}".format(row[datum]))
-        # Enter data in colums
-        # Notice the use of the function str to coerce any input to the 
-        # string type. This is needed
-        # since pyFPDF expects a string, not a number.
-        #if datum in fields:
-        #    pdf.cell(fields[datum], th, str(row[datum]), border=1)
-        #else:
-        #    pdf.cell(fields[datum], th, '', border=1)
-
-            #row.cell(td_width, cell_v,datum , "LR", 0, "L", fill)
     
-        pdf.ln(cell_v)
+        pdf.ln(0.0)
     
     # Line break equivalent to 4 lines
-    pdf.ln(4*cell_v)
+    pdf.ln(2*cell_v)
     
-    #pdf.basic_table(headers,field_names, data)
-    #pdf.colored_table(headers,field_names, data)
-    #for h in report_data:
-    #        pdf.cell(0, 10, h[0] , 0, 1)
-    #for i in data:
-    #    for h in report_data:
-    #        pdf.cell(0, 10, getattr(i,h[1]) , 0, 1)
+    # OBSERVACIONES
     
+    
+    pdf.cell(col_width, cell_v, "Observaciones: " , 1, 0, "L", 0)
+    pdf.ln()
+    
+    #logger.debug("Observaciones  {}".format(observaciones))
+    fill = False
+    if len(observaciones):
+        
+        for obs in observaciones:
+            fill = not fill
+            pdf.multi_cell(col_width,cell_v, "{} : {} ".format(
+                str(obs.creado.strftime("%Y-%m-%d %H-%M")),str(obs.detalle)
+                ) , 1, 0, fill)
+            
+            pdf.ln(0.1)
+    else:
+        pdf.cell(col_width, cell_v, "SIN OBSERVACIONES" , 1, 0, "L", fill)
+        
+    pdf.ln()
+    
+
+
     pdf.output(report_fullpath)
     return FileResponse(open(report_fullpath, 'rb'), as_attachment=True, content_type='application/pdf')
 

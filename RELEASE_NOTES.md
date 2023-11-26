@@ -2,9 +2,13 @@ __ LOBO ORGANIZADO __
 
 # STAGE
 
+# RELEASE 0.4.0 26/11/2023
+* Reportes CSV completo en listados de cuotas cobradas y gestion de cobrana (estado de pago de cuota scocial familias)
+* NUEVO ficha familias ahora eXPORT PDF completo, incluye cuenta corriente de la familia con identificador de pago interno y comprobante (MP)
+
 # RELEASE 0.3.4 12/11/2023
 * Fix sobre generacion reportes
-* FEeeature se suma reporte de cuotas a reportes CSV!
+* Feature se suma reporte de cuotas a reportes CSV!
 
 # RELEASE 0.3.3 12/11/2023
 
