@@ -354,7 +354,7 @@ def familia_detalle(request, familia_id, error_message='',views_export_on='FALSE
         #planes_cuotas = PlanDePago.objects.all()
         #cuotas_por_plan =  {x.id: app_cuotas.cuotas_por_plan(cuotas,x.id,False) for x in planes_cuotas }
 
-        logger.debug("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_suma:{} pagos:{} pagos_suma:{}".format(cuotas,cuotas_ya_vencidas,cuotas_vencidas_importe,pagos_totales,pagos_ya_percibidos_suma))
+        logger.debug("Cuotas : {} cuotas_vencidas:{} cuotas_vencidas_suma:{} pagos:{} pagos_suma:{}".format(len(cuotas),len(cuotas_ya_vencidas),cuotas_vencidas_importe,len(pagos_totales),pagos_ya_percibidos_suma))
 
     except Exception as err:
         raise Http404("Unexpected error: {0}".format(err))
