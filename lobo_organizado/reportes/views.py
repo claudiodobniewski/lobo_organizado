@@ -7,8 +7,10 @@ from fpdf import FPDF
 import inspect ,logging
 from django.templatetags.static import static
 from django.conf import settings
-from socios.models import Familia
-#from reportes.views_export_csv import *
+from socios.models import Familia,Socio
+from cuotas import view_cobranzas
+from reportes.views_export_csv import *
+
 #from PIL import Image
 
 logger = logging.getLogger('project.lobo.organizado')
@@ -18,9 +20,10 @@ class reportes_pdf(FPDF):
 
     def __init__(self,orientation = 'P', unit = 'mm', format='A4', current_user=None):
 
-        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%s")
+        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         self.current_user = current_user
         super().__init__(orientation , unit , format)
+        self.use_footer=False
 
     def header(self):
 
@@ -31,23 +34,28 @@ class reportes_pdf(FPDF):
         # Rendering logo:
         self.image(logo_path, 10, 8, 20)
         # Setting font: helvetica bold 15
-        self.set_font("Courier", "", 12)
+        self.set_font("Courier", "B", 11)
         #self.set_stretching(100.0)
         # Moving cursor to the right:
-        self.cell(80)
+        self.cell(25)
         # Printing title:
         width = self.get_string_width(self.title) + 6
-        self.cell(width, 10, self.title, 1, 0, "C")
+        logger.debug("PDF TITLE WIDTH: {} ".format(width) )
+        self.multi_cell(width, 10, self.title, 1, 0, 0)
         # Performing a line break:
         self.ln(20)
 
     def footer(self):
+        
         # Position cursor at 1.5 cm from bottom:
         self.set_y(-15)
         # Setting font: helvetica italic 8
         self.set_font("helvetica", "I", 8)
-        # Printing page number:
-        self.cell(0, 10, f"Page {self.page_no()}/{{nb}}"+" Usuario:{}-{},{} Fecha Reporte {}".format(self.current_user.id,self.current_user.last_name, self.current_user.first_name,self.timestamp), 0, 0, "C")
+        if not self.use_footer:
+            # Printing page number:
+            self.cell(0, 10, f"Page {self.page_no()}/{{nb}}"+" Usuario:{}-{},{} Fecha Reporte {}".format(self.current_user.id,self.current_user.last_name, self.current_user.first_name,self.timestamp), 0, 0, "C")
+        else:
+            self.cell(0, 10, self.use_footer, 0, 0, "C")
 
     def basic_table(self, headings, rows, data):
         '''heading: encabezados - rows: nombres de campo en la columna - data: queryset de modelo con la informacion'''
@@ -97,7 +105,7 @@ def reporte_estado_de_cuenta_pdf(current_user,data,filter_info):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
+    #logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
     
     headings = (
             "#",
@@ -164,7 +172,7 @@ def reporte_estado_de_cuenta_pdf(current_user,data,filter_info):
 
 
 def reporte_estado_familias(current_user,data,filter_info):
-    ''' prueba de listado familia, luego cambiar data por request y adaptar'''
+    ''' Reporte de estado de cuptas y pagos de familias segun filtro.'''
 
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
@@ -175,7 +183,7 @@ def reporte_estado_familias(current_user,data,filter_info):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
+    #logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
     
     headings = (
             "#",
@@ -224,7 +232,7 @@ def reporte_estado_familias(current_user,data,filter_info):
         count+=1
         cell_v=5
         pdf.cell(col_widths[0], cell_v, str(count), "LR", 0, "L", fill)
-        logger.debug("{}-{}".format(row.crm_id,row.familia_crm_id) )
+        #logger.debug("{}-{}".format(row.crm_id,row.familia_crm_id) )
         pdf.cell(col_widths[1], cell_v, str(row.crm_id) , "LR", 0, "L", fill)
         pdf.cell(col_widths[2], cell_v, str(row.familia_crm_id), "LR", 0, "L", fill)
         pdf.cell(col_widths[3], cell_v, str(row.actualizado), "LR", 0, "L", fill)
@@ -234,8 +242,9 @@ def reporte_estado_familias(current_user,data,filter_info):
     pdf.output(  report_fullpath)
     return FileResponse(open(report_fullpath, 'rb'), as_attachment=True, content_type='application/pdf')
 
-def test_report_familias_listado_detalle(data):
-    ''' prueba de listado familia, luego cambiar data por request y adaptar'''
+# reporte_familia_pdf
+def reporte_familia_pdf(data):
+    ''' Detalle familia domicillio, miembros, estado detallado de cuota social y pagos'''
 
     func = inspect.currentframe().f_back.f_code
     # Dump the message + the name of this function to the log.
@@ -246,34 +255,155 @@ def test_report_familias_listado_detalle(data):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} ".format(data) )
+    #logger.debug("PDF DATA SOURCE: {} ".format(data) )
+    usuario = data["usuario"]
+    familia = data["familia"]
+    socios =  data["socios"]
+    cuotas =  data["cuotas"]
+    cuotas_vencidas =  data["cuotas_vencidas"]
+    cuotas_vencidas_suma =  data["cuotas_vencidas_suma"]
+    pagos =  data["pagos"]
+    pagos_suma =  data["pagos_suma"]
+    observaciones = data["observaciones"]
+
+    cell_v=5
+    col_width=180
+    fill=False
     
-    report_data = (
-            ("CRM_ID" , 'familia_crm_id'),
-            ("Calle" , 'direccion_calle'),
-            ("Numero" , "direccion_numero"),
-        )
-
-    headers = [ h[0] for h in report_data ]
-    field_names = [ h[1] for h in report_data ]
-    #model_fields = [f.name for f in data._meta.get_fields()]
-    #rows = [ r[0] for r in data if model_fields in field_names ]
-
     pdf = reportes_pdf('P', 'mm', 'A4')
-    pdf.set_title( "Reporte Familias" )
+    pdf.use_footer="pepinos"
+    title = "Ficha Familia {} {}  Fecha {}".format(familia.crm_id, familia.familia_crm_id ,pdf.timestamp) 
+    report_fullpath = os.path.join(settings.DATA_PDF_PATH,title.replace(" ","_")+".pdf")
+    pdf.set_title(title)
     pdf.alias_nb_pages()
     pdf.set_image_filter("DCTDecode")
     pdf.add_page()
+    pdf.set_font("Times", size=10)
+    
+    # DATOS FAMILIA
+    pdf.cell(col_width, cell_v,  "Operador: {}  ".format(usuario.username ) ,1, 0, "C")
+    pdf.ln()
+    pdf.cell(col_width, cell_v, "Familia ID: "+str(familia.crm_id) , "LR", 0, "L", fill)
+    pdf.ln()
+    pdf.cell(col_width, cell_v, "Familia: "+str(familia.familia_crm_id) , "LR", 0, "L", fill)
+    pdf.ln()
+    depto = "depto "+familia.direccion_depto if familia.direccion_depto else ""
+    pdf.cell(col_width, cell_v, "Domicilio: {} {} {}  {},{}".format(
+        str(familia.direccion_calle),str(familia.direccion_numero),depto,
+        str(familia.direccion_localidad),str(familia.direccion_provincia)
+        ) , "LR", 0, "L", fill)
+    pdf.ln()
+    pdf.multi_cell(col_width, cell_v, "Contacto: "+str(familia.contacto) , 1, 0, 0)
+    pdf.ln()
+
+    # DATOS MIEMBROS FAMILIA
+    pdf.cell(col_width, cell_v, "Socios: " , "LR", 0, "L", fill)
+    pdf.ln()
+    categorias = { k: v for k,v in Socio.CATEGORIAS_CHOISES} # convertir en metodo de Socio model
+    for socio in socios:
+        pdf.cell(col_width, cell_v, "      {}, {} - DNI {} - F.Nac {} - CAT {}".format(
+            str(socio.apellidos),str(socio.nombres),str(socio.dni),str(socio.fecha_nacimiento),
+            str(categorias[socio.categoria] ) 
+            ) , "LR", 0, "L", fill)
+        pdf.ln()
+    pdf.ln()
+
+    #CUENTA CORRIENTE
+
+    ctacte = view_cobranzas.gestion_cobranza_familia(False,familia.id,only_data=True)
+    #logger.debug("PDF CTA CTE: {} ".format(ctacte) )
+    #pdf.add_page()
+    pdf.set_font("Times", "B",size=9)
     pdf.set_font("Times", size=12)
-    #pdf.basic_table(headers,field_names, data)
-    pdf.colored_table(headers,field_names, data)
-    #for h in report_data:
-    #        pdf.cell(0, 10, h[0] , 0, 1)
-    #for i in data:
-    #    for h in report_data:
-    #        pdf.cell(0, 10, getattr(i,h[1]) , 0, 1)
-    pdf.output("tuto2.pdf")
-    return FileResponse(open('tuto2.pdf', 'rb'), as_attachment=True, content_type='application/pdf')
+    # Text height is the same as current font size
+    cell_v = pdf.font_size+1
+    td_width = 30
+    count=0
+    fill = False
+    pdf.set_fill_color(224, 235, 255)
+    pdf.set_text_color(0)
+
+    ctacte_fields = ( ('#', 8), ('fecha',25) , ('cuota',24) , ('pago',24) ,('saldo',30),('plan',20) ,('comprobante',50) ) #f ields['cuota']
+    fields = {}
+    for header in ctacte_fields:
+        pdf.cell(header[1], cell_v, str(header[0]), border=1)
+        fields[header[0]] = header[1]
+    pdf.ln()
+
+    for row in ctacte['registros']:
+        #logger.debug("ROW {}".format(row))
+        #pdf.cell(td_width, cell_v, str(row), border=1)
+        
+
+        #logger.debug(row.hash)
+        count+=1
+        cell_v=5
+
+        if row['tipo'] == 'p':
+            if 'comprobante' in row and len(row['comprobante'] ):
+                comprobante = "MP-"+row['comprobante']   + f"\n"+row["hash"]
+                multi_cell_v = cell_v * 3
+
+            else:
+                comprobante = row["hash"]
+                multi_cell_v = cell_v * 2
+        else:
+            #comprobante = f'{row.hash}'
+            comprobante = ' - '
+            multi_cell_v = cell_v 
+
+        pdf.cell(fields['#'], multi_cell_v, str(count), 1, 0, "L", fill)
+        pdf.cell(fields['fecha'], multi_cell_v, str(row['fecha'].strftime("%d-%m-%Y")) , 1, 0, "L", fill)
+        #logger.debug("{}-{}".format(row.id,row.familia.familia_crm_id) )
+        if row['tipo'] == 'p' :
+            pdf.cell(fields['cuota'], multi_cell_v, ' ' , 1, 0, "L", fill)
+            pdf.cell(fields['pago'], multi_cell_v, str(row['pago']) , 1, 0, "L", fill)
+        else:
+            pdf.cell(fields['cuota'], multi_cell_v, str(row['cuota']) , 1, 0, "L", fill)
+            pdf.cell(fields['pago'], multi_cell_v, ' ' , 1, 0, "L", fill)
+        pdf.cell(fields['saldo'], multi_cell_v, str(row['saldo']) , 1, 0, "L", fill)
+        pdf.cell(fields['plan'], multi_cell_v, str(row['plan']), 1, 0, "L", fill)
+        #pdf.cell(fields['tipo'], cell_v, str(row['tipo']), "LR", 0, "L", fill)
+        
+        
+
+        pdf.multi_cell(fields['comprobante'], cell_v, str(comprobante), 1, 0,  fill)
+        #pdf.cell(col_widths[7], cell_v,comprobante, "LR", 0, "L", fill)
+        
+        #pdf.ln()
+        fill = not fill
+    
+        pdf.ln(0.0)
+    
+    # Line break equivalent to 4 lines
+    pdf.ln(2*cell_v)
+    
+    # OBSERVACIONES
+    
+    
+    pdf.cell(col_width, cell_v, "Observaciones: " , 1, 0, "L", 0)
+    pdf.ln()
+    
+    #logger.debug("Observaciones  {}".format(observaciones))
+    fill = False
+    if len(observaciones):
+        
+        for obs in observaciones:
+            fill = not fill
+            pdf.multi_cell(col_width,cell_v, "{} : {} ".format(
+                str(obs.creado.strftime("%Y-%m-%d %H-%M")),str(obs.detalle)
+                ) , 1, 0, fill)
+            
+            pdf.ln(0.1)
+    else:
+        pdf.cell(col_width, cell_v, "SIN OBSERVACIONES" , 1, 0, "L", fill)
+        
+    pdf.ln()
+    
+
+
+    pdf.output(report_fullpath)
+    return FileResponse(open(report_fullpath, 'rb'), as_attachment=True, content_type='application/pdf')
 
 def test_report(request):
     sales = [
@@ -309,7 +439,7 @@ def reporte_cobranza_pdf(current_user,data,filter_info):
         func.co_firstlineno
     ))
 
-    logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
+    #logger.debug("PDF DATA SOURCE: {} FILTERS: {}".format(data , filter_info) )
     
     headings = (
             "#",
@@ -394,4 +524,3 @@ def socios_familia(familias):
 
     # continuas TODO 
     return None
-

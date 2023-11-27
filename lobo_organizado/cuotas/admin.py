@@ -10,7 +10,7 @@ from .models import CuotaPago
 
 
 class PlanDePagoAdmin(admin.ModelAdmin):
-    fields = ['crm_id','nombre','descripcion','cantidad_cuotas','vto_primera_cuota','importe_cuota']
+    fields = ['crm_id','nombre','descripcion','cantidad_cuotas','vto_primera_cuota','importe_cuota','orden','plan_default','excluir']
 
 class CuotaSocialFamiliaAdmin(admin.ModelAdmin):
     fields = ['familia','plan_de_pago','vencimiento','importe_cuota']

@@ -93,7 +93,7 @@ def reporte_estado_familias_csv(current_user,data,filter_info):
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%s")
  
-    report_fullpath = os.path.join(settings.DATA_PDF_PATH,"vl_reporte_cobranza_saldos.{}.csv".format(timestamp))
+    report_fullpath = os.path.join(settings.DATA_PDF_PATH,"vl_reporte_saldos.{}.csv".format(timestamp))
 
     response = HttpResponse(
         content_type="text/csv",
@@ -182,6 +182,7 @@ def reporte_cobranza_csv(current_user,data,filter_info):
             
     
     return response
+
 
 
 def index_csv(request):

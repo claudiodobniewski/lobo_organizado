@@ -14,6 +14,7 @@ urlpatterns = [
     path('socio/editar/<int:socio_id>', views.socio_editar, name='socio_editar'),
     path('socio/borrar/<int:socio_id>', views.socio_borrar, name='socio_borrar'),
     path('socios', views.socio_index, name='socios_listado'),
+    path('familia/<int:familia_id>/export/<str:views_export_on>', views.familia_detalle, name='familia_detalle_export'),
     path('familia/<int:familia_id>', views.familia_detalle, name='familia_detalle'),
     path('familia/<int:familia_id>/<str:error_message>', views.familia_detalle, name='familia_detalle'),
     path('familia/nuevo/<int:familia_id>/<str:error_message>', views.familia_nuevo, name='familia_nuevo'),
