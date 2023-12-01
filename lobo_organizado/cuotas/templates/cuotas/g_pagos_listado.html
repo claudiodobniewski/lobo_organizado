@@ -67,21 +67,23 @@
         <th scope="col">Comprobante</th>
       </tr>
     </thead>
+    
+    {% if page_obj.paginator.count %}
     <tbody>
-      {% if page_obj.paginator.count %}
       {% for registro in page_obj %}
 
-      <tr>
-        <td>{{ registro.fecha_cobro }}</td>
-        <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %}">{{ forloop.counter }}</a></th>
-        <td><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %} "
-          title="{{ cuota.familia.familia_crm_id }}">{{ registro.familia.crm_id }}#{{ registro.familia.familia_crm_id }}</a></td>
-        <td><a href="{% url 'cuotas:gestion_cobranza_familia' familia_id=registro.familia.id %} "
-          title="detalle cuotas y pagos">{{ registro.aplica_pago_plan.crm_id }}</a></td>
-        <td>{{ registro.forma_de_pago.medio_id }}</td>
-        <td>{{ registro.importe }}</td>
-        <td>{% if registro.comprobante %}{{ registro.comprobante }}{% else %}{{ registro.hash|cut:"-" }}{% endif %}</td>
-      </tr>
+        <tr>
+          
+          <th scope="row"><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %}">{{ forloop.counter }}</a></th>
+          <td>{{ registro.fecha_cobro }}</td>
+          <td><a href="{% url 'socios:familia_detalle' familia_id=registro.familia.id %} "
+            title="{{ cuota.familia.familia_crm_id }}">{{ registro.familia.crm_id }}#{{ registro.familia.familia_crm_id }}</a></td>
+          <td><a href="{% url 'cuotas:gestion_cobranza_familia' familia_id=registro.familia.id %} "
+            title="detalle cuotas y pagos">{{ registro.aplica_pago_plan.crm_id }}</a></td>
+          <td>{{ registro.forma_de_pago.medio_id }}</td>
+          <td>{{ registro.importe }}</td>
+          <td>{% if registro.comprobante %}{{ registro.comprobante }}{% else %}{{ registro.hash|cut:"-" }}{% endif %}</td>
+        </tr>
 
       {% endfor %}
     </tbody>
