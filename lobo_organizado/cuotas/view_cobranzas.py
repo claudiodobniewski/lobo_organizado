@@ -85,6 +85,7 @@ class SaldosFamilia():
     def aplica_un_pago(self,pago):
         
         self.saldo += float ( pago.importe )
+        logger.debug("* aplica_un_pago {} ".format(pago.aplica_pago_plan.id))
         reg = {
             "fecha": pago.fecha_cobro , 
             "cuota": 0.0,
@@ -106,7 +107,7 @@ class SaldosFamilia():
             self.registros.append(self.aplica_una_cuota(cuota))
 
     def aplica_una_cuota(self,cuota):
-
+        logger.debug("Aplicando cuota... {} {} {} ".format(cuota, cuota.id , cuota.plan_de_pago))
         self.saldo -= cuota.importe_cuota
         reg = {
             "fecha": cuota.vencimiento , 
@@ -294,17 +295,21 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
     
 
     if f_familia:
-        lista_familias = Familia.objects.filter(familia_crm_id__icontains=f_familia).filter(eliminado=False).order_by('familia_crm_id')
+        lista_familias = Familia.objects.filter(familia_crm_id__icontains=f_familia).order_by('familia_crm_id')
     else:
         lista_familias = Familia.objects.all().filter(eliminado=False).order_by('familia_crm_id')
     
-    lista_planes_view = PlanDePago.objects.all().order_by('id')
+    planes_de_pago =  PlanDePago.objects.all().exclude(excluir=True).order_by('id')
+    planes_de_pago_ids =  [plan_p.id for plan_p in planes_de_pago]
+    lista_planes_view = PlanDePago.objects.all().exclude(excluir=True).order_by('id')
 
+    logger.debug( "### planes_de_pago {}  planes_de_pago_ids {}  lista_planes_view {}  ".format(planes_de_pago,planes_de_pago_ids,lista_planes_view))
+    
     if f_plan:
         logger.debug(" checkpint planes filtrado '{}' ".format(f_plan))
-        lista_planes = PlanDePago.objects.all().filter(id=f_plan)
+        lista_planes = PlanDePago.objects.all().exclude(excluir=True).filter(id=f_plan)
     else:
-        lista_planes = lista_planes_view.all()
+        lista_planes = lista_planes_view.all().exclude(excluir=True)
     
     #lista_planes = PlanDePago.objects.all().order_by('id')
 
@@ -319,8 +324,8 @@ def gestion_cobranza_listado(request, clean_filters=False, error_message=''):
         ## analizar el "start_date" si lo aplicamos
         ## TODO default value para end_date today en el filtro.
 
-        cuotas = app_cuotas.cuotas_queryset(familia.id)
-        pagos =  app_cuotas.pagos_percibidos_queryset(familia.id)
+        cuotas = app_cuotas.cuotas_queryset(familia.id,planes_de_pago_ids=planes_de_pago_ids)
+        pagos =  app_cuotas.pagos_percibidos_queryset(familia.id,planes_de_pago_ids=planes_de_pago_ids)
 
         for un_plan in lista_planes:
             estado_plan = EstadoPlan()
@@ -393,9 +398,14 @@ def gestion_cobranza_familia(request, familia_id, only_data=False):
     '''detalla cuotas y pagos de la familia, con saldo por movimiento'''
 
     familia = Familia.objects.get(pk=familia_id,eliminado=False)
-    cuotas = app_cuotas.cuotas_queryset(familia.id).filter(deleted=False).order_by('vencimiento')
-    pagos = app_cuotas.pagos_percibidos_queryset(familia.id).filter(deleted=False).order_by('fecha_cobro')
-    planes_de_pago =  PlanDePago.objects.all().order_by('id')
+    planes_de_pago =  PlanDePago.objects.all().exclude(excluir=True).order_by('id')
+    planes_de_pago_ids =  [plan_p.id for plan_p in planes_de_pago]
+    logger.debug("planes_de_pago: {} - {}".format(planes_de_pago,planes_de_pago_ids ))
+    cuotas = app_cuotas.cuotas_queryset(familia.id,planes_de_pago_ids=planes_de_pago_ids).filter(deleted=False).order_by('vencimiento')
+    pagos = app_cuotas.pagos_percibidos_queryset(familia.id,planes_de_pago_ids=planes_de_pago_ids).filter(deleted=False).order_by('fecha_cobro')
+    
+    
+    logger.debug("cuotas: {}".format(cuotas))
     registros=[]
     
     gestion = SaldosFamilia(cuotas,pagos,planes_de_pago)
@@ -435,7 +445,7 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
     end_date = None
     f_plan = None
     f_familia = None
-    lista_pagos = CuotaPago.objects.all().filter(deleted=False).order_by('-fecha_cobro')
+    lista_pagos = CuotaPago.objects.all().filter(deleted=False).exclude(aplica_pago_plan__excluir=True).order_by('-fecha_cobro')
     current_user = request.user
     # Reporte PDF options
     report_export_on = False # generate and download report
@@ -470,7 +480,7 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
             start_date = date.today() # - timedelta(months = 1)
         else:
             start_date = datetime.date(datetime.strptime(f_start_date,"%Y-%m-%d"))
-            lista_pagos = lista_pagos.filter(fecha_cobro__gte=start_date)
+            lista_pagos = lista_pagos.filter(fecha_cobro__gte=start_date).exclude(aplica_pago_plan__excluir=True)
         
         logger.debug(" GET ## {}: {}".format(clean_filters,request.GET) )
 
@@ -479,7 +489,7 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
             end_date = date.today()
         else:
             end_date = datetime.date(datetime.strptime(f_end_date,"%Y-%m-%d"))
-        lista_pagos = lista_pagos.filter(fecha_cobro__lte=end_date)
+        lista_pagos = lista_pagos.filter(fecha_cobro__lte=end_date).exclude(aplica_pago_plan__excluir=True)
         logger.debug("Pagos 1 {}".format(lista_pagos))
         
         if f_plan:
@@ -491,7 +501,7 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
             lista_familias = Familia.objects.filter(familia_crm_id__icontains=f_familia).filter(eliminado=False).order_by('familia_crm_id')
             logger.debug("Familias {}".format(lista_familias))
             logger.debug("Pagos 3 {}".format(lista_pagos))
-            lista_pagos = lista_pagos.filter(deleted=False).filter(familia__pk__in=lista_familias)
+            lista_pagos = lista_pagos.filter(deleted=False).filter(familia__pk__in=lista_familias).exclude(aplica_pago_plan__excluir=True)
             lista_pagos = CuotaPago.objects.all().filter(deleted=False).filter(familia__pk__in=lista_familias).order_by('-fecha_cobro')
 
             logger.debug("Pagos 4 {}".format(lista_pagos))
@@ -508,12 +518,12 @@ def gestion_pagos_listado(request, clean_filters=False, error_message=''):
         report_export_on = False # generate and download report
         report_export_all = True # Report must include all records? True= yes, False=only current pa
 
-    lista_planes_view = PlanDePago.objects.all().order_by('id')
+    lista_planes_view = PlanDePago.objects.all().exclude(excluir=True).order_by('id')
     if f_plan:
         logger.debug(" checkpint planes filtrado '{}' ".format(f_plan))
-        lista_planes = PlanDePago.objects.all().filter(id=f_plan)
+        lista_planes = PlanDePago.objects.all().exclude(excluir=True).filter(id=f_plan)
     else:
-        lista_planes = lista_planes_view.all()
+        lista_planes = lista_planes_view.all().exclude(excluir=True)
 
     reporte = lista_pagos
 
