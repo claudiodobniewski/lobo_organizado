@@ -2,6 +2,11 @@ __ LOBO ORGANIZADO __
 
 # STAGE
 
+# RELEASE 0.4.1 02/12/2023
+* Filtrado de planes de pago en todas las operaciones : gestion de cobranza, pagos, giltros de planes, cta cte familias.
+  -  se debe tildas (true) en admin el campo "excluir" de los planes de pago para que dejen de aparecer.
+  -  tambien se aplica el default de plan de pago para el plan de pago preseleccionado al ingresar pago de cuotas.
+
 # RELEASE 0.4.0 26/11/2023
 * Reportes CSV completo en listados de cuotas cobradas y gestion de cobrana (estado de pago de cuota scocial familias)
 * NUEVO ficha familias ahora eXPORT PDF completo, incluye cuenta corriente de la familia con identificador de pago interno y comprobante (MP)
